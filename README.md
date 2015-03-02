@@ -42,6 +42,7 @@ Array2d<float,3,3> d; // Static 2d array (size 9) of type float
 Array2d<int> e;       // Dynamic 2d array of type int
 Array2d<double> f;    // Dynamic 2d array of type double
                       // NOTE: STATIC ARRAYS DO NOT EXIST FOR DIMENSIONS HIGHER THAN 2
+Array3d<int> g;       // Dynamic 3d array ot type int
 
 a.allocate(10);       // allocate `a` to size 10
 b.mold(a);            // allocate `b` to same size as `a`
@@ -75,6 +76,9 @@ for(int j=0;j<e.d2();j++){    // this is accessing the 2d array using the indexi
 f = d+e; // this is an element-wise addition operation, 
          // which through the magic of inlining, does not create temporaries.
          // In debug mode, this makes sure that both arrays have the same size.
+         
+g.map( function_returning_external_int_ptr() , 10,10,10); // This maps an external pointer to a 3d array, and 
+                                                          // makes it of size 10x10x10
 
 ```
 
