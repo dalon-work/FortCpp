@@ -1,0 +1,15 @@
+build/
+debug/
+release/
+test
+*.exec
+*.a
+*.vti
+*.pvti
+*.o
+.svn/
+*.vtu
+*.pvtu
+tags
+*.swp
+*.log.*
