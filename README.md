@@ -25,7 +25,7 @@ I didn't like any of the above for a a few different reasons.
 
 I'm not a C++ guru, I'm a engineer who started with Fortran, MATLAB, and Python (NumPy), so don't rake me over the coals for not doing "proper" C++. Sometimes I feel like C++ takes itself way too seriously.
 
-== How to use FortC++
+## How to use FortC++
 
 FortC++ has up to 5d arrays. This number might go up later. 
 The basic functionality can be had as follows:
