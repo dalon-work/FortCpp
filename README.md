@@ -108,7 +108,8 @@ To turn debugging off, define the macro NDEBUG. Use this for release code, as de
 ### Compiling and Optimization
 
 This library uses features from the C++11 standard, so you have to use a C++11 compliant compiler. 
-With G++, this means compiling with the -std=c++11 option.
+With G++, this means compiling with the -`std=c++11` option. This library also relies heavily on the ability
+of the compiler to inline everything, or else performance goes to zilch. For G++, this means compiling with the `-O3` flag.
 
 I've tried several ways to disable aliasing checks in whole-array operations, and have succeeded (I think)
 with the G++ compiler through the use of `#pragma GCC ivdep`. The important point here is: This library assumes
