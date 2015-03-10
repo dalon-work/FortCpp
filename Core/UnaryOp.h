@@ -1,7 +1,7 @@
-#ifndef USU_UNARYOP_H
-#define USU_UNARYOP_H
+#ifndef FortCpp_UNARYOP_H
+#define FortCpp_UNARYOP_H
 
-namespace USU
+namespace FortCpp
 {
 
 namespace internal
@@ -56,9 +56,9 @@ struct NegUnOp{
 
 
 
-USU_UNARY_OP(SqrtUnOp,sqrt)
-USU_UNARY_OP(SinUnOp,sin)
-USU_UNARY_OP(CosUnOp,cos)
+FortCpp_UNARY_OP(SqrtUnOp,sqrt)
+FortCpp_UNARY_OP(SinUnOp,sin)
+FortCpp_UNARY_OP(CosUnOp,cos)
 
-}; // end namespace USU
+}; // end namespace FortCpp
 #endif

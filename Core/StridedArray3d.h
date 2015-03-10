@@ -1,7 +1,7 @@
-#ifndef USU_STRIDEDARRAY3D_H
-#define USU_STRIDEDARRAY3D_H
+#ifndef FortCpp_STRIDEDARRAY3D_H
+#define FortCpp_STRIDEDARRAY3D_H
 
-namespace USU
+namespace FortCpp
 {
 
 namespace internal
@@ -146,6 +146,6 @@ class StridedArray3d : public ArrayBase3d< StridedArray3d<ArrayDerived,SliceDeri
 
 }; // end class
 
-}; // end namespace USU
+}; // end namespace FortCpp
 
 #endif

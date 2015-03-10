@@ -1,8 +1,8 @@
-#ifndef USU_STRIDES_H
-#define USU_STRIDES_H
+#ifndef FortCpp_STRIDES_H
+#define FortCpp_STRIDES_H
 #include "ForwardDeclarations.h"
 
-namespace USU
+namespace FortCpp
 {
 
 namespace internal
