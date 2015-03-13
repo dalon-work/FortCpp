@@ -111,19 +111,11 @@ class Array1d : public ArrayBase1d<Array1d<T,D1,Options> >
 
   /*************************************************/
 
-  /**
-   * Allocates memory. With debugging, throws a fatal exception
-   * if the array is already allocated
-   */
   void allocate(const int d1){
     _storage.allocate(d1);
     _accessor.set_dim(d1);
   }
 
-  /** 
-   * Maps a pointer into the array. The size of the 
-   * pointer array is given by i
-   */
   void map(T* a, const int d1){
     _storage.map(a,d1);
     _accessor.set_dim(d1);
@@ -140,10 +132,20 @@ class Array1d : public ArrayBase1d<Array1d<T,D1,Options> >
    * memory it points to if the array was not allocated
    */
   void deallocate(){
-    FortCpp_NOT_STATIC_FUNCTION_ASSERT
     _storage.deallocate();
   }
   /*************************************************/
+
+  Derived reverse(){
+    Derived A;
+    A.mold(*this);
+    int r=size()-1;
+    for(int i=0;i<size();i++){
+      A[i] = (*this)[r];
+      r--;
+    }
+    return A;
+  }
 
   static Derived constant(T c){
     FortCpp_IS_STATIC_FUNCTION_ASSERT
@@ -264,9 +266,7 @@ class Array1d : public ArrayBase1d<Array1d<T,D1,Options> >
   }
 
   /*********************************************************/
-   /** 
-    * Returns the number of elements in the first dimension
-    */
+
    inline const int d1() const { return _accessor.d1(); }
    inline const int size() const { return _storage.size(); }
    inline const bool allocated() const { return _storage.allocated(); }
