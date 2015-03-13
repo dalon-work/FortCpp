@@ -418,30 +418,30 @@ end subroutine Array3d_SSS
 
 !*********************!
 
-! subroutine Array3d_ijS(d,a,i,j,S3,l,r) bind(C,name="Array3d_ijS")
-!   type(Dim3),value :: d
-!   type(c_ptr),intent(in) :: a
-!   type(Dim1),value :: l
-!   integer(c_int),value :: i,j
-!   type(Slice),value :: s3
-!   type(c_ptr),intent(out) :: r
-!
-!   real(c_double),pointer :: c_array(:,:,:),f_array(:)
-!   real(c_double),allocatable :: temp(:)
-!
-!   i=i+1
-!   j=j+1
-!   call convert_slice(S3)
-!   call c_f_pointer(a,c_array,[d%d1,d%d2,d%d3])
-!   temp = c_array(i,j,S3%b : S3%e : S3%s)
-!   l = shape(temp)
-!
-!   allocate(f_array(l%d1))
-!   f_array=temp
-!   r = c_loc(f_array(1))
-!   
-! end subroutine Array3d_ijS
-!
+subroutine Array4d_ijkS(d,a,i,j,k,S4,rd,r) bind(C,name="Array4d_ijkS")
+  type(Dim3),value :: d
+  type(c_ptr),intent(in) :: a
+  type(Dim1),value :: rd
+  integer(c_int),value :: i,j,k
+  type(Slice),value :: s4
+  type(c_ptr),intent(out) :: r
+
+  real(c_double),pointer :: c_array(:,:,:,:),f_array(:)
+  real(c_double),allocatable :: temp(:)
+
+  i=i+1
+  j=j+1
+  call convert_slice(S4)
+  call c_f_pointer(a,c_array,[d%d1,d%d2,d%d3,d%d4])
+  temp = c_array(i,j,k,S4%b : S4%e : S4%s)
+  rd = shape(temp)
+
+  allocate(f_array(rd%d1))
+  f_array=temp
+  r = c_loc(f_array(1))
+
+end subroutine Array4d_ijkS
+
 ! subroutine Array3d_iSk(d,a,i,S2,k,l,r) bind(C,name="Array3d_iSk")
 !   type(Dim3),value :: d
 !   type(c_ptr),intent(in) :: a
