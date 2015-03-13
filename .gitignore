@@ -1,7 +1,6 @@
 build/
 debug/
 release/
-test
 *.exec
 *.a
 *.vti
