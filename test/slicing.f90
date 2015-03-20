@@ -170,10 +170,12 @@ subroutine Array1d_S(d,a,S1,rd,r) bind(C,name="Array1d_S")
   real(c_double),pointer,dimension(:) :: c_array,f_array
   real(c_double),allocatable,dimension(:) :: temp
 
+
   call convert_slice(S1)
   call c_f_pointer(a,c_array,[d%d1])
   temp = c_array(S1%b : S1%e : S1%s)
   rd = shape(temp)
+
 
   allocate(f_array(rd%d1))
   f_array = temp

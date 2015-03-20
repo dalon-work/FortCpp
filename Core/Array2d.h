@@ -182,7 +182,6 @@ class Array2d : public ArrayBase2d<Array2d<T,D1,D2,Options> >
     return S;
   }
 
-  /***/
   template<FortCpp_SLICE_TEMPLATE(1), FortCpp_SLICE_TEMPLATE(2)>
   inline StridedArray2d<Derived,FortCpp_SLICE(1),
                                 FortCpp_SLICE(2) >operator () (const FortCpp_SLICE_0(1) &S1,
