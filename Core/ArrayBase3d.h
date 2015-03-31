@@ -4,29 +4,29 @@
 namespace FortCpp
 {
   
-// namespace internal
-// {
-//
-// template<typename Derived>
-// struct traits<ArrayBase3d<Derived> >
-// {
-//   typedef typename traits<Derived>::Scalar Scalar;
-//   enum{
-//     Size   = traits<Derived>::Size,
-//     D1     = traits<Derived>::D1,
-//     D2     = traits<Derived>::D2,
-//     D3     = traits<Derived>::D3,
-//     StorageType = traits<Derived>::StorageType,
-//     Dim    = 3,
-//     Order  = traits<Derived>::Order,
-//     Align  = traits<Derived>::Align,
-//     Stride = traits<Derived>::Stride,
-//     Options = traits<Derived>::Options
-//   };
-//
-// };
-//
-// }; // end namespace internal
+namespace internal
+{
+
+template<typename Derived>
+struct traits<ArrayBase3d<Derived> >
+{
+  typedef typename traits<Derived>::Scalar Scalar;
+  enum{
+    Size   = traits<Derived>::Size,
+    D1     = traits<Derived>::D1,
+    D2     = traits<Derived>::D2,
+    D3     = traits<Derived>::D3,
+    StorageType = traits<Derived>::StorageType,
+    Dim    = 3,
+    Order  = traits<Derived>::Order,
+    Align  = traits<Derived>::Align,
+    Stride = traits<Derived>::Stride
+    // Options = traits<Derived>::Options
+  };
+
+};
+
+}; // end namespace internal
 
 template <typename Derived>
 class ArrayBase3d : public ArrayBase< Derived >
