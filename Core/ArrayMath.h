@@ -5,6 +5,16 @@ namespace FortCpp
 {
 
 template<typename Derived>
+int count(const ArrayBase<Derived> &rhs)
+{
+  int c = 0;
+  for(int i=0;i<rhs.size();i++){
+    if(rhs.derived()[i]) c++;
+  }
+  return c;
+}
+
+template<typename Derived>
 bool isnan(const ArrayBase<Derived> &rhs)
 {
   for(int i=0;i<rhs.size();i++){

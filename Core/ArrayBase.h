@@ -96,6 +96,7 @@ class ArrayBase
    FortCpp_BINARY_OP(MulBinOp,*)
    FortCpp_BINARY_OP(DivBinOp,/)
    FortCpp_BINARY_OP(EqBinOp,==)
+   FortCpp_BINARY_OP(NotEqBinOp,==)
 
    FortCpp_UNARY_FUNC(SqrtUnOp,sqrt)
    FortCpp_UNARY_FUNC(SinUnOp,sin)
