@@ -1,5 +1,5 @@
-#ifndef FortCpp_SLICE_H
-#define FortCpp_SLICE_H
+#ifndef FortCpp_sLICE_h
+#define FortCpp_sLICE_h
 #include "ForwardDeclarations.h"
 
 namespace FortCpp
@@ -29,30 +29,30 @@ class SliceValue
 };
 
 /** Traits Struct **/
-template<int _Type,int _Dim,int _L,int _S>
-struct traits<Slice<_Type,_Dim,_L,_S> >
+template<int _type,int _dim,int _l,int _s>
+struct traits<Slice<_type,_dim,_l,_s> >
 {
   enum{
-    Type = _Type,
-    Dim  = _Dim,
-    L    = _L,
-    S    = _S
+    Type = _type,
+    Dim  = _dim,
+    L    = _l,
+    S    = _s
   };
 };
 
 /** Slice class **/
-template<int _Type,int _Dim,int _L,int _S> 
+template<int _type,int _dim,int _l,int _s> 
 class Slice
 {
   private:
-  const int _b;
-  const SliceValue<_L> _l;
-  const SliceValue<_S> _s;
+  const int _be;
+  const SliceValue<_l> _le;
+  const SliceValue<_s> _se;
   public:
-  inline explicit Slice(const int B, const int E, const int S) : _b(B),_l(E-B),_s(S) {}
-  inline const int b() const { return _b; }
-  inline const int l() const { return _l.get(); }
-  inline const int s() const { return _s.get(); }
+  inline explicit Slice(const int B, const int E, const int S) : _be(B),_le(E-B),_se(S) {}
+  inline const int b() const { return _be; }
+  inline const int l() const { return _le.get(); }
+  inline const int s() const { return _se.get(); }
 };
 
 
@@ -87,25 +87,25 @@ inline static internal::Slice<internal::Full> S()
   return internal::Slice<internal::Full>(0,0,0);
 }
 
-// A full slice with stride _S
-// template<int _S>
-// inline static internal::Slice<internal::Full,0,internal::Unknown,_S> S() 
+// A full slice with stride _s
+// template<int _s>
+// inline static internal::Slice<internal::Full,0,internal::Unknown,_s> S() 
 // {
-//   return internal::Slice<internal::Full,0,internal::Unknown,_S>(0,0,0);
+//   return internal::Slice<internal::Full,0,internal::Unknown,_s>(0,0,0);
 // }
 
-// A contiguous slice of length _L
-template<int _L> 
-inline static internal::Slice<internal::Contig,0,_L> S(const int B)  
+// A contiguous slice of length _l
+template<int _l> 
+inline static internal::Slice<internal::Contig,0,_l> S(const int B)  
 {
-  return internal::Slice<internal::Contig,0,_L>(B,0,0);
+  return internal::Slice<internal::Contig,0,_l>(B,0,0);
 }
 
-// An unknown slice of length _L and stride _S
-template<int _L,int _S>
-inline static internal::Slice<internal::Unknown,0,_L,_S> S(const int B) 
+// An unknown slice of length _l and stride _s
+template<int _l,int _s>
+inline static internal::Slice<internal::Unknown,0,_l,_s> S(const int B) 
 {
-  return internal::Slice<internal::Unknown,0,_L,_S>(B,0,0);
+  return internal::Slice<internal::Unknown,0,_l,_s>(B,0,0);
 }
 
 // a contiguous slice of unknown length
@@ -114,11 +114,11 @@ inline static internal::Slice<internal::Contig,0,internal::Unknown> S(const int 
   return internal::Slice<internal::Contig,0,internal::Unknown>(B,E,0);
 }
 
-// an unknown slice of unknown length and stride _S
-template<int _S>
-inline static internal::Slice<internal::Unknown,0,internal::Unknown,_S> S(const int B,const int E) 
+// an unknown slice of unknown length and stride _s
+template<int _s>
+inline static internal::Slice<internal::Unknown,0,internal::Unknown,_s> S(const int B,const int E) 
 {
-  return internal::Slice<internal::Unknown,0,internal::Unknown,_S>(B,E,0);
+  return internal::Slice<internal::Unknown,0,internal::Unknown,_s>(B,E,0);
 }
 
 // an unknown slice of unknown length and stride

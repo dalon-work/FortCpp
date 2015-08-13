@@ -23,7 +23,7 @@ class StrideValue<Unknown>
   inline const int s() const {return _s;}
 };
 
-template<int _S>
+template<int _s>
 class StrideValue
 {
   private:
@@ -31,7 +31,7 @@ class StrideValue
   StrideValue(const StrideValue &other)=default;
   inline explicit StrideValue() {}
   inline void set(const int s) {}
-  static inline const int s() { return _S;}
+  static inline const int s() { return _s;}
 };
 
 

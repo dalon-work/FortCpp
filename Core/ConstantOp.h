@@ -1,5 +1,5 @@
-#ifndef FortCpp_CONSTANTOP_H
-#define FortCpp_CONSTANTOP_H
+#ifndef FortCpp_cONSTANTOP_h
+#define FortCpp_cONSTANTOP_h
 
 namespace FortCpp
 {
@@ -7,7 +7,7 @@ namespace FortCpp
 namespace internal
 {
 
-enum CONSTANT_SIDE
+enum CONSTANT_sIDE
 {
   LHS,
   RHS
@@ -36,19 +36,19 @@ class ConstantOp<internal::LHS,Rhs,Op> : public ArrayBase<ConstantOp<internal::L
   typedef typename internal::traits<Rhs>::Scalar T;
   typedef ConstantOp<internal::LHS,Rhs,Op> Derived;
   protected:
-  const T &_C;
+  const T &_c;
   const Rhs &_rhs;
   const Op  &_op;
   const internal::OpSize<internal::traits<Derived>::Size> _size;
 
   public:
-  inline ConstantOp(const T &C, const Rhs &rhs,const Op &op): _C(C), _rhs(rhs), _op(op), _size(rhs.size())
+  inline ConstantOp(const T &C, const Rhs &rhs,const Op &op): _c(C), _rhs(rhs), _op(op), _size(rhs.size())
   { }
-  inline ConstantOp(const ConstantOp &A) : _C(A._C), _rhs(A._rhs), _op(A._op), _size(A.size())
+  inline ConstantOp(const ConstantOp &A) : _c(A._c), _rhs(A._rhs), _op(A._op), _size(A.size())
   { }
 
   inline const T operator [] (const int &i) const{
-    return _op.eval(_C,_rhs[i]);
+    return _op.eval(_c,_rhs[i]);
   }
 
   inline const int size() const { return _size.size(); }
@@ -63,19 +63,19 @@ class ConstantOp<internal::RHS,Lhs,Op> : public ArrayBase<ConstantOp<internal::R
   typedef typename internal::traits<Lhs>::Scalar T;
   typedef ConstantOp<internal::LHS,Lhs,Op> Derived;
   protected:
-  const T &_C;
+  const T &_c;
   const Lhs &_lhs;
   const Op  &_op;
   const internal::OpSize<internal::traits<Derived>::Size> _size;
 
   public:
-  inline ConstantOp(const Lhs &lhs,const T &C, const Op &op): _C(C), _lhs(lhs), _op(op), _size(lhs.size())
+  inline ConstantOp(const Lhs &lhs,const T &C, const Op &op): _c(C), _lhs(lhs), _op(op), _size(lhs.size())
   { }
-  inline ConstantOp(const ConstantOp &A) : _C(A._C), _lhs(A._lhs), _op(A._op), _size(A.size())
+  inline ConstantOp(const ConstantOp &A) : _c(A._c), _lhs(A._lhs), _op(A._op), _size(A.size())
   { }
 
   inline const T operator [] (const int &i) const{
-    return _op.eval(_lhs[i],_C);
+    return _op.eval(_lhs[i],_c);
   }
 
   inline const int size() const { return _size.size(); }

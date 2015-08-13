@@ -51,7 +51,7 @@ enum
 template<int Size> class OpSize;
 template<typename Derived> struct traits;
 template<typename Derived,int Size,int Dim> class Dimensions;
-template<int _S> class StrideValue;
+template<int _s> class StrideValue;
 template<int... StridePack> class Strides;
 template<typename Derived,int Dim, int Order, int Stride,int... StridePack> class Accessor;
 template<int Type,int Dim=0,int L=Unknown,int S=1> class Slice;

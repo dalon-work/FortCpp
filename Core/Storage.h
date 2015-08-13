@@ -46,8 +46,17 @@ class Storage<T,Pointer,Unknown,UnAligned>
   inline const int size() const { return _size; }
   inline const bool allocated() const { return _alloc; }
   inline const bool associated() const { return _A; }
-  inline const T & operator [] (const int i) const { return _A[i]; }
-  inline T & operator [] (const int i){ return _A[i]; }
+  inline const T & operator [] (const int i) const { 
+#ifdef FortCpp_READ_NAN
+    FortCpp_NAN_CHECK(_A[i])
+#endif
+    return _A[i]; 
+  }
+  inline T & operator [] (const int i){
+#ifdef FortCpp_WRITE_NAN
+    FortCpp_NAN_CHECK(_A[i])
+#endif
+    return _A[i]; }
 
   /**
    * Deallocates memory, or disassociates the array from the 
@@ -88,8 +97,16 @@ class Storage<T,Pointer,Size,UnAligned>
   inline const int size() const { return Size; }
   inline const bool allocated() const { return 0; }
   inline const bool associated() const { return 1; }
-  inline const T & operator [] (const int i) const { return _A[i]; }
-  inline T & operator [] (const int i){ return _A[i]; }
+  inline const T & operator [] (const int i) const {
+#ifdef FortCpp_READ_NAN
+    FortCpp_NAN_CHECK(_A[i])
+#endif
+    return _A[i]; }
+  inline T & operator [] (const int i){
+#ifdef FortCpp_WRITE_NAN
+    FortCpp_NAN_CHECK(_A[i])
+#endif
+    return _A[i]; }
 
   /**
    * Deallocates memory, or disassociates the array from the 
@@ -118,8 +135,16 @@ class Storage<T,Static,Size,UnAligned>
 
   inline static const int size() { return Size; }
   inline T* data() { return _A; }
-  inline const T & operator [] (const int i) const { return _A[i]; }
-  inline T & operator [] (const int i){ return _A[i]; }
+  inline const T & operator [] (const int i) const { 
+#ifdef FortCpp_READ_NAN
+    FortCpp_NAN_CHECK(_A[i])
+#endif
+    return _A[i]; }
+  inline T & operator [] (const int i){
+#ifdef FortCpp_WRITE_NAN
+    FortCpp_NAN_CHECK(_A[i])
+#endif
+    return _A[i]; }
   inline const bool allocated() const { return 1; }
   inline const bool associated() const { return 1; }
   inline void deallocate() const {}

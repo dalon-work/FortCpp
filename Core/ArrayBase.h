@@ -96,7 +96,7 @@ class ArrayBase
    FortCpp_BINARY_OP(MulBinOp,*)
    FortCpp_BINARY_OP(DivBinOp,/)
    FortCpp_BINARY_OP(EqBinOp,==)
-   FortCpp_BINARY_OP(NotEqBinOp,==)
+   FortCpp_BINARY_OP(NotEqBinOp,!=)
 
    FortCpp_UNARY_FUNC(SqrtUnOp,sqrt)
    FortCpp_UNARY_FUNC(SinUnOp,sin)
@@ -105,6 +105,13 @@ class ArrayBase
    inline const UnaryOp<Derived,NegUnOp<T> >operator -() const
    {
      return UnaryOp<Derived,NegUnOp<T> >(this->derived(),NegUnOp<T>());
+   }
+
+   inline explicit operator bool() const {
+     for(int i=0;i<derived().size();i++){
+       if(derived()[i]) return 1;
+     }
+     return 0;
    }
    /*********************************************/
 

@@ -39,8 +39,21 @@
 #define FortCpp_BOUNDS_CHECK(i,D)
 #define FortCpp_LINEAR_SIZE_CHECK(i)
 #define FortCpp_SLICE_CHECK(D)
+#define FortCpp_NAN_CHECK(a)
 #else
 
+#if defined(FortCpp_WRITE_NAN) || defined(FortCpp_READ_NAN)
+#define FortCpp_NAN_CHECK(a) try{ \
+                             if(bool((a) != (a))){  \
+                                 throw NanException(); \
+                             }  \
+                           }   \
+                          catch(std::exception &e){  \
+                            FortCpp::ArrayException::handle_exception(e); \
+                            }
+#else 
+#define FortCpp_NAN_CHECK(a)
+#endif
 
 #define FortCpp_SIZE_MATCH(a,b) try{                            \
                                 if((a) != (b)){                 \

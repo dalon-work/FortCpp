@@ -6,8 +6,12 @@
 #include <sstream>
 #include "stdlib.h"
 #include "stdio.h"
+
+#ifdef FortCpp_ARRAY_BACKTRACE
 #include "execinfo.h"
 #include "unistd.h"
+#endif
+
 using namespace std;
 
 namespace FortCpp
@@ -76,6 +80,18 @@ class ArrayException : public exception
   }
 
 
+};
+
+class NanException : public ArrayException
+{
+  public:
+    NanException() {};
+
+    const char * what() const throw(){
+      std::stringstream s;
+      s << "NaN found!" << std::endl;
+      return s.str().c_str();
+    }
 };
 
 class SizeException : public ArrayException
