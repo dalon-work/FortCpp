@@ -195,14 +195,14 @@ class Array1d : public ArrayBase1d<Array1d<T,D1,Options> >
     return A;
   }
 
-  static Derived linspace(double start, double stop, int num,bool endpoint=1){
+  static Derived linspace(long double start, long double stop, int num,bool endpoint=1){
     FortCpp_NOT_STATIC_FUNCTION_ASSERT
     Derived A;
     A.allocate(num);
     int end = endpoint ? 1 : 0;
-    double dx = (stop-start)/double(num-end);
+    long double dx = (stop-start)/static_cast<long double>(num-end);
     for(int i=0;i<num;i++){
-      A[i] = start+dx*i;
+      A[i] = static_cast<T>(start+static_cast<long double>(i)*dx);
     }
     return A;
   }
