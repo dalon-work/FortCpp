@@ -58,7 +58,7 @@ typename internal::traits<Derived>::Scalar min(const ArrayBase<Derived> &rhs)
   typename internal::traits<Derived>::Scalar m;
   m = rhs.derived()[0];
   for(int i=1;i<rhs.size();i++){
-    m = m < rhs[i] ? m : rhs[i];
+    m = m < rhs.derived()[i] ? m : rhs.derived()[i];
   }
   return m;
 }
@@ -69,7 +69,7 @@ typename internal::traits<Derived>::Scalar max(const ArrayBase<Derived> &rhs)
   typename internal::traits<Derived>::Scalar m;
   m = rhs.derived()[0];
   for(int i=1;i<rhs.size();i++){
-    m = m > rhs[i] ? m : rhs[i];
+    m = m > rhs.derived()[i] ? m : rhs.derived()[i];
   }
   return m;
 }
