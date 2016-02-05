@@ -11,7 +11,7 @@ struct traits<UnaryOp<Rhs,Op> >
 {
   typedef typename traits<Rhs>::Scalar Scalar;
   enum{
-    Size = int(traits<Rhs>::Size) != int(Unknown) ? int(traits<Rhs>::Size) : int(Unknown)
+     Rank = traits<Rhs>::Rank
   };
 };
 }; // end namespace internal
@@ -27,19 +27,21 @@ class UnaryOp : public ArrayBase<UnaryOp<Rhs,Op> >
   protected:
   const Rhs &_rhs;
   const Op  &_op;
-  const internal::OpSize<internal::traits<Derived>::Size> _size;
 
   public:
-  inline UnaryOp(const Rhs &rhs,const Op &op): _rhs(rhs), _op(op), _size(rhs.size())
+  inline UnaryOp(const Rhs &rhs,const Op &op): _rhs(rhs), _op(op)
   { }
-  inline UnaryOp(const UnaryOp &A) : _rhs(A._rhs), _op(A._op), _size(A.size())
+  inline UnaryOp(const UnaryOp &A) : _rhs(A._rhs), _op(A._op)
   { }
 
   inline const T operator [] (const int &i) const{
     return _op.eval(_rhs[i]);
   }
 
-  inline const int size() const { return _size.size(); }
+  inline const Rhs& getExpr() const {
+     return _rhs;
+  }
+
 };
 
 /*
@@ -53,8 +55,6 @@ struct NegUnOp{
     return -_rhs;
   }
 };
-
-
 
 FortCpp_UNARY_OP(SqrtUnOp,sqrt)
 FortCpp_UNARY_OP(SinUnOp,sin)

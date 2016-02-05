@@ -16,12 +16,12 @@ enum CONSTANT_sIDE
 /*
  * Traits specialization for ConstantOp
  */
-template<int Side,typename Derived,typename Op>
+template<unsigned Side,typename Derived,typename Op>
 struct traits<ConstantOp<Side,Derived,Op> >
 {
   typedef typename traits<Derived>::Scalar Scalar;
   enum{
-    Size = (int(traits<Derived>::Size) != int(Unknown)) ? int(traits<Derived>::Size) : int(Unknown)
+     Rank = traits<Derived>::Rank
   };
 };
 
@@ -39,19 +39,22 @@ class ConstantOp<internal::LHS,Rhs,Op> : public ArrayBase<ConstantOp<internal::L
   const T &_c;
   const Rhs &_rhs;
   const Op  &_op;
-  const internal::OpSize<internal::traits<Derived>::Size> _size;
 
   public:
-  inline ConstantOp(const T &C, const Rhs &rhs,const Op &op): _c(C), _rhs(rhs), _op(op), _size(rhs.size())
+  inline ConstantOp(const T &C, const Rhs &rhs,const Op &op): _c(C), _rhs(rhs), _op(op)
   { }
-  inline ConstantOp(const ConstantOp &A) : _c(A._c), _rhs(A._rhs), _op(A._op), _size(A.size())
+  inline ConstantOp(const ConstantOp &A) : _c(A._c), _rhs(A._rhs), _op(A._op)
   { }
 
   inline const T operator [] (const int &i) const{
     return _op.eval(_c,_rhs[i]);
   }
 
-  inline const int size() const { return _size.size(); }
+  const Rhs& getExpr()
+  {
+     return _rhs;
+  };
+
 };
 
 /*
@@ -66,19 +69,26 @@ class ConstantOp<internal::RHS,Lhs,Op> : public ArrayBase<ConstantOp<internal::R
   const T &_c;
   const Lhs &_lhs;
   const Op  &_op;
-  const internal::OpSize<internal::traits<Derived>::Size> _size;
+  // const internal::OpSize<internal::traits<Derived>::Size> _size;
 
   public:
-  inline ConstantOp(const Lhs &lhs,const T &C, const Op &op): _c(C), _lhs(lhs), _op(op), _size(lhs.size())
+  ConstantOp(const Lhs &lhs,const T &C, const Op &op): _c(C), _lhs(lhs), _op(op)
   { }
-  inline ConstantOp(const ConstantOp &A) : _c(A._c), _lhs(A._lhs), _op(A._op), _size(A.size())
+  ConstantOp(const ConstantOp &A) : _c(A._c), _lhs(A._lhs), _op(A._op)
   { }
 
-  inline const T operator [] (const int &i) const{
+  const T operator [] (const int &i) const{
     return _op.eval(_lhs[i],_c);
   }
 
-  inline const int size() const { return _size.size(); }
+  const Lhs& getExpr()
+  {
+     return _lhs;
+  };
+
+
+
+  // inline const int size() const { return _size.size(); }
 };
 
 

@@ -104,7 +104,7 @@ class SizeException : public ArrayException
       std::stringstream s;
       s << "SIZE OF LHS (" << a 
         << ") AND RHS ("   << b 
-        << ") IN ASSIGNMENT DO NOT MATCH" 
+        << ") IN ASSIGNMENT DO NOT FortCppTCH" 
         << std::endl;
       return s.str().c_str();
     }

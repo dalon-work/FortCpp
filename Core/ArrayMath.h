@@ -79,11 +79,13 @@ UnaryOp<Derived,SqrtUnOp<typename internal::traits<Derived>::Scalar> > sqrt(cons
 {
   return rhs.sqrt();
 };
+
 template<typename Derived>
 UnaryOp<Derived,SinUnOp<typename internal::traits<Derived>::Scalar> > sin(const ArrayBase<Derived> &rhs)
 {
   return rhs.sin();
 };
+
 template<typename Derived>
 UnaryOp<Derived,CosUnOp<typename internal::traits<Derived>::Scalar> > cos(const ArrayBase<Derived> &rhs)
 {

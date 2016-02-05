@@ -1,6 +1,8 @@
 #ifndef FortCpp_BINARYOP_H
 #define FortCpp_BINARYOP_H
 
+#include "ForwardDeclarations.h"
+
 namespace FortCpp
 {
 
@@ -10,11 +12,13 @@ namespace internal
 template<typename Lhs,typename Rhs,typename Op>
 struct traits<BinaryOp<Lhs,Rhs,Op> >
 {
-  typedef typename traits<Rhs>::Scalar Scalar;
+  typedef typename traits<Lhs>::Scalar Scalar;
   enum{
-    Size = (int(traits<Lhs>::Size) != int(Unknown)) ? int(traits<Lhs>::Size) : (int(traits<Rhs>::Size) != int(Unknown)) ? int(traits<Rhs>::Size) : int(Unknown)
+     Rank = traits<Lhs>::Rank
   };
 };
+
+
 }; // end namespace internal
 
 /*
@@ -25,20 +29,30 @@ class BinaryOp : public ArrayBase<BinaryOp<Lhs,Rhs,Op> >
 {
   typedef typename internal::traits<Rhs>::Scalar T;
   typedef BinaryOp<Lhs,Rhs,Op> Derived;
+
   protected:
   const Lhs &_lhs;
   const Rhs &_rhs;
   const Op  &_op;
-  const internal::OpSize<internal::traits<Derived>::Size> _size;
+  // const internal::OpSize<internal::traits<Derived>::Size> _size;
 
   public:
-  inline BinaryOp(const Lhs &lhs,const Rhs &rhs,const Op &op): _lhs(lhs), _rhs(rhs), _op(op), _size(lhs.size()) { }
-  inline BinaryOp(const BinaryOp &A) : _lhs(A._lhs), _rhs(A._rhs), _op(A._op),_size(A.size()) { }
+  BinaryOp(const Lhs &lhs,const Rhs &rhs,const Op &op): _lhs(lhs), _rhs(rhs), _op(op) {
+  static_assert( std::is_same< typename internal::traits<Lhs>::Scalar, 
+                               typename internal::traits<Rhs>::Scalar >::value ,
+                               "ARRAYS MUST HAVE SAME SCALAR TYPE");
+  };
+  BinaryOp(const BinaryOp &A) : _lhs(A._lhs), _rhs(A._rhs), _op(A._op) { }
 
-  inline const T operator [] (const int &i) const{
+  const T operator [] (const int &i) const{
     return _op.eval(_lhs[i],_rhs[i]);
   }
-  inline const int size() const { return _size.size(); }
+
+  const Lhs & get_lhs() const { return _lhs; }
+  const Rhs & get_rhs() const { return _rhs; }
+
+
+  // inline const int size() const { return _size.size(); 
 };
 
 /*

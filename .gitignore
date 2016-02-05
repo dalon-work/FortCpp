@@ -11,4 +11,6 @@ release/
 *.pvtu
 tags
 *.swp
+*.out
 *.log.*
+Core/test.C

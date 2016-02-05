@@ -1,6 +1,15 @@
 #ifndef FortCpp_ARRAYBASE_H
 #define FortCpp_ARRAYBASE_H
 
+#include "Macros.h"
+#include "ForwardDeclarations.h"
+#include "Storage.h"
+#include "Dimensions.h"
+#include "BinaryOp.h"
+#include "ConstantOp.h"
+#include "UnaryOp.h"
+#include "CheckDims.h"
+
 namespace FortCpp
 {
 
@@ -8,17 +17,16 @@ template <typename Derived>
 class ArrayBase
 {
 
+  public:
+
   typedef typename internal::traits<Derived>::Scalar T;
+  static const unsigned Rank = internal::traits<Derived>::Rank;
 
-  private:
-
-  protected:
-  ArrayBase(const ArrayBase<Derived>&)=default;
-  ArrayBase(ArrayBase<Derived>&&)=default;
   ArrayBase()=default;
+  ArrayBase(const ArrayBase<Derived>&)=delete;
+  ArrayBase(ArrayBase<Derived>&&)=delete;
   ~ArrayBase()=default;
 
-  public:
 
   /** 
    * Sets the entire array to a given value
@@ -26,23 +34,21 @@ class ArrayBase
    inline const T& operator = (const T &B) 
    {
 #pragma GCC ivdep
-     for(int i=0;i< this->size();i++){ 
+     for(int i=0;i < size();i++){ 
        derived()[i] = B;
      }
          return B;
    }
 
-  /**
-   * This copies an array using the equals sign. The
-   * sizes of the two arrays must match, or else a fatal error
-   * is thrown in debug mode. This allows a MD ArrayBase to be
-   * assigned to a 1D ArrayBase since and vice versa, since it
-   * only takes size into account.
-   */
    template<typename OtherDerived>
    inline Derived& operator = (const ArrayBase<OtherDerived> &B) 
    {
-    FortCpp_SIZE_MATCH(this->size(),B.size())
+      // static_assert(template Rank == internal::traits<OtherDerived>::Rank,"RANKS DO NOT FortCppTCH");
+    // FortCpp_SIZE_FortCppTCH(this->size(),B.size())
+    if(internal::compare_dims(derived(),B.derived()) == 0){
+       std::cout << "DIMENSIONS DO NOT MATCH IN ASSIGNMENT" << endl;
+       exit(-1);
+    }
 #pragma GCC ivdep
     for(int i=0;i<this->size();i++){ 
       derived()[i] = B.derived()[i];
@@ -52,13 +58,20 @@ class ArrayBase
 
    inline Derived& operator = (const ArrayBase<Derived> &B) 
    {
-    FortCpp_SIZE_MATCH(this->size(),B.size())
+    // FortCpp_SIZE_FortCppTCH(this->size(),B.size())
+    if(internal::compare_dims(derived(),B.derived()) == 0){
+       std::cout << "DIMENSIONS DO NOT MATCH IN ASSIGNMENT" << endl;
+       exit(-1);
+    }
 #pragma GCC ivdep
     for(int i=0;i<this->size();i++){ 
       derived()[i] = B.derived()[i];
     }
     return derived();
   }
+
+  constexpr unsigned size() const{ return derived().size(); }
+  constexpr unsigned size(unsigned i) const { return derived().size(i); }
 
    /**
     * += and -= operators
@@ -91,10 +104,12 @@ class ArrayBase
 
    /************************************************/
 
+  
    FortCpp_BINARY_OP(AddBinOp,+)
    FortCpp_BINARY_OP(SubBinOp,-)
    FortCpp_BINARY_OP(MulBinOp,*)
    FortCpp_BINARY_OP(DivBinOp,/)
+
    FortCpp_BINARY_OP(EqBinOp,==)
    FortCpp_BINARY_OP(NotEqBinOp,!=)
 
@@ -107,18 +122,16 @@ class ArrayBase
      return UnaryOp<Derived,NegUnOp<T> >(this->derived(),NegUnOp<T>());
    }
 
-   inline explicit operator bool() const {
-     for(int i=0;i<derived().size();i++){
-       if(derived()[i]) return 1;
-     }
-     return 0;
-   }
-   /*********************************************/
+  //
+  //  inline explicit operator bool() const {
+  //    for(int i=0;i<derived().size();i++){
+  //      if(derived()[i]) return 1;
+  //    }
+  //    return 0;
+  //  }
 
-  inline const int size() const { return this->derived().size(); }
-
-  inline const Derived& derived() const { return *static_cast<const Derived*>(this); }
-  inline       Derived& derived() { return *static_cast<Derived*>(this); }
+  const Derived& derived() const { return *static_cast<const Derived*>(this); }
+  Derived& derived() { return *static_cast<Derived*>(this); }
 
   friend std::ostream& operator << (std::ostream& os, const ArrayBase<Derived> &A){
     for(int i=0;i<A.size();i++){
