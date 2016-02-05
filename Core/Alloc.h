@@ -3,8 +3,8 @@
 
 #include "ArrayBase.h"
 #include <assert.h>
-#include "Slice.h"
-#include "StrideCalc.h"
+// #include "Slice.h"
+// #include "StrideCalc.h"
 
 namespace FortCpp
 {
@@ -18,7 +18,7 @@ struct traits<Alloc<_T,_Rank,_Options> > {
 	enum {
 	    Size = Unknown,
 	    Rank = _Rank,
-	    StorageType = (Size == Unknown) ? Pointer : Static,
+	    StorageType = Pointer,
 	    Order = _Options & MajorOrderBit,
 	    Align  = _Options & AlignedBit,
 	    Stride = _Options & StrideBit,
@@ -38,9 +38,11 @@ class Alloc : public ArrayBase<Alloc<T,Rank,Options> >
 	typedef ArrayBase<Derived> Base;
 	static const unsigned Order = internal::traits<Derived>::Order;
 	static const unsigned Stride = internal::traits<Derived>::Stride;
+   static const unsigned StorageType = internal::traits<Derived>::StorageType;
+   static const unsigned Align = internal::traits<Derived>::Align;
 
 private:
-	StorageDerived _storage;
+   internal::Storage<T,StorageType,Align> _storage;
 	std::array<unsigned,Rank> _dim;
 	std::array<unsigned,Rank> _str;
 
@@ -58,7 +60,7 @@ public:
    {
 		_dim = {{0}};
 		_str = {{0}};
-		storage.deallocate();
+		_storage.deallocate();
 	}
 
 	template<typename... indices>
@@ -93,10 +95,11 @@ public:
 	void allocate(indices... idx) 
    {
 		static_assert(sizeof...(idx) == Rank, 
-            "NUMBER OF INDICES DOES NOT MATCH RANK OF ARRAY");
-		if (internal::is_negative(idx...)) { assert(0); }
-		set_array<Rank,0>(_dim,static_cast<unsigned>(idx)...);
-		storage.allocate(internal::product(static_cast<unsigned>(idx)...);
+            "NUMBER OF INDICES PASSED TO ALLOCATE DOES NOT MATCH RANK OF ARRAY");
+      internal::set_array<Rank,0>(_dim,static_cast<unsigned>(idx)...);
+      for(int i=0;i<Rank;i++) { _str[i] = 1; }
+      internal::compute_strides<Order,Rank>::exec(_str,_dim);
+		_storage.allocate(internal::product(static_cast<unsigned>(idx)...));
 	}
 
 	template<typename... indices>
@@ -107,8 +110,8 @@ public:
 		static_assert(sizeof...(idx) == Rank, 
             "NUMBER OF INDICES DOES NOT MATCH RANK OF ARRAY");
 		if ( internal::is_negative(idx...) ) { assert(0); }
-      set_array<Rank,0>(_dim,static_cast<unsigned>(idx)...);
-		storage.map(a,internal::product(static_cast<unsigned>(idx)...));
+      internal::set_array<Rank,0>(_dim,static_cast<unsigned>(idx)...);
+		_storage.map(a,internal::product(static_cast<unsigned>(idx)...));
 	}
 
 	// template<typename OtherDerived>
@@ -117,48 +120,41 @@ public:
 	// 	static_assert(Rank == internal::traits<OtherDerived>::Rank,
    //          "RANKS DO NOT MATCH IN MOLD OPERATION");
 	// 	deallocate();
-	// 	dim.copy_dim(B.derived().get_dim(),B.derived().get_str());
-	// 	storage.allocate(dim.size());
 	// }
 
 	/***************************************/
 
 	template<typename... indices>
 	const T& operator () (indices... idx) const {
-		if ( internal::is_negative(idx...) ) { assert(0); }
-		// FortCpp_BOUNDS_CHECK(i,1)
-		// FortCpp_BOUNDS_CHECK(j,2)
-		return storage[internal::offset(str,(static_cast<unsigned>(idx)...)];
+		return _storage[internal::offset(_str,static_cast<unsigned>(idx)...)];
 	}
 
 	template<typename... indices>
 	T& operator () (indices... idx) {
-		if ( internal::is_negative(idx...) ) { assert(0); }
-		// FortCpp_BOUNDS_CHECK(i,1)
-		// FortCpp_BOUNDS_CHECK(j,2)
-		return storage[internal::offset(str,static_cast<unsigned>(idx)...];
+		return _storage[internal::offset(_str,static_cast<unsigned>(idx)...)];
 	}
 
 	/*************************************************/
 
 	const T& operator [] (int i) const {
 		if ( internal::is_negative(i) ) { assert(0); }
-		return storage[internal::compute_offset<Order,Stride,Rank>::exec(_dim,_str,i)];
+		return _storage[internal::compute_offset<Order,Stride,Rank>::exec(_dim,_str,i)];
 	}
 	T& operator [] (int i) {
 		if ( internal::is_negative(i) ) { assert(0); }
-		return storage[internal::compute_offset<Order,Stride,Rank>::exec(_dim,_str,i)];
+		return _storage[internal::compute_offset<Order,Stride,Rank>::exec(_dim,_str,i)];
 	}
 
 	/***********************************************/
 
-	unsigned size()                            const { return storage.size();       }
-	unsigned size(unsigned r)                  const { return dim[r];               }
-	const std::array<unsigned,Rank>& get_dim() const { return dim;                  }
-	const std::array<unsigned,Rank>& get_str() const { return str;                  }
-	bool allocated ()                          const { return storage.allocated();  }
-	bool associated()                          const { return storage.associated(); }
-	T*  data()                                       { return storage.data();       }
+	unsigned size()                              const { return _storage.size();       }
+	unsigned size  (unsigned r)                  const { return _dim[r-1];             }
+	unsigned stride(unsigned r)                  const { return _str[r-1];             }
+	const std::array<unsigned,Rank>& get_dim()   const { return _dim;                  }
+	const std::array<unsigned,Rank>& get_str()   const { return _str;                  }
+	bool allocated ()                            const { return _storage.allocated();  }
+	bool associated()                            const { return _storage.associated(); }
+	T*  data()                                         { return _storage.data();       }
 
 	/***********************************************/
 

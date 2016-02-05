@@ -51,14 +51,14 @@ public:
 // #ifdef FortCpp_READ_NAN
 //     FortCpp_NAN_CHECK(A[i])
 // #endif
-		return A[i];
+		return _A[i];
 	}
 
 	T& operator [] (unsigned i) {
 // #ifdef FortCpp_WRITE_NAN
 //     FortCpp_NAN_CHECK(A[i])
 // #endif
-		return A[i];
+		return _A[i];
 	}
 
 	/**

@@ -59,7 +59,7 @@ unsigned product(const std::array<unsigned,Rank>& idx)
 /********** SET_ARRAY **********/
 
 template<unsigned Rank,unsigned D>
-void set_array(unsigned i)
+void set_array(std::array<unsigned,Rank>& A,unsigned i)
 {
 	A[D] = i;
 }
@@ -117,7 +117,7 @@ template<unsigned Order,unsigned Rank> struct compute_strides;
 
 template<unsigned Rank>
 struct compute_strides<ColMajor,Rank> {
-	void exec(std::array<unsigned,Rank>& str,
+	static void exec(std::array<unsigned,Rank>& str,
 	          const std::array<unsigned,Rank>& dim) {
 		for (int r=0; r<Rank-1; r++) {
 			for (int i=r+1; i<Rank; i++) {
@@ -129,7 +129,7 @@ struct compute_strides<ColMajor,Rank> {
 
 template<unsigned Rank>
 struct compute_strides<RowMajor,Rank> {
-	void exec(std::array<unsigned,Rank>& str,
+	static void exec(std::array<unsigned,Rank>& str,
 	          const std::array<unsigned,Rank>& dim) {
 		for (int r=1; r<Rank; r++) {
 			for (int i=0; i<Rank-r-1; i++) {

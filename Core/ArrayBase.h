@@ -3,12 +3,12 @@
 
 #include "Macros.h"
 #include "ForwardDeclarations.h"
+#include "Util.h"
 #include "Storage.h"
-#include "Dimensions.h"
+// #include "Dimensions.h"
 #include "BinaryOp.h"
 #include "ConstantOp.h"
 #include "UnaryOp.h"
-#include "CheckDims.h"
 
 namespace FortCpp
 {
@@ -27,7 +27,6 @@ public:
 	ArrayBase(ArrayBase<Derived>&&)=delete;
 	~ArrayBase()=default;
 
-
 	/**
 	 * Sets the entire array to a given value
 	 */
@@ -43,10 +42,10 @@ public:
 	inline Derived& operator = (const ArrayBase<OtherDerived>& B) {
 		// static_assert(template Rank == internal::traits<OtherDerived>::Rank,"RANKS DO NOT FortCppTCH");
 		// FortCpp_SIZE_FortCppTCH(this->size(),B.size())
-		if (internal::compare_dims(derived(),B.derived()) == 0) {
-			std::cout << "DIMENSIONS DO NOT MATCH IN ASSIGNMENT" << endl;
-			exit(-1);
-		}
+		// if (internal::compare_dims(derived(),B.derived()) == 0) {
+		// 	std::cout << "DIMENSIONS DO NOT MATCH IN ASSIGNMENT" << endl;
+		// 	exit(-1);
+		// }
 #pragma GCC ivdep
 		for (int i=0; i<this->size(); i++) {
 			derived()[i] = B.derived()[i];
@@ -56,10 +55,10 @@ public:
 
 	inline Derived& operator = (const ArrayBase<Derived>& B) {
 		// FortCpp_SIZE_FortCppTCH(this->size(),B.size())
-		if (internal::compare_dims(derived(),B.derived()) == 0) {
-			std::cout << "DIMENSIONS DO NOT MATCH IN ASSIGNMENT" << endl;
-			exit(-1);
-		}
+		// if (internal::compare_dims(derived(),B.derived()) == 0) {
+		// 	std::cout << "DIMENSIONS DO NOT MATCH IN ASSIGNMENT" << endl;
+		// 	exit(-1);
+		// }
 #pragma GCC ivdep
 		for (int i=0; i<this->size(); i++) {
 			derived()[i] = B.derived()[i];
