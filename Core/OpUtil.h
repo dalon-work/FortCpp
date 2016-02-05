@@ -8,21 +8,21 @@ namespace internal
 {
 
 
-template<int Size> 
+template<int Size>
 class OpSize
 {
-  public:
-    OpSize(const int size) {}
-    const int size() const { return Size; }
+public:
+	OpSize(const int size) {}
+	const int size() const { return Size; }
 };
 
 template<>
 class OpSize<Unknown>
 {
-  const int _size;
-  public:
-    OpSize(const int size) : _size(size) {}
-    const int size() const { return _size; }
+	const int _size;
+public:
+	OpSize(const int size) : _size(size) {}
+	const int size() const { return _size; }
 };
 
 };

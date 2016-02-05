@@ -7,25 +7,21 @@ namespace FortCpp
 namespace internal
 {
 
-   /*** Counts the number of slices in a view ***/
+/*** Counts the number of slices in a view ***/
 template<typename front,typename... indices> struct count_slice;
 
 template<typename last>
-struct count_slice<last>
-{
-   enum
-   {
-      count = std::is_same<last,class Slice>::value
-   };
+struct count_slice<last> {
+	enum {
+	    count = std::is_same<last,class Slice>::value
+	};
 };
 
 template<typename front,typename... indices>
-struct count_slice
-{
-   enum
-   {
-      count = std::is_same<front,class Slice>::value + count_slice<indices...>::count
-   };
+struct count_slice {
+	enum {
+	    count = std::is_same<front,class Slice>::value + count_slice<indices...>::count
+	};
 };
 
 
@@ -37,14 +33,14 @@ struct count_slice
 // template<typename ArrayDerived>
 // struct compute_stride<ArrayDerived,0>
 // {
-//   enum{ 
+//   enum{
 //     res = 1
 //   };
 // };
 // template<typename ArrayDerived>
 // struct compute_stride<ArrayDerived,1>
 // {
-//   enum{ 
+//   enum{
 //     D = traits<ArrayDerived>::D1,
 //     res = (int(D) == int(Unknown)) ? int(Unknown) : int(D)
 //   };
@@ -76,7 +72,7 @@ struct count_slice
 // template<typename ArrayDerived>
 // struct compute_stride<ArrayDerived,5>
 // {
-//   enum{ 
+//   enum{
 //     D = traits<ArrayDerived>::D5,
 //     res = (int(D) == int(Unknown)) ? int(Unknown) : int(D)*int(compute_stride<ArrayDerived,4>::res)
 //   };
@@ -87,8 +83,8 @@ struct count_slice
 // {
 //   enum{
 //     Dim = traits<SliceDerived>::Dim,
-//     S = (int(traits<SliceDerived>::S) == int(Unknown)) ? int(Unknown) 
-//       : (int(compute_stride<ArrayDerived,Dim-1>::res) < 0) ? int(Unknown) 
+//     S = (int(traits<SliceDerived>::S) == int(Unknown)) ? int(Unknown)
+//       : (int(compute_stride<ArrayDerived,Dim-1>::res) < 0) ? int(Unknown)
 //       : int(compute_stride<ArrayDerived,Dim-1>::res*traits<SliceDerived>::S)
 //   };
 // };
@@ -150,35 +146,35 @@ struct count_slice
 // template<int Stride,int Dim, typename AccessorDerived, typename SliceDerived> struct runtime_stride;
 //
 // template<typename AccessorDerived, typename SliceDerived>
-// struct runtime_stride<Unknown,1,AccessorDerived,SliceDerived> 
+// struct runtime_stride<Unknown,1,AccessorDerived,SliceDerived>
 // {
 //   static inline const int result(const AccessorDerived &A, const SliceDerived &S){
 //     return S.s();
 //   }
 // };
 // template<typename AccessorDerived, typename SliceDerived>
-// struct runtime_stride<Unknown,2,AccessorDerived,SliceDerived> 
+// struct runtime_stride<Unknown,2,AccessorDerived,SliceDerived>
 // {
 //   static inline const int result(const AccessorDerived &A, const SliceDerived &S){
 //     return S.s()*A.d1();
 //   }
 // };
 // template<typename AccessorDerived, typename SliceDerived>
-// struct runtime_stride<Unknown,3,AccessorDerived,SliceDerived> 
+// struct runtime_stride<Unknown,3,AccessorDerived,SliceDerived>
 // {
 //   static inline const int result(const AccessorDerived &A, const SliceDerived &S){
 //     return S.s()*A.d1()*A.d2();
 //   }
 // };
 // template<typename AccessorDerived, typename SliceDerived>
-// struct runtime_stride<Unknown,4,AccessorDerived,SliceDerived> 
+// struct runtime_stride<Unknown,4,AccessorDerived,SliceDerived>
 // {
 //   static inline const int result(const AccessorDerived &A, const SliceDerived &S){
 //     return S.s()*A.d1()*A.d2()*A.d3();
 //   }
 // };
 // template<typename AccessorDerived, typename SliceDerived>
-// struct runtime_stride<Unknown,5,AccessorDerived,SliceDerived> 
+// struct runtime_stride<Unknown,5,AccessorDerived,SliceDerived>
 // {
 //   static inline const int result(const AccessorDerived &A, const SliceDerived &S){
 //     return S.s()*A.d1()*A.d2()*A.d3()*A.d4();

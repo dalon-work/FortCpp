@@ -10,65 +10,63 @@ struct Slice;
 
 namespace internal
 {
-   void process_index(const int& i)
-   {
-      cout << "int" << endl;
-      // Slice S(i);
-      // S.index = 1;
-   }
+void process_index(const int& i)
+{
+	cout << "int" << endl;
+	// Slice S(i);
+	// S.index = 1;
+}
 
-   void process_index(const Slice& S)
-   {
-      cout << "Slice" << endl;
-      // return S;
-   }
+void process_index(const Slice& S)
+{
+	cout << "Slice" << endl;
+	// return S;
+}
 };
 
 static const int BEG = -1;
 static const int END = -156700;
 
-struct Slice
-{
-      int beg;
-      int end;
-      int str;
-      bool index;
+struct Slice {
+	int beg;
+	int end;
+	int str;
+	bool index;
 
-      Slice() : beg(0),end(END),str(1),index(0) {}
-      Slice(int b) : beg(b),end(END),str(1),index(0) {}
-      Slice(int b,int e) : beg(b),end(e),str(1),index(0) {}
-      Slice(int b,int e,int s) : beg(b),end(e),str(s),index(0) {}
+	Slice() : beg(0),end(END),str(1),index(0) {}
+	Slice(int b) : beg(b),end(END),str(1),index(0) {}
+	Slice(int b,int e) : beg(b),end(e),str(1),index(0) {}
+	Slice(int b,int e,int s) : beg(b),end(e),str(s),index(0) {}
 
-      unsigned size(unsigned i)
-      {
-         assert(str!=0);
+	unsigned size(unsigned i) {
+		assert(str!=0);
 
-         if(beg < 0){
-            beg = i+beg;
-         }
-         else if(beg == END){
-            beg = i-1;
-         }
-         else if(beg == BEG){
-            beg = 0;
-         }
+		if (beg < 0) {
+			beg = i+beg;
+		}
+		else if (beg == END) {
+			beg = i-1;
+		}
+		else if (beg == BEG) {
+			beg = 0;
+		}
 
-         if(end == END){
-            end = i;
-         }
-         else if(end < 0){
-            end = i+end;
-         }
+		if (end == END) {
+			end = i;
+		}
+		else if (end < 0) {
+			end = i+end;
+		}
 
-         if(beg > end){
-            assert(str<0);
-         }
+		if (beg > end) {
+			assert(str<0);
+		}
 
-         if(str < 0){
-            return 1+(end-beg+1)/str;
-         }
-         return 1+(end-beg-1)/str;
-      }
+		if (str < 0) {
+			return 1+(end-beg+1)/str;
+		}
+		return 1+(end-beg-1)/str;
+	}
 };
 
 
@@ -105,7 +103,7 @@ struct Slice
 // };
 //
 // #<{(|* Slice class *|)}>#
-// template<int _type,int _dim,int _l,int _s> 
+// template<int _type,int _dim,int _l,int _s>
 // class Slice
 // {
 //   private:
@@ -124,16 +122,16 @@ struct Slice
 //
 // #<{(|****************************************************|)}>#
 //
-// #<{(|* 
+// #<{(|*
 //  * These overloaded slicing functions hide the complexity
-//  * of using the Slicing structs from the user. It does, 
+//  * of using the Slicing structs from the user. It does,
 //  * however take over the letter S for the global namespace
 //  *
 //  * Slice<Full,Dim,L,S> S() -- Returns a full slice of the dimension,
-//  *                            which indicates that the entire dimension 
+//  *                            which indicates that the entire dimension
 //  *                            should be used.
 //  * Slice<Contig,Dim,L,S> S(B,E) -- A Contiguous Slice is a slice of a dimension,
-//  *                                 in which S == 1. The length could or could not 
+//  *                                 in which S == 1. The length could or could not
 //  *                                 be specified.
 //  * Slice<Unknown,Dim,L,S> S(B,E,S) -- An Unknown Slice is one where all conditions are not
 //  *                                    specified. The length and stride could or could not
@@ -153,40 +151,40 @@ struct Slice
 //
 // // A full slice with stride _s
 // // template<int _s>
-// // inline static internal::Slice<internal::Full,0,internal::Unknown,_s> S() 
+// // inline static internal::Slice<internal::Full,0,internal::Unknown,_s> S()
 // // {
 // //   return internal::Slice<internal::Full,0,internal::Unknown,_s>(0,0,0);
 // // }
 //
 // // A contiguous slice of length _l
-// template<int _l> 
-// inline static internal::Slice<internal::Contig,0,_l> S(const int B)  
+// template<int _l>
+// inline static internal::Slice<internal::Contig,0,_l> S(const int B)
 // {
 //   return internal::Slice<internal::Contig,0,_l>(B,0,0);
 // }
 //
 // // An unknown slice of length _l and stride _s
 // template<int _l,int _s>
-// inline static internal::Slice<internal::Unknown,0,_l,_s> S(const int B) 
+// inline static internal::Slice<internal::Unknown,0,_l,_s> S(const int B)
 // {
 //   return internal::Slice<internal::Unknown,0,_l,_s>(B,0,0);
 // }
 //
 // // a contiguous slice of unknown length
-// inline static internal::Slice<internal::Contig,0,internal::Unknown> S(const int B,const int E) 
+// inline static internal::Slice<internal::Contig,0,internal::Unknown> S(const int B,const int E)
 // {
 //   return internal::Slice<internal::Contig,0,internal::Unknown>(B,E,0);
 // }
 //
 // // an unknown slice of unknown length and stride _s
 // template<int _s>
-// inline static internal::Slice<internal::Unknown,0,internal::Unknown,_s> S(const int B,const int E) 
+// inline static internal::Slice<internal::Unknown,0,internal::Unknown,_s> S(const int B,const int E)
 // {
 //   return internal::Slice<internal::Unknown,0,internal::Unknown,_s>(B,E,0);
 // }
 //
 // // an unknown slice of unknown length and stride
-// inline static internal::Slice<internal::Unknown,0,internal::Unknown,internal::Unknown> S(const int &B,const int &E,const int &S) 
+// inline static internal::Slice<internal::Unknown,0,internal::Unknown,internal::Unknown> S(const int &B,const int &E,const int &S)
 // {
 //   return internal::Slice<internal::Unknown,0,internal::Unknown,internal::Unknown>(B,E,S);
 // }

@@ -1,0 +1,11 @@
+--style=linux 
+--indent=tab=4 
+--max-instatement-indent=80 
+--pad-header 
+#--unpad-paren 
+--align-pointer=type 
+--align-reference=type 
+--break-closing-brackets 
+--add-one-line-brackets
+--convert-tabs
+--suffix=none

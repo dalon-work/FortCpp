@@ -7,14 +7,13 @@ namespace FortCpp
 /**
  * See the pairing with the enumeration down below
  */
-enum
-{
-  ColMajor  = 0,
-  RowMajor  = 1,
-  UnAligned = 0,
-  Aligned   = 2,
-  Contig = 0,
-  Strided = 4
+enum {
+    ColMajor  = 0,
+    RowMajor  = 1,
+    UnAligned = 0,
+    Aligned   = 2,
+    Contig = 0,
+    Strided = 4
 };
 
 
@@ -31,22 +30,20 @@ namespace internal
  * AlignedBit    : Defines if this array is aligned on a 16 byte boundary
  *                 Defaults to 0 (not aligned)
  */
-enum
-{
-  MajorOrderBit = 1,
-  AlignedBit    = 2,
-  StrideBit     = 4
+enum {
+    MajorOrderBit = 1,
+    AlignedBit    = 2,
+    StrideBit     = 4
 };
 
-/** 
+/**
  * Various other definitions
  */
-enum
-{
-  Full = -1,
-  Unknown = -2,
-  Pointer = 0,
-  Static = 1,
+enum {
+    Full = -1,
+    Unknown = -2,
+    Pointer = 0,
+    Static = 1,
 };
 
 template<int Size> class OpSize;

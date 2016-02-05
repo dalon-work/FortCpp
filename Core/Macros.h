@@ -19,7 +19,7 @@
    { \
      return BinaryOp<Derived,OtherDerived,OP<T> >(this->derived(),rhs,OP<T>()); \
    } \
-
+ 
 #define FortCpp_UNARY_FUNC(OP,X) \
   inline const UnaryOp<Derived,OP<T> > X() const \
   { \
@@ -51,7 +51,7 @@
                           catch(std::exception &e){  \
                             FortCpp::ArrayException::handle_exception(e); \
                             }
-#else 
+#else
 #define FortCpp_NAN_CHECK(a)
 #endif
 
