@@ -121,7 +121,7 @@ struct compute_strides<ColMajor,Rank> {
 	          const std::array<unsigned,Rank>& dim) {
 		for (int r=0; r<Rank-1; r++) {
 			for (int i=r+1; i<Rank; i++) {
-				str[r]*=dim[i];
+				str[i]*=dim[r];
 			}
 		}
 	}
@@ -132,8 +132,8 @@ struct compute_strides<RowMajor,Rank> {
 	static void exec(std::array<unsigned,Rank>& str,
 	          const std::array<unsigned,Rank>& dim) {
 		for (int r=1; r<Rank; r++) {
-			for (int i=0; i<Rank-r-1; i++) {
-				str[r] *= dim[i];
+			for (int i=0; i<Rank-r; i++) {
+				str[i] *= dim[r];
 			}
 		}
 	}

@@ -69,14 +69,33 @@ TEST_CASE( "Alloc Dimensions & Strides","[Basics][Alloc]" ){
          }
       }
 
+      c.deallocate();
+      c.allocate(2,3,4,5);
+
+      REQUIRE( c.size() == 2*3*4*5 );
+      CHECK( c.stride(1) == 1 );
+      CHECK( c.stride(2) == 2 );
+      CHECK( c.stride(3) == 2*3 );
+      CHECK( c.stride(4) == 2*3*4 );
+
       SECTION( "Row-Major","[RM]" ){
 
          REQUIRE( d.size() == 10*10*10*10 );
          for(int i=0;i<4;i++){
             CAPTURE(i);
             CHECK( d.size(i+1) == 10 );
-            CHECK( d.stride(i+1) == pow(10,i) );
+            CHECK( d.stride(i+1) == pow(10,4-1-i) );
          }
+
+         d.deallocate();
+         d.allocate(2,3,4,5);
+
+         REQUIRE( d.size() == 2*3*4*5 );
+         CHECK( d.stride(1) == 3*4*5 );
+         CHECK( d.stride(2) == 3*4 );
+         CHECK( d.stride(3) == 3 );
+         CHECK( d.stride(4) == 1 );
+
       }
    }
 }
