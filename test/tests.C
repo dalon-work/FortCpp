@@ -41,6 +41,7 @@ TEST_CASE( "Alloc Basics","[Basics][Alloc]" ){
 
 }
 
+
 TEST_CASE( "Alloc Dimensions & Strides","[Basics][Alloc]" ){
 
    Alloc<int,1> a(10);
@@ -78,7 +79,7 @@ TEST_CASE( "Alloc Dimensions & Strides","[Basics][Alloc]" ){
       CHECK( c.stride(3) == 2*3 );
       CHECK( c.stride(4) == 2*3*4 );
 
-      SECTION( "Row-Major","[RM]" ){
+      SECTION( "Row-Major" ){
 
          REQUIRE( d.size() == 10*10*10*10 );
          for(int i=0;i<4;i++){
@@ -92,12 +93,148 @@ TEST_CASE( "Alloc Dimensions & Strides","[Basics][Alloc]" ){
 
          REQUIRE( d.size() == 2*3*4*5 );
          CHECK( d.stride(1) == 3*4*5 );
-         CHECK( d.stride(2) == 3*4 );
-         CHECK( d.stride(3) == 3 );
+         CHECK( d.stride(2) == 4*5 );
+         CHECK( d.stride(3) == 5 );
          CHECK( d.stride(4) == 1 );
 
       }
    }
 }
 
+TEST_CASE("Mapping","[Basics][Alloc]"){
+
+   Alloc<int,1> a;
+   Alloc<int,1,RowMajor> b;
+   int p[10];
+   a.map(p,10);
+
+   REQUIRE( a.size() == 10);
+   REQUIRE( a.stride(1) == 1);
+   REQUIRE( a.size(1) == 10);
+   REQUIRE( a.data() == p );
+
+   a.deallocate();
+
+   REQUIRE( a.data() == nullptr );
+   REQUIRE( a.size() == 0 );
+   REQUIRE( a.size(1) == 0 );
+   REQUIRE( a.stride(1) == 0 );
+
+   b.map(p,10);
+
+   REQUIRE( b.size() == 10);
+   REQUIRE( b.stride(1) == 1);
+   REQUIRE( b.size(1) == 10);
+   REQUIRE( b.data() == p );
+
+
+   SECTION("Alloc MD"){
+
+      int p[2*3*4*5];
+
+      SECTION("Column-Major"){
+
+         Alloc<int,4> c;
+         c.map(p,2,3,4,5);
+
+         REQUIRE( c.data() == p );
+         REQUIRE( c.size() == 2*3*4*5 );
+         CHECK( c.size(1) == 2 );
+         CHECK( c.size(2) == 3 );
+         CHECK( c.size(3) == 4 );
+         CHECK( c.size(4) == 5 );
+
+         CHECK( c.stride(1) == 1 );
+         CHECK( c.stride(2) == 2 );
+         CHECK( c.stride(3) == 2*3 );
+         CHECK( c.stride(4) == 2*3*4 );
+      }
+
+      SECTION("Row-Major"){
+         Alloc<int,4,RowMajor> d;
+         d.map(p,2,3,4,5);
+
+         REQUIRE( d.data() == p );
+         REQUIRE( d.size() == 2*3*4*5 );
+         CHECK( d.size(1) == 2 );
+         CHECK( d.size(2) == 3 );
+         CHECK( d.size(3) == 4 );
+         CHECK( d.size(4) == 5 );
+
+         CHECK( d.stride(1) == 3*4*5 );
+         CHECK( d.stride(2) == 4*5 );
+         CHECK( d.stride(3) == 5 );
+         CHECK( d.stride(4) == 1 );
+      }
+   }
+
+}
+
+TEST_CASE("Alloc Indexing","[Basic][Alloc][Contig]"){
+
+   Alloc<int,1> a(10);
+
+   for(int i=0;i<a.size();i++){
+      a[i] = i;
+   }
+
+   for(int i=0;i<a.size();i++){
+      CAPTURE(i);
+      CHECK(a[i] == i);
+   }
+
+   a.deallocate();
+   a.allocate(10);
+
+   for(int i=0;i<a.size();i++){
+      a(i) = i;
+   }
+
+   for(int i=0;i<a.size();i++){
+      CAPTURE(i);
+      CHECK(a(i) == i);
+   }
+
+   Alloc<int,4> b(2,3,4,5);
+   Alloc<int,4,RowMajor> c(2,3,4,5);
+
+   for(int i=0;i<b.size();i++){
+      b[i] = i;
+      c[i] = i;
+   }
+
+   for(int i=0;i<b.size();i++){
+      CAPTURE(i);
+      REQUIRE( b[i] == i );
+      REQUIRE( c[i] == i );
+   }
+
+   SECTION("Column-Major") {
+      int count=0;
+      for(int l=0;l<b.size(4);l++){
+         for(int k=0;k<b.size(3);k++){
+            for(int j=0;j<b.size(2);j++){
+               for(int i=0;i<b.size(1);i++){
+                  CHECK(b(i,j,k,l) == count);
+                  count++;
+               }
+            }
+         }
+      }
+   }
+
+   SECTION("Row-Major") {
+      int count=0;
+      for(int i=0;i<c.size(1);i++){
+         for(int j=0;j<c.size(2);j++){
+            for(int k=0;k<c.size(3);k++){
+               for(int l=0;l<c.size(4);l++){
+                  CHECK(c(i,j,k,l) == count);
+                  count++;
+               }
+            }
+         }
+      }
+   }
+}
 

@@ -82,7 +82,7 @@ unsigned offset(const std::array<unsigned,Rank>& str,unsigned i)
 template<unsigned Rank,unsigned D,typename... indices>
 unsigned offset(const std::array<unsigned,Rank>& str,unsigned i,indices... idx)
 {
-	return i*str[D]+offset<Rank,D+1>(idx...);
+	return i*str[D]+offset<Rank,D+1>(str,idx...);
 }
 
 /******* COMPARE_DIMS ***************/
@@ -132,7 +132,7 @@ struct compute_strides<RowMajor,Rank> {
 	static void exec(std::array<unsigned,Rank>& str,
 	          const std::array<unsigned,Rank>& dim) {
 		for (int r=1; r<Rank; r++) {
-			for (int i=0; i<Rank-r; i++) {
+			for (int i=0; i<r; i++) {
 				str[i] *= dim[r];
 			}
 		}
@@ -141,11 +141,11 @@ struct compute_strides<RowMajor,Rank> {
 
 /******** COMPUTE_OFFSET ***********/
 
-template<unsigned Order,unsigned Stride,unsigned Rank> struct compute_offset;
+template<unsigned Order,unsigned Stride,unsigned Rank> struct linear_index;
 
 template<unsigned Order,unsigned Rank>
-struct compute_offset<Order,Contig,Rank> {
-	void exec(const std::array<unsigned,Rank>& dim,
+struct linear_index<Order,Contig,Rank> {
+	static unsigned exec(const std::array<unsigned,Rank>& dim,
 	          const std::array<unsigned,Rank>& str,
 	          unsigned i) {
 		return i;
@@ -153,8 +153,8 @@ struct compute_offset<Order,Contig,Rank> {
 };
 
 template<unsigned Rank>
-struct compute_offset<ColMajor,Strided,Rank> {
-	void exec(const std::array<unsigned,Rank>& dim,
+struct linear_index<ColMajor,Strided,Rank> {
+	static unsigned exec(const std::array<unsigned,Rank>& dim,
 	          const std::array<unsigned,Rank>& str,
 	          unsigned i) {
 		unsigned o= str[0]*(i%dim[0]);
@@ -168,8 +168,8 @@ struct compute_offset<ColMajor,Strided,Rank> {
 };
 
 template<unsigned Rank>
-struct compute_offset<RowMajor,Strided,Rank> {
-	void exec(const std::array<unsigned,Rank>& str,
+struct linear_index<RowMajor,Strided,Rank> {
+	static unsigned exec(const std::array<unsigned,Rank>& str,
 	          const std::array<unsigned,Rank>& dim,
 	          unsigned i) {
 		unsigned o = str[Rank-1]*(i%dim[Rank-1]);

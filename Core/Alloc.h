@@ -105,12 +105,15 @@ public:
 	template<typename... indices>
 	void map(T* a, indices... idx)
    {
-		static_assert(internal::traits<Derived>::Align == UnAligned,
-            "MAPPING ONTO AN ALIGNED ARRAY IS NOT ALLOWED");
+		static_assert(Align == UnAligned,
+            "CANNOT MAP ONTO AN ALIGNED ARRAY");
 		static_assert(sizeof...(idx) == Rank, 
-            "NUMBER OF INDICES DOES NOT MATCH RANK OF ARRAY");
-		if ( internal::is_negative(idx...) ) { assert(0); }
+            "NUMBER OF INDICES PASSED TO MAP DOES NOT MATCH RANK OF ARRAY");
+      static_assert(Stride == Contig,
+            "CANNOT MAP A STRIDED ARRAY");
       internal::set_array<Rank,0>(_dim,static_cast<unsigned>(idx)...);
+      for(int i=0;i<Rank;i++) { _str[i] = 1; }
+      internal::compute_strides<Order,Rank>::exec(_str,_dim);
 		_storage.map(a,internal::product(static_cast<unsigned>(idx)...));
 	}
 
@@ -126,23 +129,23 @@ public:
 
 	template<typename... indices>
 	const T& operator () (indices... idx) const {
-		return _storage[internal::offset(_str,static_cast<unsigned>(idx)...)];
+		return _storage[internal::offset<Rank,0>(_str,static_cast<unsigned>(idx)...)];
 	}
 
 	template<typename... indices>
 	T& operator () (indices... idx) {
-		return _storage[internal::offset(_str,static_cast<unsigned>(idx)...)];
+		return _storage[internal::offset<Rank,0>(_str,static_cast<unsigned>(idx)...)];
 	}
 
 	/*************************************************/
 
 	const T& operator [] (int i) const {
 		if ( internal::is_negative(i) ) { assert(0); }
-		return _storage[internal::compute_offset<Order,Stride,Rank>::exec(_dim,_str,i)];
+		return _storage[internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)];
 	}
 	T& operator [] (int i) {
 		if ( internal::is_negative(i) ) { assert(0); }
-		return _storage[internal::compute_offset<Order,Stride,Rank>::exec(_dim,_str,i)];
+		return _storage[internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)];
 	}
 
 	/***********************************************/
