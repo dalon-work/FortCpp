@@ -129,22 +129,33 @@ public:
 
 	template<typename... indices>
 	const T& operator () (indices... idx) const {
+#ifndef NDEBUG
+      internal::is_negative<0>(idx...);
+      internal::in_bounds<0,Rank>(_dim,idx...);
+#endif
+
 		return _storage[internal::offset<Rank,0>(_str,static_cast<unsigned>(idx)...)];
 	}
 
 	template<typename... indices>
 	T& operator () (indices... idx) {
+#ifndef NDEBUG
+      internal::is_negative<0>(idx...);
+      internal::in_bounds<0,Rank>(_dim,idx...);
+#endif
 		return _storage[internal::offset<Rank,0>(_str,static_cast<unsigned>(idx)...)];
 	}
 
 	/*************************************************/
 
 	const T& operator [] (int i) const {
-		if ( internal::is_negative(i) ) { assert(0); }
+      internal::in_size(i,size());
 		return _storage[internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)];
 	}
 	T& operator [] (int i) {
-		if ( internal::is_negative(i) ) { assert(0); }
+#ifndef NDEBUG
+      internal::in_size(i,size());
+#endif
 		return _storage[internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)];
 	}
 

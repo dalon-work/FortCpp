@@ -3,9 +3,9 @@
 
 #include "Macros.h"
 #include "ForwardDeclarations.h"
+#include "ArrayException.h"
 #include "Util.h"
 #include "Storage.h"
-// #include "Dimensions.h"
 #include "BinaryOp.h"
 #include "ConstantOp.h"
 #include "UnaryOp.h"
@@ -40,12 +40,9 @@ public:
 
 	template<typename OtherDerived>
 	inline Derived& operator = (const ArrayBase<OtherDerived>& B) {
-		// static_assert(template Rank == internal::traits<OtherDerived>::Rank,"RANKS DO NOT FortCppTCH");
-		// FortCpp_SIZE_FortCppTCH(this->size(),B.size())
-		// if (internal::compare_dims(derived(),B.derived()) == 0) {
-		// 	std::cout << "DIMENSIONS DO NOT MATCH IN ASSIGNMENT" << endl;
-		// 	exit(-1);
-		// }
+#ifndef NDEBUG
+      internal::compare_dims(derived(),B.derived());
+#endif
 #pragma GCC ivdep
 		for (int i=0; i<this->size(); i++) {
 			derived()[i] = B.derived()[i];
@@ -54,11 +51,9 @@ public:
 	}
 
 	inline Derived& operator = (const ArrayBase<Derived>& B) {
-		// FortCpp_SIZE_FortCppTCH(this->size(),B.size())
-		// if (internal::compare_dims(derived(),B.derived()) == 0) {
-		// 	std::cout << "DIMENSIONS DO NOT MATCH IN ASSIGNMENT" << endl;
-		// 	exit(-1);
-		// }
+#ifndef NDEBUG
+      internal::compare_dims(derived(),B.derived());
+#endif
 #pragma GCC ivdep
 		for (int i=0; i<this->size(); i++) {
 			derived()[i] = B.derived()[i];
@@ -73,23 +68,35 @@ public:
 	 * += and -= operators
 	 */
 	inline Derived& operator += (const T& B) {
+#ifndef NDEBUG
+      internal::compare_dims(derived(),B.derived());
+#endif
 		derived() = derived() + B;
 		return derived();
 	}
 
 	template<typename OtherDerived>
 	inline Derived& operator += (const ArrayBase<OtherDerived>& B) {
+#ifndef NDEBUG
+      internal::compare_dims(derived(),B.derived());
+#endif
 		derived() = derived() + B.derived();
 		return derived();
 	}
 
 	inline Derived& operator -= (const T& B) {
+#ifndef NDEBUG
+      internal::compare_dims(derived(),B.derived());
+#endif
 		derived() = derived() - B;
 		return derived();
 	}
 
 	template<typename OtherDerived>
 	inline Derived& operator -= (const ArrayBase<OtherDerived>& B) {
+#ifndef NDEBUG
+      internal::compare_dims(derived(),B.derived());
+#endif
 		derived() = derived() - B.derived();
 		return derived();
 	}

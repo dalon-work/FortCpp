@@ -183,6 +183,9 @@ TEST_CASE("Alloc Indexing","[Basic][Alloc][Contig]"){
       CHECK(a[i] == i);
    }
 
+   REQUIRE_THROWS(a[10]);
+   REQUIRE_THROWS(a[-1]);
+
    a.deallocate();
    a.allocate(10);
 
@@ -194,6 +197,9 @@ TEST_CASE("Alloc Indexing","[Basic][Alloc][Contig]"){
       CAPTURE(i);
       CHECK(a(i) == i);
    }
+
+   REQUIRE_THROWS(a(10));
+   REQUIRE_THROWS(a(-1));
 
    Alloc<int,4> b(2,3,4,5);
    Alloc<int,4,RowMajor> c(2,3,4,5);
@@ -208,6 +214,11 @@ TEST_CASE("Alloc Indexing","[Basic][Alloc][Contig]"){
       REQUIRE( b[i] == i );
       REQUIRE( c[i] == i );
    }
+
+   REQUIRE_THROWS(b(2,2,2,2));
+   REQUIRE_THROWS(b(-1,0,0,0));
+   REQUIRE_THROWS(b[10000]);
+   REQUIRE_THROWS(b[-1]);
 
    SECTION("Column-Major") {
       int count=0;
@@ -237,4 +248,31 @@ TEST_CASE("Alloc Indexing","[Basic][Alloc][Contig]"){
       }
    }
 }
+
+TEST_CASE("Array Operations","[Op][Alloc]"){
+   
+   Alloc<int,1> a(10),b(10),c(10);
+
+   a = 1;
+   b = 2;
+
+   for(int i=0;i<a.size();i++){
+      REQUIRE( a[i] == 1 );
+      REQUIRE( b[i] == 2 );
+   }
+
+   REQUIRE_NOTHROW( b = a; );
+
+   for(int i=0;i<b.size();i++){
+      CHECK( b[i] == a[i] );
+   }
+
+}
+
+
+
+
+
+
+
 
