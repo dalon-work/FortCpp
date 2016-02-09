@@ -183,9 +183,6 @@ TEST_CASE("Alloc Indexing","[Basic][Alloc][Contig]"){
       CHECK(a[i] == i);
    }
 
-   REQUIRE_THROWS(a[10]);
-   REQUIRE_THROWS(a[-1]);
-
    a.deallocate();
    a.allocate(10);
 
@@ -197,9 +194,6 @@ TEST_CASE("Alloc Indexing","[Basic][Alloc][Contig]"){
       CAPTURE(i);
       CHECK(a(i) == i);
    }
-
-   REQUIRE_THROWS(a(10));
-   REQUIRE_THROWS(a(-1));
 
    Alloc<int,4> b(2,3,4,5);
    Alloc<int,4,RowMajor> c(2,3,4,5);
@@ -215,10 +209,6 @@ TEST_CASE("Alloc Indexing","[Basic][Alloc][Contig]"){
       REQUIRE( c[i] == i );
    }
 
-   REQUIRE_THROWS(b(2,2,2,2));
-   REQUIRE_THROWS(b(-1,0,0,0));
-   REQUIRE_THROWS(b[10000]);
-   REQUIRE_THROWS(b[-1]);
 
    SECTION("Column-Major") {
       int count=0;
@@ -261,13 +251,40 @@ TEST_CASE("Array Operations","[Op][Alloc]"){
       REQUIRE( b[i] == 2 );
    }
 
-   REQUIRE_NOTHROW( b = a; );
+   b = a;
 
    for(int i=0;i<b.size();i++){
       CHECK( b[i] == a[i] );
    }
 
 }
+
+#ifndef NDEBUG
+TEST_CASE("Alloc Exceptions","[Alloc][Exception]"){
+   Alloc<int,1> a(10),b(11);
+
+   CHECK_THROWS_AS( a(-1) , NegIdxException );
+   CHECK_THROWS_AS( a(10) , BoundsException );
+   CHECK_THROWS_AS( a[-1] , SizeException );
+
+   a = 1;
+
+   CHECK_THROWS_AS( a=b , DimException );
+
+   Alloc<int,4> c(2,2,2,2),d(2,2,3,2),e(2,2,2,2),f(2,2,2,2);
+
+   c = 2;
+   d = 3;
+   e = 4;
+
+   CHECK_THROWS_AS( c(0,2,0,0), BoundsException );
+   CHECK_THROWS_AS( d=c, DimException );
+   CHECK_THROWS_AS( d(1,1,2,-1), NegIdxException );
+
+   CHECK_THROWS_AS( e = f+c+d , DimException );
+
+}
+#endif
 
 
 

@@ -132,7 +132,8 @@ void compare_dims(const Lhs& lhs, const Alloc<T,Rank,Options>& rhs)
 template<typename Lhs,typename Lhs2,typename Rhs,typename Op>
 void compare_dims(const Lhs& lhs, const BinaryOp<Lhs2,Rhs,Op>& rhs)
 {
-	compare_dims(lhs,rhs.get_lhs()) && compare_dims(lhs,rhs.get_rhs());
+	compare_dims(lhs,rhs.get_lhs());
+   compare_dims(lhs,rhs.get_rhs());
 }
 
 template<typename Lhs,unsigned Side,typename Derived,typename Op>

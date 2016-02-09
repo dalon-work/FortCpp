@@ -4,6 +4,9 @@
 namespace FortCpp
 {
 
+namespace Math
+{
+
 template<typename Derived>
 int count(const ArrayBase<Derived>& rhs)
 {
@@ -73,6 +76,8 @@ typename internal::traits<Derived>::Scalar max(const ArrayBase<Derived>& rhs)
 	}
 	return m;
 }
+
+}; // end namespace Math
 
 template<typename Derived>
 UnaryOp<Derived,SqrtUnOp<typename internal::traits<Derived>::Scalar> > sqrt(const ArrayBase<Derived>& rhs)
