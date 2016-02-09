@@ -102,6 +102,14 @@ public:
 		_storage.allocate(internal::product(static_cast<unsigned>(idx)...));
 	}
 
+	void allocate(const std::array<unsigned,Rank>& new_dim)
+   {
+      _dim = new_dim;
+      for(int i=0;i<Rank;i++) { _str[i] = 1; }
+      internal::compute_strides<Order,Rank>::exec(_str,_dim);
+		_storage.allocate(internal::product<Rank>(_dim));
+	}
+
 	template<typename... indices>
 	void map(T* a, indices... idx)
    {
@@ -117,13 +125,16 @@ public:
 		_storage.map(a,internal::product(static_cast<unsigned>(idx)...));
 	}
 
-	// template<typename OtherDerived>
-	// void mold(const ArrayBase<OtherDerived>& B) 
-   // {
-	// 	static_assert(Rank == internal::traits<OtherDerived>::Rank,
-   //          "RANKS DO NOT MATCH IN MOLD OPERATION");
-	// 	deallocate();
-	// }
+	template<typename OtherDerived>
+	void mold(const ArrayBase<OtherDerived>& B) 
+   {
+		static_assert(Rank == internal::traits<OtherDerived>::Rank,
+            "RANKS DO NOT MATCH IN MOLD OPERATION");
+      static_assert(Stride == Contig,
+            "CANNOT MOLD A STRIDED ARRAY");
+		deallocate();
+      allocate(B.get_dim());
+	}
 
 	/***************************************/
 
@@ -134,7 +145,9 @@ public:
       internal::in_bounds<0,Rank>(_dim,idx...);
 #endif
 
-		return _storage[internal::offset<Rank,0>(_str,static_cast<unsigned>(idx)...)];
+		return _storage[
+         internal::offset<Rank,0>(_str,static_cast<unsigned>(idx)...)
+         ];
 	}
 
 	template<typename... indices>
@@ -143,27 +156,43 @@ public:
       internal::is_negative<0>(idx...);
       internal::in_bounds<0,Rank>(_dim,idx...);
 #endif
-		return _storage[internal::offset<Rank,0>(_str,static_cast<unsigned>(idx)...)];
+		return _storage[
+         internal::offset<Rank,0>(_str,static_cast<unsigned>(idx)...)
+         ];
 	}
 
 	/*************************************************/
 
 	const T& operator [] (int i) const {
+#ifndef NDEBUG
       internal::in_size(i,size());
-		return _storage[internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)];
+#endif
+		return _storage[
+         internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)
+         ];
 	}
 	T& operator [] (int i) {
 #ifndef NDEBUG
       internal::in_size(i,size());
 #endif
-		return _storage[internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)];
+		return _storage[
+         internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)
+         ];
 	}
 
 	/***********************************************/
 
 	unsigned size()                              const { return _storage.size();       }
-	unsigned size  (unsigned r)                  const { return _dim[r-1];             }
-	unsigned stride(unsigned r)                  const { return _str[r-1];             }
+	unsigned size  (unsigned r)                  const { 
+#ifndef NDEBUG
+      internal::in_rank<Rank>(r);
+#endif
+      return _dim[r-1];             }
+	unsigned stride(unsigned r)                  const {
+#ifndef NDEBUG
+      internal::in_rank<Rank>(r);
+#endif
+      return _str[r-1];             }
 	const std::array<unsigned,Rank>& get_dim()   const { return _dim;                  }
 	const std::array<unsigned,Rank>& get_str()   const { return _str;                  }
 	bool allocated ()                            const { return _storage.allocated();  }

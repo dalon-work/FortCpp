@@ -86,6 +86,20 @@ public:
 	}
 };
 
+class RankException : public ArrayException
+{
+public:
+	int i,rank;
+	RankException(int I, int _rank) : i(I),rank(_rank) {}
+
+	const char* what() const throw() {
+		std::stringstream s;
+		s << "DIMENSION " << i
+		  << " OUT OF BOUNDS OF ARRAY RANK (" << rank << ")" << std::endl;
+		return s.str().c_str();
+	}
+};
+
 
 
 }; // end namespace FortCpp

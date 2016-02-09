@@ -111,6 +111,14 @@ void in_bounds(std::array<unsigned,Rank> &dim,unsigned i,indices... idx)
    in_bounds<D+1,Rank>(dim,idx...);
 }
 
+template<unsigned Rank>
+void in_rank(int i)
+{
+   if( i < 1 || i > Rank){
+      throw RankException(i,Rank);
+   }
+}
+
 /******* COMPARE_DIMS ***************/
 
 template<std::size_t Rank>
