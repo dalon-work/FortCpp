@@ -6,25 +6,6 @@
 namespace FortCpp
 {
 
-struct Slice;
-
-namespace internal
-{
-
-void process_index(const int& i)
-{
-	cout << "int" << endl;
-	// Slice S(i);
-	// S.index = 1;
-}
-
-void process_index(const Slice& S)
-{
-	cout << "Slice" << endl;
-	// return S;
-}
-};
-
 static const int BEG = -1;
 static const int END = -156700;
 
@@ -74,18 +55,18 @@ struct SliceBase {
 struct FullSlice : public SliceBase<FullSlice>
 {
    FullSlice() : SliceBase() {};
-}
+};
 
 struct ContigSlice : public SliceBase<ContigSlice>
 {
    ContigSlice(int b) : SliceBase(b) {};
    ContigSlice(int b,int e) : SliceBase(b,e) {};
-}
+};
 
 struct StridedSlice : public SliceBase<StridedSlice>
 {
    StridedSlice(int b,int e,int s) : SliceBase(b,e,s) {};
-}
+};
 
 FullSlice Slice()
 {

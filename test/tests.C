@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include "../FortCpp.h"
 #include <cmath>
+#include <iostream>
 
 using namespace FortCpp;
 using namespace std;
@@ -256,6 +257,15 @@ TEST_CASE("Array Operations","[Op][Alloc]"){
    for(int i=0;i<b.size();i++){
       CHECK( b[i] == a[i] );
    }
+
+}
+
+TEST_CASE("Alloc Slice","[Alloc][Slice]"){
+
+   Alloc<int,4> a;
+
+   a.view(Slice(),1,Slice(2,3,1),Slice(2,3));
+
 
 }
 

@@ -7,21 +7,46 @@ namespace FortCpp
 namespace internal
 {
 
+template<typename idx> struct is_slice;
+
+template<> struct is_slice<int     > { enum{ value = 0 }; };
+template<> struct is_slice<unsigned> { enum{ value = 0 }; };
+template<> struct is_slice<FullSlice   > { enum{ value = 1 }; };
+template<> struct is_slice<ContigSlice > { enum{ value = 1 }; };
+template<> struct is_slice<StridedSlice> { enum{ value = 1 }; };
+
+template<typename idx> struct is_FullSlice;
+
 /*** Counts the number of slices in a view ***/
 template<typename front,typename... indices> struct count_slice;
 
-template<typename last>
-struct count_slice<last> {
+template<typename tail>
+struct count_slice<tail> {
 	enum {
-	    count = std::is_same<last,class Slice>::value
+	    count = is_slice<tail>::value
 	};
 };
 
-template<typename front,typename... indices>
+template<typename head,typename... indices>
 struct count_slice {
 	enum {
-	    count = std::is_same<front,class Slice>::value + count_slice<indices...>::count
+	    count = is_slice<head>::value + count_slice<indices...>::count
 	};
+};
+
+/*** Determines if a slice is contiguous or not ***/
+template<unsigned Order,typename... indices> struct contig_view;
+
+template<typename tail>
+struct contig_view<ColMajor,tail>
+{}
+
+template<typename head,typename... indices>
+struct contig_view<ColMajor,head,indices...>
+{
+   enum {
+      static const bool stride = std::is_same<FullSlice,head>::value ? contig_view<ColMajor,indices...> : 0
+   };
 };
 
 

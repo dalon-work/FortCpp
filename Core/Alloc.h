@@ -1,10 +1,9 @@
-#ifndef FortCpp_ARRAY2D_H
-#define FortCpp_ARRAY2D_H
+#ifndef FortCpp_ALLOC_H
+#define FortCpp_ALLOC_H
 
 #include "ArrayBase.h"
 #include <assert.h>
-// #include "Slice.h"
-// #include "StrideCalc.h"
+#include <iostream>
 
 namespace FortCpp
 {
@@ -203,14 +202,15 @@ public:
 
 
 
-	// Alloc<T,internal::count_slice<indices...>::count,Order|UnAligned|Strided>
-//  template<typename... indices>
-//     void view(indices... idx){
-//        Alloc<T,internal::count_slice<indices...>::count,Order|UnAligned|Strided> S;
-//        // cout << internal::count_slice<indices...>::count << endl;
-//
-//     }
-//
+	// Alloc<T,internal::count_slice<indices...>::count,
+      // Order|UnAligned|Strided>
+ template<typename... indices>
+    void view(indices... idx){
+       // Alloc<T,internal::count_slice<indices...>::count,Order|UnAligned|Strided> S;
+       std::cout << internal::count_slice<indices...>::count << std::endl;
+
+    }
+
 //  template<typename OtherDerived,typename... indices>
 //     void map_view(ArrayBase<OtherDerived>& A,indices... idx){
 //

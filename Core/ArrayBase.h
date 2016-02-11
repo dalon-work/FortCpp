@@ -9,6 +9,8 @@
 #include "BinaryOp.h"
 #include "ConstantOp.h"
 #include "UnaryOp.h"
+#include "Slice.h"
+#include "StrideCalc.h"
 
 namespace FortCpp
 {
