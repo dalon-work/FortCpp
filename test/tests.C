@@ -260,15 +260,15 @@ TEST_CASE("Array Operations","[Op][Alloc]"){
 
 }
 
-TEST_CASE("Alloc Slice","[Alloc][Slice]"){
+TEST_CASE("Alloc View","[Alloc][View]"){
 
    SECTION("Column-Major"){
 
       Alloc<int,4> a;
 
       auto f = Slice();
-      auto c = Slice(0,3);
-      auto s = Slice(0,3,4);
+      auto c = Slice(2,3);
+      auto s = Slice(1,3,4);
 
       auto s1 = a.view(f,0,0,0);
       auto s2 = a.view(f,f,0,0);
@@ -280,6 +280,11 @@ TEST_CASE("Alloc Slice","[Alloc][Slice]"){
       CHECK(s3.contiguous());
       CHECK(s4.contiguous());
 
+      CHECK(s1.rank() == 1);
+      CHECK(s2.rank() == 2);
+      CHECK(s3.rank() == 3);
+      CHECK(s4.rank() == 4);
+
       auto s5 = a.view(c,0,0,0);
       auto s6 = a.view(c,c,0,0);
       auto s7 = a.view(c,c,c,0);
@@ -289,6 +294,11 @@ TEST_CASE("Alloc Slice","[Alloc][Slice]"){
       CHECK_FALSE(s6.contiguous());
       CHECK_FALSE(s7.contiguous());
       CHECK_FALSE(s8.contiguous());
+
+      CHECK(s5.rank() == 1);
+      CHECK(s6.rank() == 2);
+      CHECK(s7.rank() == 3);
+      CHECK(s8.rank() == 4);
 
       auto s9  = a.view(s,0,0,0);
       auto s10 = a.view(s,s,0,0);
@@ -300,6 +310,11 @@ TEST_CASE("Alloc Slice","[Alloc][Slice]"){
       CHECK_FALSE(s11.contiguous());
       CHECK_FALSE(s12.contiguous());
 
+      CHECK(s9 .rank() == 1);
+      CHECK(s10.rank() == 2);
+      CHECK(s11.rank() == 3);
+      CHECK(s12.rank() == 4);
+
       auto s13 = a.view(0,f,0,0);
       auto s14 = a.view(f,0,f,0);
       auto s15 = a.view(f,0,0,f);
@@ -309,6 +324,11 @@ TEST_CASE("Alloc Slice","[Alloc][Slice]"){
       CHECK_FALSE(s14.contiguous());
       CHECK_FALSE(s15.contiguous());
       CHECK_FALSE(s16.contiguous());
+
+      CHECK(s13.rank() == 1);
+      CHECK(s14.rank() == 2);
+      CHECK(s15.rank() == 2);
+      CHECK(s16.rank() == 2);
    }
 
    SECTION("Row-Major"){
@@ -316,8 +336,8 @@ TEST_CASE("Alloc Slice","[Alloc][Slice]"){
       Alloc<int,4,RowMajor> a;
 
       auto f = Slice();
-      auto c = Slice(0,3);
-      auto s = Slice(0,3,4);
+      auto c = Slice(2,3);
+      auto s = Slice(1,3,4);
 
       auto s1 = a.view(0,0,0,f);
       auto s2 = a.view(0,0,f,f);

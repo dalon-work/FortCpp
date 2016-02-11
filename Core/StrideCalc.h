@@ -27,20 +27,27 @@ struct count_slice {
 };
 
 /*** Determines if a slice is contiguous or not ***/
-template<unsigned Order,typename... indices> struct contig_view;
+template<unsigned Order,unsigned Stride,typename... indices> struct contig_view;
 template<unsigned Order,bool Full,typename... indices> struct contig_view_cont;
+
+template<unsigned Order,typename... indices> 
+struct contig_view<Order,Strided,indices...>
+{
+   static const int
+      stride = Strided;
+};
 
 /******* COLUMN MAJOR *********/
 
 template<typename head>
-struct contig_view<ColMajor,head>
+struct contig_view<ColMajor,Contig,head>
 {
    static const int 
       stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
 };
 
 template<typename head,typename... indices>
-struct contig_view<ColMajor,head,indices...>
+struct contig_view<ColMajor,Contig,head,indices...>
 {
       static const int 
          stride = std::is_same<head,FullSlice>::value ?
@@ -80,17 +87,17 @@ struct contig_view_cont<ColMajor,0,head,indices...>
          contig_view_cont<ColMajor,0,indices...>::stride;
 };
 
-/******* Row MAJOR *********/
+/******* ROW MAJOR *********/
 
 template<typename head>
-struct contig_view<RowMajor,head>
+struct contig_view<RowMajor,Contig,head>
 {
    static const int 
       stride = is_slice<head>::value ? Contig : Strided;
 };
 
 template<typename head,typename... indices>
-struct contig_view<RowMajor,head,indices...>
+struct contig_view<RowMajor,Contig,head,indices...>
 {
       static const int 
          stride = !is_slice<head>::value ? 
@@ -132,6 +139,40 @@ struct contig_view_cont<RowMajor,0,head,indices...>
             is_slice<head>::value ?  Strided :
                contig_view_cont<RowMajor,0,indices...>::stride;
 };
+
+/***** SET_LEN ********/
+
+template<unsigned Rank,unsigned newRank,unsigned D,typename... indices>
+void set_len(std::array<unsigned,newRank>& len,
+      const std::array<unsigned,Rank>& dim,
+      const indices&... idx){
+}
+
+/***** SET_BEG *******/
+
+unsigned get_beg(const int& i) 
+{
+   return static_cast<unsigned>(i);
+}
+
+unsigned get_beg(const SliceBase& i)
+{
+   return static_cast<unsigned>(i.beg);
+}
+
+template<unsigned Rank,unsigned D,typename tail>
+void set_beg(std::array<unsigned,Rank>& beg,tail& i)
+{
+   beg[D] = get_beg(i);
+}
+
+template<unsigned Rank,unsigned D,typename head, typename... indices>
+void set_beg(std::array<unsigned,Rank>& beg,head& i,const indices&... idx)
+{
+   beg[D] = get_beg(i);
+   set_beg<Rank,D+1>(beg,idx...);
+}
+
 
 
 

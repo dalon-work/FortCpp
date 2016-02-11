@@ -55,7 +55,7 @@ template<typename T,unsigned StorageType, unsigned Align> class Storage;
 // template<int... StridePack> class Strides;
 // template<typename Derived,int Dim, int Order, int Stride,int... StridePack> class Accessor;
 // template<int Type,int Dim=0,int L=Unknown,int S=1> class Slice;
-template<typename Derived> class SliceBase;
+// template<typename Derived> class SliceBase;
 // template<int Value> class SliceValue;
 
 }; // end namespace internal

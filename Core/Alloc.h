@@ -134,6 +134,15 @@ public:
 		deallocate();
       allocate(B.get_dim());
 	}
+	/***************************************/
+
+   unsigned offset(const std::array<unsigned,Rank>& idx) const {
+      unsigned s = 0;
+      for(int r=0;r<Rank;r++){
+         s += idx[r]*_str[r];
+      }
+      return s;
+   }
 
 	/***************************************/
 
@@ -196,16 +205,27 @@ public:
 	const std::array<unsigned,Rank>& get_str()   const { return _str;                  }
 	bool allocated ()                            const { return _storage.allocated();  }
 	bool associated()                            const { return _storage.associated(); }
-   bool contiguous()                            const { return Stride == Contig;       }
+   bool contiguous()                            const { return Stride == Contig;      }
+   unsigned rank()                              const { return Rank;                  }
 	T*  data()                                         { return _storage.data();       }
 
 	/***********************************************/
 
    template<typename... indices>
-   Alloc<T,internal::count_slice<indices...>::count, Order | UnAligned | internal::contig_view<Order,indices...>::stride>
-   view(indices... idx){
-      Alloc<T,internal::count_slice<indices...>::count,
-         Order | UnAligned | internal::contig_view<Order,indices...>::stride> S;
+   Alloc<T,
+      internal::count_slice<indices...>::count,
+      Order | UnAligned | internal::contig_view<Order,Stride,indices...>::stride>
+   view(const indices&... idx){
+      static const unsigned newRank = internal::count_slice<indices...>::count;
+      static const unsigned newStride = internal::contig_view<Order,Stride,indices...>::stride;
+      Alloc<T,newRank, Order | UnAligned | newStride> S;
+
+      std::array<unsigned,Rank> beg;
+      std::array<unsigned,newRank> len;
+      std::array<unsigned,newRank> str;
+
+      internal::set_len<Rank,newRank,0>(dim,len,idx...);
+      internal::set_beg<Rank        ,0>(beg,idx...);
 
       return S;
 
