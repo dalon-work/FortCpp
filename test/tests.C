@@ -311,6 +311,55 @@ TEST_CASE("Alloc Slice","[Alloc][Slice]"){
       CHECK_FALSE(s16.contiguous());
    }
 
+   SECTION("Row-Major"){
+
+      Alloc<int,4,RowMajor> a;
+
+      auto f = Slice();
+      auto c = Slice(0,3);
+      auto s = Slice(0,3,4);
+
+      auto s1 = a.view(0,0,0,f);
+      auto s2 = a.view(0,0,f,f);
+      auto s3 = a.view(0,f,f,f);
+      auto s4 = a.view(f,f,f,f);
+
+      CHECK(s1.contiguous());
+      CHECK(s2.contiguous());
+      CHECK(s3.contiguous());
+      CHECK(s4.contiguous());
+
+      auto s5 = a.view(0,0,0,c);
+      auto s6 = a.view(0,0,c,c);
+      auto s7 = a.view(0,c,c,c);
+      auto s8 = a.view(c,c,c,c);
+
+      CHECK_FALSE(s5.contiguous());
+      CHECK_FALSE(s6.contiguous());
+      CHECK_FALSE(s7.contiguous());
+      CHECK_FALSE(s8.contiguous());
+
+      auto s9  = a.view(0,0,0,s);
+      auto s10 = a.view(0,0,s,s);
+      auto s11 = a.view(0,s,s,s);
+      auto s12 = a.view(s,s,s,s);
+
+      CHECK_FALSE(s9 .contiguous());
+      CHECK_FALSE(s10.contiguous());
+      CHECK_FALSE(s11.contiguous());
+      CHECK_FALSE(s12.contiguous());
+
+      auto s13 = a.view(0,f,0,0);
+      auto s14 = a.view(0,f,0,f);
+      auto s15 = a.view(0,c,0,f);
+      auto s16 = a.view(f,0,s,0);
+
+      CHECK_FALSE(s13.contiguous());
+      CHECK_FALSE(s14.contiguous());
+      CHECK_FALSE(s15.contiguous());
+      CHECK_FALSE(s16.contiguous());
+   }
+
 }
 
 #ifndef NDEBUG

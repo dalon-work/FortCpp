@@ -80,6 +80,58 @@ struct contig_view_cont<ColMajor,0,head,indices...>
          contig_view_cont<ColMajor,0,indices...>::stride;
 };
 
+/******* Row MAJOR *********/
+
+template<typename head>
+struct contig_view<RowMajor,head>
+{
+   static const int 
+      stride = is_slice<head>::value ? Contig : Strided;
+};
+
+template<typename head,typename... indices>
+struct contig_view<RowMajor,head,indices...>
+{
+      static const int 
+         stride = !is_slice<head>::value ? 
+                     contig_view_cont<RowMajor,0,indices...>::stride :
+                        std::is_same<head,FullSlice>::value ?
+                           contig_view_cont<RowMajor,1,indices...>::stride :
+                              Strided;
+};
+
+template<typename head>
+struct contig_view_cont<RowMajor,1,head>
+{
+      static const int 
+         stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
+};
+
+template<typename head,typename... indices>
+struct contig_view_cont<RowMajor,1,head,indices...>
+{
+   static const int
+      stride = std::is_same<head,FullSlice>::value ?
+         contig_view_cont<RowMajor,1,indices...>::stride :
+            Strided;
+};
+
+template<typename head>
+struct contig_view_cont<RowMajor,0,head>
+{
+   static const int
+      stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
+};
+
+template<typename head,typename... indices>
+struct contig_view_cont<RowMajor,0,head,indices...>
+{
+   static const int
+      stride = std::is_same<head,FullSlice>::value ?
+         contig_view_cont<RowMajor,1,indices...>::stride :
+            is_slice<head>::value ?  Strided :
+               contig_view_cont<RowMajor,0,indices...>::stride;
+};
 
 
 
