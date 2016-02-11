@@ -25,8 +25,8 @@ public:
 	static const unsigned Rank = internal::traits<Derived>::Rank;
 
 	ArrayBase()=default;
-	ArrayBase(const ArrayBase<Derived>&)=delete;
-	ArrayBase(ArrayBase<Derived>&&)=delete;
+	ArrayBase(const ArrayBase<Derived>&)=default;
+	ArrayBase(ArrayBase<Derived>&&)=default;
 	~ArrayBase()=default;
 
 	/**

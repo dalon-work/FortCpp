@@ -262,10 +262,54 @@ TEST_CASE("Array Operations","[Op][Alloc]"){
 
 TEST_CASE("Alloc Slice","[Alloc][Slice]"){
 
-   Alloc<int,4> a;
+   SECTION("Column-Major"){
 
-   a.view(Slice(),1,Slice(2,3,1),Slice(2,3));
+      Alloc<int,4> a;
 
+      auto f = Slice();
+      auto c = Slice(0,3);
+      auto s = Slice(0,3,4);
+
+      auto s1 = a.view(f,0,0,0);
+      auto s2 = a.view(f,f,0,0);
+      auto s3 = a.view(f,f,f,0);
+      auto s4 = a.view(f,f,f,f);
+
+      CHECK(s1.contiguous());
+      CHECK(s2.contiguous());
+      CHECK(s3.contiguous());
+      CHECK(s4.contiguous());
+
+      auto s5 = a.view(c,0,0,0);
+      auto s6 = a.view(c,c,0,0);
+      auto s7 = a.view(c,c,c,0);
+      auto s8 = a.view(c,c,c,c);
+
+      CHECK_FALSE(s5.contiguous());
+      CHECK_FALSE(s6.contiguous());
+      CHECK_FALSE(s7.contiguous());
+      CHECK_FALSE(s8.contiguous());
+
+      auto s9  = a.view(s,0,0,0);
+      auto s10 = a.view(s,s,0,0);
+      auto s11 = a.view(s,s,s,0);
+      auto s12 = a.view(s,s,s,s);
+
+      CHECK_FALSE(s9 .contiguous());
+      CHECK_FALSE(s10.contiguous());
+      CHECK_FALSE(s11.contiguous());
+      CHECK_FALSE(s12.contiguous());
+
+      auto s13 = a.view(0,f,0,0);
+      auto s14 = a.view(f,0,f,0);
+      auto s15 = a.view(f,0,0,f);
+      auto s16 = a.view(f,0,s,0);
+
+      CHECK_FALSE(s13.contiguous());
+      CHECK_FALSE(s14.contiguous());
+      CHECK_FALSE(s15.contiguous());
+      CHECK_FALSE(s16.contiguous());
+   }
 
 }
 

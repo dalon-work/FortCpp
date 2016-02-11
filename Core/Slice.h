@@ -9,7 +9,6 @@ namespace FortCpp
 static const int BEG = -1;
 static const int END = -156700;
 
-template<typename Derived>
 struct SliceBase {
 	int beg;
 	int end;
@@ -52,18 +51,18 @@ struct SliceBase {
 	}
 };
 
-struct FullSlice : public SliceBase<FullSlice>
+struct FullSlice : public SliceBase
 {
    FullSlice() : SliceBase() {};
 };
 
-struct ContigSlice : public SliceBase<ContigSlice>
+struct ContigSlice : public SliceBase
 {
    ContigSlice(int b) : SliceBase(b) {};
    ContigSlice(int b,int e) : SliceBase(b,e) {};
 };
 
-struct StridedSlice : public SliceBase<StridedSlice>
+struct StridedSlice : public SliceBase
 {
    StridedSlice(int b,int e,int s) : SliceBase(b,e,s) {};
 };

@@ -22,8 +22,8 @@ private:
 
 public:
 	Storage()=default;
-	Storage(const Derived& B)=delete;
-	Storage(const Derived&& B)=delete;
+	Storage(const Derived& B)=default;
+	Storage(Derived&& B)=default;
 
 	~Storage() {
 		deallocate();

@@ -7,46 +7,77 @@ namespace FortCpp
 namespace internal
 {
 
-template<typename idx> struct is_slice;
-
-template<> struct is_slice<int     > { enum{ value = 0 }; };
-template<> struct is_slice<unsigned> { enum{ value = 0 }; };
-template<> struct is_slice<FullSlice   > { enum{ value = 1 }; };
-template<> struct is_slice<ContigSlice > { enum{ value = 1 }; };
-template<> struct is_slice<StridedSlice> { enum{ value = 1 }; };
-
-template<typename idx> struct is_FullSlice;
+template<typename idx> struct is_slice      { static const int value = 0; };
+template<   > struct is_slice<FullSlice   > { static const int value = 1; };
+template<   > struct is_slice<ContigSlice > { static const int value = 1; };
+template<   > struct is_slice<StridedSlice> { static const int value = 1; };
 
 /*** Counts the number of slices in a view ***/
 template<typename front,typename... indices> struct count_slice;
 
 template<typename tail>
 struct count_slice<tail> {
-	enum {
-	    count = is_slice<tail>::value
-	};
+   static const int count = is_slice<tail>::value;
 };
 
 template<typename head,typename... indices>
 struct count_slice {
-	enum {
-	    count = is_slice<head>::value + count_slice<indices...>::count
-	};
+   static const int 
+      count = is_slice<head>::value + count_slice<indices...>::count;
 };
 
 /*** Determines if a slice is contiguous or not ***/
 template<unsigned Order,typename... indices> struct contig_view;
+template<unsigned Order,bool Full,typename... indices> struct contig_view_cont;
 
-template<typename tail>
-struct contig_view<ColMajor,tail>
-{}
+/******* COLUMN MAJOR *********/
+
+template<typename head>
+struct contig_view<ColMajor,head>
+{
+   static const int 
+      stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
+};
 
 template<typename head,typename... indices>
 struct contig_view<ColMajor,head,indices...>
 {
-   enum {
-      static const bool stride = std::is_same<FullSlice,head>::value ? contig_view<ColMajor,indices...> : 0
-   };
+      static const int 
+         stride = std::is_same<head,FullSlice>::value ?
+                  contig_view_cont<ColMajor,1,indices...>::stride : Strided;
+};
+
+template<typename head>
+struct contig_view_cont<ColMajor,1,head>
+{
+      static const int 
+         stride = std::is_same<head,FullSlice>::value ? Contig : 
+                  is_slice<head>::value ? Strided : Contig;
+};
+
+template<typename head,typename... indices>
+struct contig_view_cont<ColMajor,1,head,indices...>
+{
+   static const int
+      stride = std::is_same<head,FullSlice>::value ?
+         contig_view_cont<ColMajor,1,indices...>::stride :
+         is_slice<head>::value ? Strided :
+         contig_view_cont<ColMajor,0,indices...>::stride;
+};
+
+template<typename head>
+struct contig_view_cont<ColMajor,0,head>
+{
+   static const int
+      stride = is_slice<head>::value ? Strided : Contig;
+};
+
+template<typename head,typename... indices>
+struct contig_view_cont<ColMajor,0,head,indices...>
+{
+   static const int
+      stride = is_slice<head>::value ? Strided : 
+         contig_view_cont<ColMajor,0,indices...>::stride;
 };
 
 

@@ -47,8 +47,8 @@ private:
 
 public:
 	Alloc()                =default;
-	Alloc(const Derived& B)=delete;
-	Alloc(Derived&& B)     =delete;
+	Alloc(const Derived& B)=default;
+	Alloc(Derived&& B)     =default;
 
 	~Alloc() 
    {
@@ -196,20 +196,20 @@ public:
 	const std::array<unsigned,Rank>& get_str()   const { return _str;                  }
 	bool allocated ()                            const { return _storage.allocated();  }
 	bool associated()                            const { return _storage.associated(); }
+   bool contiguous()                            const { return Stride == Contig;       }
 	T*  data()                                         { return _storage.data();       }
 
 	/***********************************************/
 
+   template<typename... indices>
+   Alloc<T,internal::count_slice<indices...>::count, Order | UnAligned | internal::contig_view<Order,indices...>::stride>
+   view(indices... idx){
+      Alloc<T,internal::count_slice<indices...>::count,
+         Order | UnAligned | internal::contig_view<Order,indices...>::stride> S;
 
+      return S;
 
-	// Alloc<T,internal::count_slice<indices...>::count,
-      // Order|UnAligned|Strided>
- template<typename... indices>
-    void view(indices... idx){
-       // Alloc<T,internal::count_slice<indices...>::count,Order|UnAligned|Strided> S;
-       std::cout << internal::count_slice<indices...>::count << std::endl;
-
-    }
+   }
 
 //  template<typename OtherDerived,typename... indices>
 //     void map_view(ArrayBase<OtherDerived>& A,indices... idx){
@@ -224,54 +224,7 @@ public:
 
 
 
-	// template< FortCpp_SLICE_TEMPLATE(1) >
-	//  StridedArray1d<Derived,FortCpp_SLICE(1) > operator () (const FortCpp_SLICE_0(1) &S1,
-	//                                                            const int j){
-	//   typedef StridedArray1d<Derived,FortCpp_SLICE(1)> ResultType;
-	//   enum{
-	//     Stride1 = internal::traits<ResultType>::S1
-	//   };
-	//   const int l1 = FortCpp_SLICE_RUNTIME_LENGTH(1)
-	//   const int s1 = FortCpp_SLICE_RUNTIME_STRIDE(1,1)
-	//   FortCpp_SLICE_CHECK(1)
-	//   FortCpp_BOUNDS_CHECK(j,2)
-	//   ResultType S(&storage[dim(S1.b(),j)],l1,s1);
-	//   return S;
-	// }
 
-	// template<FortCpp_SLICE_TEMPLATE(2)>
-	//  StridedArray1d<Derived,FortCpp_SLICE(2)> operator () (const int i,
-	//                                                          const FortCpp_SLICE_0(2) &S2){
-	//   typedef StridedArray1d<Derived,FortCpp_SLICE(2)> ResultType;
-	//   enum{
-	//     Stride1 = internal::traits<ResultType>::S1
-	//   };
-	//   const int l2 = FortCpp_SLICE_RUNTIME_LENGTH(2)
-	//   const int s2 = FortCpp_SLICE_RUNTIME_STRIDE(1,2)
-	//   FortCpp_BOUNDS_CHECK(i,1)
-	//   FortCpp_SLICE_CHECK(2)
-	//   ResultType S(&storage[dim(i,S2.b())],l2,s2);
-	//   return S;
-	// }
-	//
-	// template<FortCpp_SLICE_TEMPLATE(1), FortCpp_SLICE_TEMPLATE(2)>
-	//  StridedAlloc<Derived,FortCpp_SLICE(1),
-	//                               FortCpp_SLICE(2) >operator () (const FortCpp_SLICE_0(1) &S1,
-	//                                                          const FortCpp_SLICE_0(2) &S2){
-	//   typedef StridedAlloc<Derived,FortCpp_SLICE(1),FortCpp_SLICE(2)> ResultType;
-	//   enum{
-	//     Stride1 = internal::traits<ResultType>::S1,
-	//     Stride2 = internal::traits<ResultType>::S2
-	//   };
-	//   const int l1 = FortCpp_SLICE_RUNTIME_LENGTH(1)
-	//   const int l2 = FortCpp_SLICE_RUNTIME_LENGTH(2)
-	//   const int s1 = FortCpp_SLICE_RUNTIME_STRIDE(1,1)
-	//   const int s2 = FortCpp_SLICE_RUNTIME_STRIDE(2,2)
-	//   FortCpp_SLICE_CHECK(1)
-	//   FortCpp_SLICE_CHECK(2)
-	//   ResultType S(&storage[dim(S1.b(),S2.b())],l1,l2,s1,s2);
-	//   return S;
-	// }
 
 	/*******************************************************/
 
