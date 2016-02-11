@@ -13,14 +13,13 @@ struct SliceBase {
 	int beg;
 	int end;
 	int str;
-	bool index;
 
-	SliceBase() : beg(0),end(END),str(1),index(0) {}
-	SliceBase(int b) : beg(b),end(END),str(1),index(0) {}
-	SliceBase(int b,int e) : beg(b),end(e),str(1),index(0) {}
-	SliceBase(int b,int e,int s) : beg(b),end(e),str(s),index(0) {}
+	SliceBase() : beg(0),end(END),str(1) {}
+	SliceBase(int b) : beg(b),end(END),str(1) {}
+	SliceBase(int b,int e) : beg(b),end(e),str(1) {}
+	SliceBase(int b,int e,int s) : beg(b),end(e),str(s) {}
 
-	unsigned size(unsigned i) {
+	unsigned len(unsigned i) {
 		assert(str!=0);
 
 		if (beg < 0) {

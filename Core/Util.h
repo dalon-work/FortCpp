@@ -85,7 +85,7 @@ unsigned offset(const std::array<unsigned,Rank>& str,unsigned i,indices... idx)
 
 /******* IN_SIZE *******/
 
-void in_size(unsigned i,unsigned s)
+void in_size(int i,unsigned s)
 {
    if( i < 0 || i >= s ){
       throw SizeException(i,s);

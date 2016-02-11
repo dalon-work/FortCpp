@@ -7,10 +7,16 @@ namespace FortCpp
 namespace internal
 {
 
-template<typename idx> struct is_slice      { static const int value = 0; };
-template<   > struct is_slice<FullSlice   > { static const int value = 1; };
-template<   > struct is_slice<ContigSlice > { static const int value = 1; };
-template<   > struct is_slice<StridedSlice> { static const int value = 1; };
+template<typename idx> struct is_slice        { static const int value = 0; };
+template<   > struct is_slice<FullSlice     > { static const int value = 1; };
+template<   > struct is_slice<ContigSlice   > { static const int value = 1; };
+template<   > struct is_slice<StridedSlice  > { static const int value = 1; };
+template<   > struct is_slice<FullSlice&    > { static const int value = 1; };
+template<   > struct is_slice<ContigSlice&  > { static const int value = 1; };
+template<   > struct is_slice<StridedSlice& > { static const int value = 1; };
+template<   > struct is_slice<FullSlice&&   > { static const int value = 1; };
+template<   > struct is_slice<ContigSlice&& > { static const int value = 1; };
+template<   > struct is_slice<StridedSlice&&> { static const int value = 1; };
 
 /*** Counts the number of slices in a view ***/
 template<typename front,typename... indices> struct count_slice;
@@ -142,11 +148,43 @@ struct contig_view_cont<RowMajor,0,head,indices...>
 
 /***** SET_LEN ********/
 
-template<unsigned Rank,unsigned newRank,unsigned D,typename... indices>
+template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD,typename... indices>
 void set_len(std::array<unsigned,newRank>& len,
       const std::array<unsigned,Rank>& dim,
-      const indices&... idx){
+      int& i,
+      indices... idx);
+template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD,typename... indices>
+void set_len(std::array<unsigned,newRank>& len,
+      const std::array<unsigned,Rank>& dim,
+      SliceBase& i,
+      indices... idx);
+
+
+template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD>
+void set_len(std::array<unsigned,newRank>& len,
+      const std::array<unsigned,Rank>& dim)
+{
 }
+
+template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD,typename... indices>
+void set_len(std::array<unsigned,newRank>& len,
+      const std::array<unsigned,Rank>& dim,
+      int& i,
+      indices... idx)
+{
+   set_len<Rank,newRank,D+1,nD>(len,dim,idx...);
+}
+
+template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD,typename... indices>
+void set_len(std::array<unsigned,newRank>& len,
+      const std::array<unsigned,Rank>& dim,
+      SliceBase& i,
+      indices... idx)
+{
+   len[nD] = i.len(dim[D]);
+   set_len<Rank,newRank,D+1,nD+1>(len,dim,idx...);
+}
+
 
 /***** SET_BEG *******/
 

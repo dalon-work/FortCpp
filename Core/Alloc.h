@@ -215,7 +215,7 @@ public:
    Alloc<T,
       internal::count_slice<indices...>::count,
       Order | UnAligned | internal::contig_view<Order,Stride,indices...>::stride>
-   view(const indices&... idx){
+   view(indices... idx){
       static const unsigned newRank = internal::count_slice<indices...>::count;
       static const unsigned newStride = internal::contig_view<Order,Stride,indices...>::stride;
       Alloc<T,newRank, Order | UnAligned | newStride> S;
@@ -224,8 +224,13 @@ public:
       std::array<unsigned,newRank> len;
       std::array<unsigned,newRank> str;
 
-      internal::set_len<Rank,newRank,0>(dim,len,idx...);
+      internal::set_len<Rank,newRank,0,0>(len,_dim,idx...);
       internal::set_beg<Rank        ,0>(beg,idx...);
+
+      for(int i=0;i<newRank;i++){
+         std::cout << ' ' << len[i];
+      }
+      std::cout << std::endl;
 
       return S;
 

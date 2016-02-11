@@ -264,11 +264,11 @@ TEST_CASE("Alloc View","[Alloc][View]"){
 
    SECTION("Column-Major"){
 
-      Alloc<int,4> a;
+      Alloc<int,4> a(10,10,10,10);
 
       auto f = Slice();
       auto c = Slice(2,3);
-      auto s = Slice(1,3,4);
+      auto s = Slice(1,10,4);
 
       auto s1 = a.view(f,0,0,0);
       auto s2 = a.view(f,f,0,0);
@@ -333,7 +333,7 @@ TEST_CASE("Alloc View","[Alloc][View]"){
 
    SECTION("Row-Major"){
 
-      Alloc<int,4,RowMajor> a;
+      Alloc<int,4,RowMajor> a(10,10,10,10);
 
       auto f = Slice();
       auto c = Slice(2,3);
