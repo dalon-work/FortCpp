@@ -148,43 +148,41 @@ struct contig_view_cont<RowMajor,0,head,indices...>
 
 /***** SET_LEN ********/
 
-template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD,typename... indices>
-void set_len(std::array<unsigned,newRank>& len,
-      const std::array<unsigned,Rank>& dim,
-      int& i,
-      indices... idx);
-template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD,typename... indices>
-void set_len(std::array<unsigned,newRank>& len,
-      const std::array<unsigned,Rank>& dim,
+// template<unsigned Rank,unsigned nRank,unsigned D,unsigned nD,typename... indices>
+// void set_len(const std::array<unsigned,Rank>& dim,
+//       std::array<unsigned,nRank>& len,
+//       int& i,
+//       indices... idx);
+template<unsigned Rank,unsigned nRank,unsigned D,unsigned nD,typename... indices>
+void set_len(const std::array<unsigned,Rank>& dim,
+      std::array<unsigned,nRank>& len,
       SliceBase& i,
-      indices... idx);
+      indices&... idx);
 
-
-template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD>
-void set_len(std::array<unsigned,newRank>& len,
-      const std::array<unsigned,Rank>& dim)
+template<unsigned Rank,unsigned nRank,unsigned D,unsigned nD>
+void set_len(const std::array<unsigned,Rank>& dim,
+      const std::array<unsigned,nRank>& len)
 {
 }
 
-template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD,typename... indices>
-void set_len(std::array<unsigned,newRank>& len,
-      const std::array<unsigned,Rank>& dim,
+template<unsigned Rank,unsigned nRank,unsigned D,unsigned nD,typename... indices>
+void set_len(const std::array<unsigned,Rank>& dim,
+      std::array<unsigned,nRank>& len,
       int& i,
-      indices... idx)
+      indices&... idx)
 {
-   set_len<Rank,newRank,D+1,nD>(len,dim,idx...);
+   set_len<Rank,nRank,D+1,nD>(dim,len,idx...);
 }
 
-template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD,typename... indices>
-void set_len(std::array<unsigned,newRank>& len,
-      const std::array<unsigned,Rank>& dim,
+template<unsigned Rank,unsigned nRank,unsigned D,unsigned nD,typename... indices>
+void set_len(const std::array<unsigned,Rank>& dim,
+      std::array<unsigned,nRank>& len,
       SliceBase& i,
-      indices... idx)
+      indices&... idx)
 {
    len[nD] = i.len(dim[D]);
-   set_len<Rank,newRank,D+1,nD+1>(len,dim,idx...);
+   set_len<Rank,nRank,D+1,nD+1>(dim,len,idx...);
 }
-
 
 /***** SET_BEG *******/
 
@@ -209,6 +207,45 @@ void set_beg(std::array<unsigned,Rank>& beg,head& i,const indices&... idx)
 {
    beg[D] = get_beg(i);
    set_beg<Rank,D+1>(beg,idx...);
+}
+
+/******* SET_STR *************/
+
+// template<unsigned Rank,unsigned newRank,unsigned D,unsigned nD,typename... indices>
+// void set_str(const std::array<unsigned,Rank>& str,
+//       std::array<unsigned,newRank>& nstr,
+//       int& i,
+//       indices... idx);
+template<unsigned Rank,unsigned nRank,unsigned D,unsigned nD,typename... indices>
+void set_str(const std::array<unsigned,Rank>& str,
+      std::array<unsigned,nRank>& nstr,
+      SliceBase& i,
+      indices... idx);
+
+
+template<unsigned Rank,unsigned nRank,unsigned D,unsigned nD>
+void set_str(const std::array<unsigned,Rank>& str,
+      std::array<unsigned,nRank>& nstr)
+{
+}
+
+template<unsigned Rank,unsigned nRank,unsigned D,unsigned nD,typename... indices>
+void set_str(const std::array<unsigned,Rank>& str,
+      std::array<unsigned,nRank>& nstr,
+      int& i,
+      indices... idx)
+{
+   set_str<Rank,nRank,D+1,nD>(str,nstr,idx...);
+}
+
+template<unsigned Rank,unsigned nRank,unsigned D,unsigned nD,typename... indices>
+void set_str(const std::array<unsigned,Rank>& str,
+      std::array<unsigned,nRank>& nstr,
+      SliceBase& i,
+      indices... idx)
+{
+   nstr[nD] = i.str*str[D];
+   set_str<Rank,nRank,D+1,nD+1>(str,nstr,idx...);
 }
 
 

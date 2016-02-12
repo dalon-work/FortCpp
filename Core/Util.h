@@ -202,27 +202,29 @@ struct linear_index<ColMajor,Strided,Rank> {
 	static unsigned exec(const std::array<unsigned,Rank>& dim,
 	          const std::array<unsigned,Rank>& str,
 	          unsigned i) {
-		unsigned o= str[0]*(i%dim[0]);
-		unsigned d=1;
-		for (int r=1; r<Rank; r++) {
-			d *= dim[r-1];
-			o += str[r]*((i/d)*dim[r]);
-		}
+		unsigned o=str[0]*(i%dim[0]);
+      unsigned d=dim[0];
+      for(int r=1;r<Rank-1;r++){
+         o += str[r]*((i/d)%dim[r]);
+         d *= dim[r];
+      }
+      o += str[Rank-1]*(i/d);
 		return o;
 	}
 };
 
 template<unsigned Rank>
 struct linear_index<RowMajor,Strided,Rank> {
-	static unsigned exec(const std::array<unsigned,Rank>& str,
-	          const std::array<unsigned,Rank>& dim,
+	static unsigned exec(const std::array<unsigned,Rank>& dim,
+	          const std::array<unsigned,Rank>& str,
 	          unsigned i) {
 		unsigned o = str[Rank-1]*(i%dim[Rank-1]);
-		unsigned d=1;
-		for (int r=Rank-1; r>=1; r--) {
+		unsigned d=dim[Rank-1];
+		for (int r=Rank-2; r>=1; r--) {
+			o += str[r]*((i/d)%dim[r]);
 			d *= dim[r];
-			o += str[r-1]*((i/d)*dim[r-1]);
 		}
+      o += str[0]*(i/d);
 		return o;
 	}
 };

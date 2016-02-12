@@ -3,10 +3,12 @@
 #include "ForwardDeclarations.h"
 #include <assert.h>
 
+#include <iostream>
+
 namespace FortCpp
 {
 
-static const int BEG = -1;
+static const int BEG = 156700;
 static const int END = -156700;
 
 struct SliceBase {
@@ -20,7 +22,7 @@ struct SliceBase {
 	SliceBase(int b,int e,int s) : beg(b),end(e),str(s) {}
 
 	unsigned len(unsigned i) {
-		assert(str!=0);
+      using namespace std;
 
 		if (beg < 0) {
 			beg = i+beg;

@@ -212,35 +212,40 @@ public:
 	/***********************************************/
 
    template<typename... indices>
-   Alloc<T,
-      internal::count_slice<indices...>::count,
+   Alloc<T, internal::count_slice<indices...>::count,
       Order | UnAligned | internal::contig_view<Order,Stride,indices...>::stride>
    view(indices... idx){
       static const unsigned newRank = internal::count_slice<indices...>::count;
       static const unsigned newStride = internal::contig_view<Order,Stride,indices...>::stride;
+      static_assert(newRank > 0, "VIEW IS OF RANK ZERO");
+      static_assert(sizeof...(idx) == Rank,
+            "NUMBER OF INDICES PASSES TO VIEW DOES NOT MATCH RANK OF ARRAY");
+
       Alloc<T,newRank, Order | UnAligned | newStride> S;
 
       std::array<unsigned,Rank> beg;
       std::array<unsigned,newRank> len;
       std::array<unsigned,newRank> str;
 
-      internal::set_len<Rank,newRank,0,0>(len,_dim,idx...);
-      internal::set_beg<Rank        ,0>(beg,idx...);
+      internal::set_len<Rank,newRank,0,0>(_dim,len,idx...);
+      internal::set_beg<Rank          ,0>(beg     ,idx...);
+      internal::set_str<Rank,newRank,0,0>(_str,str,idx...);
 
-      for(int i=0;i<newRank;i++){
-         std::cout << ' ' << len[i];
-      }
-      std::cout << std::endl;
+      S.mapView(&_storage[offset(beg)],len,str);
 
       return S;
 
    }
 
-//  template<typename OtherDerived,typename... indices>
-//     void map_view(ArrayBase<OtherDerived>& A,indices... idx){
-//
-//        std::array<unsigned,internal::traits<OtherDerived>::Rank> beg;
-//     }
+   void mapView(T* p,
+         const std::array<unsigned,Rank>& dim,
+         const std::array<unsigned,Rank>& str)
+   {
+      _storage.map(p,internal::product<Rank>(dim));
+      _dim = dim;
+      _str = str;
+   }
+
 
 
 

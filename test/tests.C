@@ -262,124 +262,260 @@ TEST_CASE("Array Operations","[Op][Alloc]"){
 
 TEST_CASE("Alloc View","[Alloc][View]"){
 
-   SECTION("Column-Major"){
+   Alloc<int,1> a(100);
 
-      Alloc<int,4> a(10,10,10,10);
-
-      auto f = Slice();
-      auto c = Slice(2,3);
-      auto s = Slice(1,10,4);
-
-      auto s1 = a.view(f,0,0,0);
-      auto s2 = a.view(f,f,0,0);
-      auto s3 = a.view(f,f,f,0);
-      auto s4 = a.view(f,f,f,f);
-
-      CHECK(s1.contiguous());
-      CHECK(s2.contiguous());
-      CHECK(s3.contiguous());
-      CHECK(s4.contiguous());
-
-      CHECK(s1.rank() == 1);
-      CHECK(s2.rank() == 2);
-      CHECK(s3.rank() == 3);
-      CHECK(s4.rank() == 4);
-
-      auto s5 = a.view(c,0,0,0);
-      auto s6 = a.view(c,c,0,0);
-      auto s7 = a.view(c,c,c,0);
-      auto s8 = a.view(c,c,c,c);
-
-      CHECK_FALSE(s5.contiguous());
-      CHECK_FALSE(s6.contiguous());
-      CHECK_FALSE(s7.contiguous());
-      CHECK_FALSE(s8.contiguous());
-
-      CHECK(s5.rank() == 1);
-      CHECK(s6.rank() == 2);
-      CHECK(s7.rank() == 3);
-      CHECK(s8.rank() == 4);
-
-      auto s9  = a.view(s,0,0,0);
-      auto s10 = a.view(s,s,0,0);
-      auto s11 = a.view(s,s,s,0);
-      auto s12 = a.view(s,s,s,s);
-
-      CHECK_FALSE(s9 .contiguous());
-      CHECK_FALSE(s10.contiguous());
-      CHECK_FALSE(s11.contiguous());
-      CHECK_FALSE(s12.contiguous());
-
-      CHECK(s9 .rank() == 1);
-      CHECK(s10.rank() == 2);
-      CHECK(s11.rank() == 3);
-      CHECK(s12.rank() == 4);
-
-      auto s13 = a.view(0,f,0,0);
-      auto s14 = a.view(f,0,f,0);
-      auto s15 = a.view(f,0,0,f);
-      auto s16 = a.view(f,0,s,0);
-
-      CHECK_FALSE(s13.contiguous());
-      CHECK_FALSE(s14.contiguous());
-      CHECK_FALSE(s15.contiguous());
-      CHECK_FALSE(s16.contiguous());
-
-      CHECK(s13.rank() == 1);
-      CHECK(s14.rank() == 2);
-      CHECK(s15.rank() == 2);
-      CHECK(s16.rank() == 2);
+   for(int i=0;i<100;i++){
+      a[i] = i;
    }
 
-   SECTION("Row-Major"){
+   auto b = a.view(Slice(0,10));
 
-      Alloc<int,4,RowMajor> a(10,10,10,10);
+   REQUIRE( b.size() == 10 );
+   REQUIRE( b.size(1) == 10 );
+   REQUIRE( b.stride(1) == 1 );
 
-      auto f = Slice();
-      auto c = Slice(2,3);
-      auto s = Slice(1,3,4);
-
-      auto s1 = a.view(0,0,0,f);
-      auto s2 = a.view(0,0,f,f);
-      auto s3 = a.view(0,f,f,f);
-      auto s4 = a.view(f,f,f,f);
-
-      CHECK(s1.contiguous());
-      CHECK(s2.contiguous());
-      CHECK(s3.contiguous());
-      CHECK(s4.contiguous());
-
-      auto s5 = a.view(0,0,0,c);
-      auto s6 = a.view(0,0,c,c);
-      auto s7 = a.view(0,c,c,c);
-      auto s8 = a.view(c,c,c,c);
-
-      CHECK_FALSE(s5.contiguous());
-      CHECK_FALSE(s6.contiguous());
-      CHECK_FALSE(s7.contiguous());
-      CHECK_FALSE(s8.contiguous());
-
-      auto s9  = a.view(0,0,0,s);
-      auto s10 = a.view(0,0,s,s);
-      auto s11 = a.view(0,s,s,s);
-      auto s12 = a.view(s,s,s,s);
-
-      CHECK_FALSE(s9 .contiguous());
-      CHECK_FALSE(s10.contiguous());
-      CHECK_FALSE(s11.contiguous());
-      CHECK_FALSE(s12.contiguous());
-
-      auto s13 = a.view(0,f,0,0);
-      auto s14 = a.view(0,f,0,f);
-      auto s15 = a.view(0,c,0,f);
-      auto s16 = a.view(f,0,s,0);
-
-      CHECK_FALSE(s13.contiguous());
-      CHECK_FALSE(s14.contiguous());
-      CHECK_FALSE(s15.contiguous());
-      CHECK_FALSE(s16.contiguous());
+   for(int i=0;i<b.size(1);i++){
+      REQUIRE(b[i] == i);
    }
 
+   b = 1000;
+   for(int i=0;i<10;i++){
+      REQUIRE(a[i] == 1000);
+   }
+
+   REQUIRE( a[10] == 10 );
+
+   auto c = a.view(Slice(0,100,2));
+
+   a = 0;
+   c = 1;
+
+   for(int i=0;i<100;i++){
+      if( i%2 == 0 ){
+         REQUIRE(a[i] == 1);
+      }
+      else
+      {
+         REQUIRE(a[i] == 0);
+      }
+   }
+
+   SECTION( "Multi-dimensions","[MD]") {
+      SECTION( "Column Major" ){
+
+         Alloc<int,2> d(10,10);
+         for(int i=0;i<d.size();i++){
+            d[i] = i;
+         }
+         auto e = d.view(Slice(),0);
+         auto f = d.view(0,Slice());
+
+         REQUIRE(e.contiguous());
+         REQUIRE(e.rank() == 1);
+         REQUIRE(e.size(1) == 10);
+
+         REQUIRE_FALSE(f.contiguous());
+         REQUIRE(f.rank() == 1);
+         REQUIRE(f.size(1) == 10);
+
+         for(int i=0;i<10;i++){
+            CHECK(e[i] == i);
+            CHECK(f[i] == i*10);
+         }
+
+         d = 0;
+         auto g = d.view(Slice(BEG,END,2),Slice(BEG,END,2));
+
+
+         REQUIRE_FALSE(g.contiguous());
+         REQUIRE(g.rank() == 2);
+         CHECK(g.size(1) == 5);
+         CHECK(g.size(2) == 5);
+         CHECK(g.size() == 25);
+
+         for(int j=0;j<g.size(2);j++){
+            for(int i=0;i<g.size(1);i++){
+               g(i,j) = 1;
+            }
+         }
+
+         for(int j=0;j<d.size(2);j++){
+            for(int i=0;i<d.size(1);i++){
+               if( j%2 == 0 && i%2==0 ){
+                  CHECK(d(i,j) == 1);
+               }
+               else{
+                  CHECK(d(i,j) == 0);
+               }
+            }
+         }
+
+         d = 0;
+         g = 1;
+
+         for(int j=0;j<d.size(2);j++){
+            for(int i=0;i<d.size(1);i++){
+               INFO( "i: " << i << " j: " << j << '\n';);
+               if( j%2 == 0 && i%2==0 ){
+                  CHECK(d(i,j) == 1);
+               }
+               else{
+                  CHECK(d(i,j) == 0);
+               }
+            }
+         }
+      }
+
+      SECTION("Row-Major"){
+         Alloc<int,2,RowMajor> h(10,10);
+         for(int i=0;i<h.size();i++){
+            h[i] = i;
+         }
+         auto m = h.view(Slice(),0);
+         auto n = h.view(0,Slice());
+
+         REQUIRE(n.contiguous());
+         REQUIRE(n.rank() == 1);
+         REQUIRE(n.size(1) == 10);
+
+         REQUIRE_FALSE(m.contiguous());
+         REQUIRE(m.rank() == 1);
+         REQUIRE(m.size(1) == 10);
+
+         for(int i=0;i<10;i++){
+            CHECK(n[i] == i);
+            CHECK(m[i] == i*10);
+         }
+
+         h = 0;
+         auto p = h.view(Slice(BEG,END,2),Slice(BEG,END,2));
+
+         REQUIRE_FALSE(p.contiguous());
+         REQUIRE(p.rank() == 2);
+         CHECK(p.size(1) == 5);
+         CHECK(p.size(2) == 5);
+         CHECK(p.size() == 25);
+
+         for(int i=0;i<p.size(1);i++){
+            for(int j=0;j<p.size(2);j++){
+               p(i,j) = 1;
+            }
+         }
+
+         for(int i=0;i<h.size(1);i++){
+            for(int j=0;j<h.size(2);j++){
+               if( j%2 == 0 && i%2==0 ){
+                  CHECK(h(i,j) == 1);
+               }
+               else{
+                  CHECK(h(i,j) == 0);
+               }
+            }
+         }
+
+         h = 0;
+         p = 1;
+
+         for(int i=0;i<h.size(1);i++){
+            for(int j=0;j<h.size(2);j++){
+               INFO( "i: " << i << " j: " << j << '\n';);
+               if( j%2 == 0 && i%2==0 ){
+                  CHECK(h(i,j) == 1);
+               }
+               else{
+                  CHECK(h(i,j) == 0);
+               }
+            }
+         }
+      }
+
+      SECTION("Really big MultiD View","[Alloc][MD][View]"){
+
+         SECTION("Column-Major","[CM]"){
+
+            Alloc<int,4> d(10,10,10,10);
+
+            auto s = Slice(BEG,END,2);
+            auto e = d.view(s,s,s,s);
+
+            d = 0;
+            e = 1;
+
+            for(int l=0;l<d.size(4);l++){
+               for(int k=0;k<d.size(3);k++){
+                  for(int j=0;j<d.size(2);j++){
+                     for(int i=0;i<d.size(1);i++){
+                        INFO( "i:" << i << " j:" << j << " k:" << k << " l:" << l);
+                        if(l%2 == 0 && k%2==0 && j%2==0 && i%2==0){
+                           CHECK(d(i,j,k,l) == 1);
+                        }
+                        else{
+                           CHECK(d(i,j,k,l) == 0);
+                        }
+                     }
+                  }
+               }
+            }
+
+            auto f = e.view(Slice(BEG,END),0,0,0);
+
+            CHECK( f.rank() == 1 );
+            CHECK( f.size() == 5 );
+            CHECK( f.stride(1) == 2 );
+
+            f = 2;
+
+            CHECK( d[0] == 2 );
+            CHECK( d[2] == 2 );
+            CHECK( d[4] == 2 );
+            CHECK( d[6] == 2 );
+            CHECK( d[8] == 2 );
+
+         }
+         
+         SECTION("Row-Major","[RM]"){
+
+            Alloc<int,4,RowMajor> d(10,10,10,10);
+
+            auto s = Slice(BEG,END,2);
+            auto e = d.view(s,s,s,s);
+
+            d = 0;
+            e = 1;
+
+            for(int i=0;i<d.size(1);i++){
+               for(int j=0;j<d.size(2);j++){
+                  for(int k=0;k<d.size(3);k++){
+                     for(int l=0;l<d.size(4);l++){
+                        INFO( "i:" << i << " j:" << j << " k:" << k << " l:" << l);
+                        if(l%2 == 0 && k%2==0 && j%2==0 && i%2==0){
+                           CHECK(d(i,j,k,l) == 1);
+                        }
+                        else{
+                           CHECK(d(i,j,k,l) == 0);
+                        }
+                     }
+                  }
+               }
+            }
+
+            auto f = e.view(0,0,0,Slice(BEG,END));
+
+            CHECK( f.rank() == 1 );
+            CHECK( f.size() == 5 );
+            CHECK( f.stride(1) == 2 );
+
+            f = 2;
+
+            CHECK( d[0] == 2 );
+            CHECK( d[2] == 2 );
+            CHECK( d[4] == 2 );
+            CHECK( d[6] == 2 );
+            CHECK( d[8] == 2 );
+
+         }
+      }
+   }
 }
 
 #ifndef NDEBUG
