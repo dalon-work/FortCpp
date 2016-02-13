@@ -149,8 +149,8 @@ public:
 	template<typename... indices>
 	const T& operator () (indices... idx) const {
 #ifndef NDEBUG
-      internal::is_negative<0>(idx...);
-      internal::in_bounds<0,Rank>(_dim,idx...);
+      internal::debug::is_negative<0>(idx...);
+      internal::debug::in_bounds<0,Rank>(_dim,idx...);
 #endif
 
 		return _storage[
@@ -161,8 +161,8 @@ public:
 	template<typename... indices>
 	T& operator () (indices... idx) {
 #ifndef NDEBUG
-      internal::is_negative<0>(idx...);
-      internal::in_bounds<0,Rank>(_dim,idx...);
+      internal::debug::is_negative<0>(idx...);
+      internal::debug::in_bounds<0,Rank>(_dim,idx...);
 #endif
 		return _storage[
          internal::offset<Rank,0>(_str,static_cast<unsigned>(idx)...)
@@ -173,7 +173,7 @@ public:
 
 	const T& operator [] (int i) const {
 #ifndef NDEBUG
-      internal::in_size(i,size());
+      internal::debug::in_size(i,size());
 #endif
 		return _storage[
          internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)
@@ -181,7 +181,7 @@ public:
 	}
 	T& operator [] (int i) {
 #ifndef NDEBUG
-      internal::in_size(i,size());
+      internal::debug::in_size(i,size());
 #endif
 		return _storage[
          internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)
@@ -193,12 +193,12 @@ public:
 	unsigned size()                              const { return _storage.size();       }
 	unsigned size  (unsigned r)                  const { 
 #ifndef NDEBUG
-      internal::in_rank<Rank>(r);
+      internal::debug::in_rank<Rank>(r);
 #endif
       return _dim[r-1];             }
 	unsigned stride(unsigned r)                  const {
 #ifndef NDEBUG
-      internal::in_rank<Rank>(r);
+      internal::debug::in_rank<Rank>(r);
 #endif
       return _str[r-1];             }
 	const std::array<unsigned,Rank>& get_dim()   const { return _dim;                  }

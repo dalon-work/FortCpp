@@ -3,7 +3,12 @@
 
 #include "Macros.h"
 #include "ForwardDeclarations.h"
+
+#ifndef NDEBUG
 #include "ArrayException.h"
+#include "Debug.h"
+#endif
+
 #include "Util.h"
 #include "Storage.h"
 #include "BinaryOp.h"
@@ -43,7 +48,7 @@ public:
 	template<typename OtherDerived>
 	inline Derived& operator = (const ArrayBase<OtherDerived>& B) {
 #ifndef NDEBUG
-      internal::compare_dims(derived(),B.derived());
+      internal::debug::compare_dims(derived(),B.derived());
 #endif
 #pragma GCC ivdep
 		for (int i=0; i<this->size(); i++) {
@@ -54,7 +59,7 @@ public:
 
 	inline Derived& operator = (const ArrayBase<Derived>& B) {
 #ifndef NDEBUG
-      internal::compare_dims(derived(),B.derived());
+      internal::debug::compare_dims(derived(),B.derived());
 #endif
 #pragma GCC ivdep
 		for (int i=0; i<this->size(); i++) {
@@ -70,9 +75,6 @@ public:
 	 * += and -= operators
 	 */
 	inline Derived& operator += (const T& B) {
-#ifndef NDEBUG
-      internal::compare_dims(derived(),B.derived());
-#endif
 		derived() = derived() + B;
 		return derived();
 	}
@@ -80,16 +82,13 @@ public:
 	template<typename OtherDerived>
 	inline Derived& operator += (const ArrayBase<OtherDerived>& B) {
 #ifndef NDEBUG
-      internal::compare_dims(derived(),B.derived());
+      internal::debug::compare_dims(derived(),B.derived());
 #endif
 		derived() = derived() + B.derived();
 		return derived();
 	}
 
 	inline Derived& operator -= (const T& B) {
-#ifndef NDEBUG
-      internal::compare_dims(derived(),B.derived());
-#endif
 		derived() = derived() - B;
 		return derived();
 	}
@@ -97,7 +96,7 @@ public:
 	template<typename OtherDerived>
 	inline Derived& operator -= (const ArrayBase<OtherDerived>& B) {
 #ifndef NDEBUG
-      internal::compare_dims(derived(),B.derived());
+      internal::debug::compare_dims(derived(),B.derived());
 #endif
 		derived() = derived() - B.derived();
 		return derived();

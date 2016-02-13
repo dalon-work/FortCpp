@@ -7,26 +7,6 @@ namespace FortCpp
 namespace internal
 {
 
-/********** IS_NEGATIVE ***********/
-
-template<unsigned D>
-void is_negative(int i)
-{
-	if ( i < 0 ) {
-      throw NegIdxException(i,D);
-	}
-}
-
-template<unsigned D,typename... indices>
-void is_negative(int i,indices... idx)
-{
-	if ( i < 0 ) {
-      throw NegIdxException(i,D);
-	}
-	else {
-		is_negative<D+1>(idx...);
-	}
-};
 
 /*********** PRODUCT ***********/
 
@@ -83,78 +63,6 @@ unsigned offset(const std::array<unsigned,Rank>& str,unsigned i,indices... idx)
 	return i*str[D]+offset<Rank,D+1>(str,idx...);
 }
 
-/******* IN_SIZE *******/
-
-void in_size(int i,unsigned s)
-{
-   if( i < 0 || i >= s ){
-      throw SizeException(i,s);
-   }
-}
-
-/******** IN_BOUNDS *******/
-
-template<unsigned D,unsigned Rank>
-void in_bounds(std::array<unsigned,Rank> &dim,unsigned i)
-{
-   if( i >= dim[D] ){
-      throw BoundsException(i,dim[D],D);
-   }
-}
-
-template<unsigned D,unsigned Rank,typename... indices>
-void in_bounds(std::array<unsigned,Rank> &dim,unsigned i,indices... idx)
-{
-   if( i >= dim[D] ){
-      throw BoundsException(i,dim[D],D);
-   }
-   in_bounds<D+1,Rank>(dim,idx...);
-}
-
-template<unsigned Rank>
-void in_rank(int i)
-{
-   if( i < 1 || i > Rank){
-      throw RankException(i,Rank);
-   }
-}
-
-/******* COMPARE_DIMS ***************/
-
-template<std::size_t Rank>
-void compare_dims(const std::array<unsigned,Rank>& lhs,
-      const std::array<unsigned,Rank>& rhs){
-   for(int r=0;r<Rank;r++){
-      if(lhs[r] != rhs[r]){
-         throw DimException(lhs[r],rhs[r],r);
-      }
-   }
-}
-
-template<typename Lhs,typename T,unsigned Rank,unsigned Options>
-void compare_dims(const Lhs& lhs, const Alloc<T,Rank,Options>& rhs)
-{
-	compare_dims<Rank>(lhs.get_dim(),rhs.get_dim());
-}
-
-template<typename Lhs,typename Lhs2,typename Rhs,typename Op>
-void compare_dims(const Lhs& lhs, const BinaryOp<Lhs2,Rhs,Op>& rhs)
-{
-	compare_dims(lhs,rhs.get_lhs());
-   compare_dims(lhs,rhs.get_rhs());
-}
-
-template<typename Lhs,unsigned Side,typename Derived,typename Op>
-void compare_dims(const Lhs& lhs,const ConstantOp<Side,Derived,Op>& rhs)
-{
-	compare_dims(lhs,rhs.getExpr());
-}
-
-template<typename Lhs,typename Rhs,typename Op>
-void compare_dims(const Lhs& lhs,const UnaryOp<Rhs,Op>& rhs)
-{
-	compare_dims(lhs,rhs.getExpr());
-}
 
 /*********** COMPUTE_STRIDES **********/
 
