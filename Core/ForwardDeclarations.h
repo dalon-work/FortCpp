@@ -13,7 +13,9 @@ enum {
     UnAligned = 0,
     Aligned   = 2,
     Contig    = 0,
-    Strided   = 4
+    Strided   = 4,
+    Static    = 0,
+    Pointer   = 8
 };
 
 
@@ -33,17 +35,8 @@ namespace internal
 enum {
     MajorOrderBit = 1,
     AlignedBit    = 2,
-    StrideBit     = 4
-};
-
-/**
- * Various other definitions
- */
-enum {
-    Full = -1,
-    Unknown = -2,
-    Pointer = 0,
-    Static = 1,
+    StrideBit     = 4,
+    StorageBit    = 8
 };
 
 template<int Size> class OpSize;
@@ -55,7 +48,7 @@ template<typename T,int StorageType, int Align> class Storage;
 
 template<typename Derived> class ArrayBase;
 template<typename T,int Rank, int Options=0> class Alloc;
-template<typename T,int... dims> class Fixed;
+template<typename T,typename... dims> class Fixed;
 template<int Side, typename Derived,typename Op> class ConstantOp;
 template<typename Lhs,typename Rhs,typename Op> class BinaryOp;
 template<typename Rhs,typename Op> class UnaryOp;
