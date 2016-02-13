@@ -27,7 +27,7 @@ class ArrayBase
 public:
 
 	typedef typename internal::traits<Derived>::Scalar T;
-	static const unsigned Rank = internal::traits<Derived>::Rank;
+	static const int Rank = internal::traits<Derived>::Rank;
 
 	ArrayBase()=default;
 	ArrayBase(const ArrayBase<Derived>&)=default;
@@ -68,8 +68,8 @@ public:
 		return derived();
 	}
 
-	constexpr unsigned size() const { return derived().size(); }
-	constexpr unsigned size(unsigned i) const { return derived().size(i); }
+	constexpr int size() const { return derived().size(); }
+	constexpr int size(int i) const { return derived().size(i); }
 
 	/**
 	 * += and -= operators

@@ -239,7 +239,7 @@ public:
 
    void mapView(T* p,
          const std::array<int,Rank>& dim,
-         const std::array<int     ,Rank>& str)
+         const std::array<int,Rank>& str)
    {
       _storage.map(p,internal::product<Rank>(dim));
       _dim = dim;

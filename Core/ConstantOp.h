@@ -15,7 +15,7 @@ enum CONSTANT_sIDE {
 /*
  * Traits specialization for ConstantOp
  */
-template<unsigned Side,typename Derived,typename Op>
+template<int Side,typename Derived,typename Op>
 struct traits<ConstantOp<Side,Derived,Op> > {
 	typedef typename traits<Derived>::Scalar Scalar;
 	enum {

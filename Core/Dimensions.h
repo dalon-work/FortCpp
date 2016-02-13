@@ -12,7 +12,7 @@ namespace internal
 
 /************ DIMENSIONS *******************/
 
-template<unsigned Rank,unsigned Order,unsigned Stride>
+template<int Rank,int Order,int Stride>
 class Dimensions
 {
 private:
@@ -43,8 +43,8 @@ public:
 		s=0;
 	}
 
-	void copy_dim(const std::array<unsigned,Rank>& otherdim,
-	              const std::array<unsigned,Rank>& otherstr) {
+	void copy_dim(const std::array<int,Rank>& otherdim,
+	              const std::array<int,Rank>& otherstr) {
 		dim = otherdim;
 		str.str = otherstr;
 		s = product<Rank>(dim);
@@ -53,29 +53,29 @@ public:
 
 	// computes the offset for a MD index
 	template<typename... indices>
-	constexpr unsigned operator () (indices... idx) const {
+	constexpr int operator () (indices... idx) const {
 		return offset<0>(idx...);
 	}
 
-	constexpr unsigned operator [] (const unsigned i) const {return str.offset(dim,i);}
+	constexpr int operator [] (const int i) const {return str.offset(dim,i);}
 
-	constexpr unsigned size() const {
+	constexpr int size() const {
 		return s;
 	}
 
-	constexpr unsigned size(unsigned D) const {
+	constexpr int size(int D) const {
 		return dim[D-1];
 	}
 
-	constexpr unsigned stride(unsigned D) const {
+	constexpr int stride(int D) const {
 		return str[D-1];
 	}
 
-	const std::array<unsigned,Rank>& get_dim() const {
+	const std::array<int,Rank>& get_dim() const {
 		return dim;
 	}
 
-	const std::array<unsigned,Rank>& get_str() const {
+	const std::array<int,Rank>& get_str() const {
 		return str.str;
 	}
 
@@ -83,8 +83,8 @@ public:
 
 /***************** EQUALITY ********************/
 
-template<unsigned LRank, unsigned LOrder, unsigned LStride,
-         unsigned RRank, unsigned ROrder, unsigned RStride>
+template<int LRank, int LOrder, int LStride,
+         int RRank, int ROrder, int RStride>
 bool operator == (const Dimensions<LRank,LOrder,LStride>& lhs,
                   const Dimensions<RRank,ROrder,RStride>& rhs)
 {

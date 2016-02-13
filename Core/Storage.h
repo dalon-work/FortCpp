@@ -8,7 +8,7 @@ namespace FortCpp
 namespace internal
 {
 
-template<typename T,unsigned StorageType,unsigned Align> class Storage;
+template<typename T,int StorageType,int Align> class Storage;
 
 template<typename T>
 class Storage<T,Pointer,UnAligned>
@@ -18,7 +18,7 @@ private:
 
 	T* _A=nullptr;
 	bool _alloc=0;
-	unsigned _size;
+	int _size;
 
 public:
 	Storage()=default;
@@ -29,13 +29,13 @@ public:
 		deallocate();
 	}
 
-	void allocate(unsigned i) {
+	void allocate(int i) {
 		_alloc = 1;
 		_A = new T[i];
 		_size = i;
 	}
 
-	void map(T* A, unsigned i) {
+	void map(T* A, int i) {
 		_alloc = 0;
 		_A = A;
 		_size = i;
@@ -45,16 +45,16 @@ public:
 	T* data() { return _A; }
 	bool allocated() const { return _alloc; }
 	bool associated() const { return _A; }
-	unsigned size() const { return _size; }
+	int size() const { return _size; }
 
-	const T& operator [] (unsigned i) const {
+	const T& operator [] (int i) const {
 // #ifdef FortCpp_READ_NAN
 //     FortCpp_NAN_CHECK(A[i])
 // #endif
 		return _A[i];
 	}
 
-	T& operator [] (unsigned i) {
+	T& operator [] (int i) {
 // #ifdef FortCpp_WRITE_NAN
 //     FortCpp_NAN_CHECK(A[i])
 // #endif

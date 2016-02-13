@@ -21,7 +21,7 @@ struct SliceBase {
 	SliceBase(int b,int e) : beg(b),end(e),str(1) {}
 	SliceBase(int b,int e,int s) : beg(b),end(e),str(s) {}
 
-	unsigned len(unsigned i) {
+	int len(int i) {
       using namespace std;
 
 		if (beg < 0) {

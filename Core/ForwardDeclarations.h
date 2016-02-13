@@ -12,8 +12,8 @@ enum {
     RowMajor  = 1,
     UnAligned = 0,
     Aligned   = 2,
-    Contig = 0,
-    Strided = 4
+    Contig    = 0,
+    Strided   = 4
 };
 
 
@@ -48,21 +48,14 @@ enum {
 
 template<int Size> class OpSize;
 template<typename Derived> struct traits;
-template<unsigned Rank ,unsigned Order,unsigned Stride> class Dimensions;
-template<typename T,unsigned StorageType, unsigned Align> class Storage;
-
-// template<int _s> class StrideValue;
-// template<int... StridePack> class Strides;
-// template<typename Derived,int Dim, int Order, int Stride,int... StridePack> class Accessor;
-// template<int Type,int Dim=0,int L=Unknown,int S=1> class Slice;
-// template<typename Derived> class SliceBase;
-// template<int Value> class SliceValue;
+template<int Rank ,int Order,int Stride> class Dimensions;
+template<typename T,int StorageType, int Align> class Storage;
 
 }; // end namespace internal
 
-
 template<typename Derived> class ArrayBase;
-template<typename T,unsigned Rank, unsigned Options=0> class Alloc;
+template<typename T,int Rank, int Options=0> class Alloc;
+template<typename T,int... dims> class Fixed;
 template<int Side, typename Derived,typename Op> class ConstantOp;
 template<typename Lhs,typename Rhs,typename Op> class BinaryOp;
 template<typename Rhs,typename Op> class UnaryOp;
