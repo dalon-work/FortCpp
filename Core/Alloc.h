@@ -15,6 +15,7 @@ template<typename _T, int _Rank, int _Options>
 struct traits<Alloc<_T,_Rank,_Options> > {
 	typedef _T Scalar;
 	enum {
+       Rank = _Rank,
 	    StorageType = Pointer,
 	    Order = _Options & MajorOrderBit,
 	    Align  = _Options & AlignedBit,

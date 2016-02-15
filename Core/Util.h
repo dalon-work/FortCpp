@@ -34,6 +34,7 @@ int product(const std::array<int,Rank>& idx)
 	return s;
 }
 
+
 /********** SET_ARRAY **********/
 
 template<int Rank,int D>

@@ -43,7 +43,7 @@ void in_size(int i,int s)
 /******** IN_BOUNDS *******/
 
 template<int D,int Rank>
-void in_bounds(std::array<int,Rank> &dim,int i)
+void in_bounds(const std::array<int,Rank> &dim,int i)
 {
    if( i >= dim[D] ){
       throw BoundsException(i,dim[D],D);
@@ -51,7 +51,7 @@ void in_bounds(std::array<int,Rank> &dim,int i)
 }
 
 template<int D,int Rank,typename... indices>
-void in_bounds(std::array<int,Rank> &dim,int i,indices... idx)
+void in_bounds(const std::array<int,Rank> &dim,int i,indices... idx)
 {
    if( i >= dim[D] ){
       throw BoundsException(i,dim[D],D);
@@ -67,6 +67,13 @@ void in_rank(int i)
    }
 }
 
+template<int r,int Rank>
+void in_rank()
+{
+   static_assert(r > 0,"Invalid dimension in size request");
+   static_assert(r <= Rank,"Invalid dimension in size request");
+}
+
 /******* COMPARE_DIMS ***************/
 
 template<std::size_t Rank>
@@ -77,6 +84,12 @@ void compare_dims(const std::array<int,Rank>& lhs,
          throw DimException(lhs[r],rhs[r],r);
       }
    }
+}
+
+template<typename Lhs,typename T,int... dims>
+void compare_dims(const Lhs& lhs, const Fixed<T,dims...>& rhs)
+{
+	compare_dims<internal::traits<Lhs>::Rank>(lhs.get_dim(),rhs.get_dim());
 }
 
 template<typename Lhs,typename T,int Rank,int Options>

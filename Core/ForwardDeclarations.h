@@ -42,13 +42,13 @@ enum {
 template<int Size> class OpSize;
 template<typename Derived> struct traits;
 template<int Rank ,int Order,int Stride> class Dimensions;
-template<typename T,int StorageType, int Align> class Storage;
+template<typename T,int StorageType,int Align,int... dims> class Storage;
 
 }; // end namespace internal
 
 template<typename Derived> class ArrayBase;
 template<typename T,int Rank, int Options=0> class Alloc;
-template<typename T,typename... dims> class Fixed;
+template<typename T,int... dims> class Fixed;
 template<int Side, typename Derived,typename Op> class ConstantOp;
 template<typename Lhs,typename Rhs,typename Op> class BinaryOp;
 template<typename Rhs,typename Op> class UnaryOp;

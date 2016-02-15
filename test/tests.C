@@ -545,6 +545,48 @@ TEST_CASE("Alloc Exceptions","[Alloc][Exception]"){
 }
 #endif
 
+TEST_CASE("Fixed","[Fixed]"){
+   Fixed<int,3> a,b,c;
+
+   REQUIRE( a.size<1>() == 3 );
+   REQUIRE( a.size() == 3 );
+
+   a = 1;
+   b = 2;
+   c = a+b;
+
+   for(int i=0;i<3;i++){
+      REQUIRE( c[i] == 3 );
+   }
+
+   for(int i=0;i<3; i++)
+   {
+      a[i] = i;
+      REQUIRE( a(i) == i );
+   }
+
+   SECTION("MULTI-D"){
+      Fixed<int,10,10,10,10> d;
+
+      int m=0;
+      for(int l=0;l<d.size<4>();l++){
+         for(int k=0;k<d.size<3>();k++){
+            for(int j=0;j<d.size<2>();j++){
+               for(int i=0;i<d.size<1>();i++){
+                  d(i,j,k,l) = m++;
+               }
+            }
+         }
+      }
+
+      for(int i=0;i<d.size();i++){
+         REQUIRE( d[i] == i );
+      }
+   }
+
+
+
+}
 
 
 

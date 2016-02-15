@@ -1,79 +1,55 @@
 #ifndef FortCpp_FIXED_H
 #define FortCpp_FIXED_H
 
+#include "FixedUtil.h"
+
 namespace FortCpp
 {
-
-template<int _Options>
-struct FixedOptions{
-	enum {
-	    StorageType = _Options & internal::StorageBit,
-	    Order       = _Options & internal::MajorOrderBit,
-	    Align       = _Options & internal::AlignedBit,
-	    Stride      =  Contig,
-	    Options     = _Options
-	};
-
-};
 
 namespace internal
 {
 
 
-template<typename... dims> struct fixed_traits;
-
-template<int Options>
-struct fixed_traits<FixedOptions<Options> > : FixedOptions<Options> {};
-
-template<>
-struct fixed_traits<int D,int last> {
-   static const int dim = last;
-   enum {
-	    StorageType = Static,
-	    Order = ColMajor,
-	    Align  = UnAligned,
-	    Stride = Contig,
-	    Options = 0
-   };
-};
-
-template<typename... dims>
-struct fixed_traits<int D,int i,dims...> : fixed_traits<D+1,dims...> 
+/*** TRAITS ***/
+template<typename _T,int... _dims>
+struct traits<Fixed<_T,_dims...> > 
 {
-   static const int dim = i;
-};
-
-template<typename _T,typename... _dims>
-struct traits<Fixed<_T,_dims...> > : fixed_traits<1,_dims...> {
 	typedef _T Scalar;
+   enum{
+      Rank = sizeof...(_dims),
+      Order = ColMajor,
+      Stride = Contig,
+      StorageType = Static,
+      Align = UnAligned
+   };
 }; // end struct traits
 
 
 }; // end namespace internal
 
-template<typename T,typename... dims>
+template<typename T,int... dims>
 class Fixed : public ArrayBase<Fixed<T,dims...> >
 {
 
 	typedef class Fixed<T,dims...> Derived;
 	typedef ArrayBase<Derived> Base;
-   static const int Rank = internal::count_dims<dims...>::count;
+   static const int Rank = sizeof...(dims);
 	static const int Order = internal::traits<Derived>::Order;
 	static const int Stride = internal::traits<Derived>::Stride;
    static const int StorageType = internal::traits<Derived>::StorageType;
    static const int Align = internal::traits<Derived>::Align;
 
-private:
-   internal::Storage<T,StorageType,Align> _storage;
+// private:
+   internal::Storage<T,StorageType,Align,dims...> _storage;
+#ifndef NDEBUG
+   const std::array<int,Rank> _dim = {{dims...}};
+#endif
+
 public:
 	Fixed()                =default;
 	Fixed(const Derived& B)=default;
 	Fixed(Derived&& B)     =default;
-
-	~Fixed() 
-   {
-		deallocate();
-	}
+   ~Fixed()               =default;
 
 	const T& operator = (const T& B) 
    {
@@ -93,91 +69,59 @@ public:
 		return Base::operator = (B);
 	}
 
-	/************************************************/
-
-	// template<typename... indices>
-	// void map(T* a, indices... idx)
-   // {
-	// 	static_assert(Align == UnAligned,
-   //          "CANNOT MAP ONTO AN ALIGNED ARRAY");
-	// 	static_assert(sizeof...(idx) == Rank, 
-   //          "NUMBER OF INDICES PASSED TO MAP DOES NOT MATCH RANK OF ARRAY");
-   //    static_assert(Stride == Contig,
-   //          "CANNOT MAP A STRIDED ARRAY");
-   //    internal::set_array<Rank,0>(_dim,static_cast<int>(idx)...);
-   //    for(int i=0;i<Rank;i++) { _str[i] = 1; }
-   //    internal::compute_strides<Order,Rank>::exec(_str,_dim);
-	// 	_storage.map(a,internal::product(static_cast<int>(idx)...));
-	// }
-
 	/***************************************/
 
-   // int offset(const std::array<int,Rank>& idx) const {
-   //    int s = 0;
-   //    for(int r=0;r<Rank;r++){
-   //       s += idx[r]*_str[r];
-   //    }
-   //    return s;
-   // }
+	template<typename... indices>
+	const T& operator () (indices... idx) const {
+#ifndef NDEBUG
+      internal::debug::is_negative<0>(idx...);
+      internal::debug::in_bounds<0,Rank>(_dim,idx...);
+#endif
 
-	/***************************************/
+		return _storage[
+         internal::fixed_compute_offset<1,dims...>(idx...)
+         ];
+	}
 
-// 	template<typename... indices>
-// 	const T& operator () (indices... idx) const {
-// #ifndef NDEBUG
-//       internal::debug::is_negative<0>(idx...);
-//       internal::debug::in_bounds<0,Rank>(_dim,idx...);
-// #endif
-//
-// 		return _storage[
-//          internal::offset<Rank,0>(_str,static_cast<int>(idx)...)
-//          ];
-// 	}
-
-// 	template<typename... indices>
-// 	T& operator () (indices... idx) {
-// #ifndef NDEBUG
-//       internal::debug::is_negative<0>(idx...);
-//       internal::debug::in_bounds<0,Rank>(_dim,idx...);
-// #endif
-// 		return _storage[
-//          internal::offset<Rank,0>(_str,static_cast<int>(idx)...)
-//          ];
-// 	}
+	template<typename... indices>
+	T& operator () (indices... idx) {
+#ifndef NDEBUG
+      internal::debug::is_negative<0>(idx...);
+      internal::debug::in_bounds<0,Rank>(_dim,idx...);
+#endif
+		return _storage[
+         internal::fixed_compute_offset<1,dims...>(idx...)
+         ];
+	}
 
 	/*************************************************/
 
-// 	const T& operator [] (int i) const {
-// #ifndef NDEBUG
-//       internal::debug::in_size(i,size());
-// #endif
-// 		return _storage[
-//          internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)
-//          ];
-// 	}
-// 	T& operator [] (int i) {
-// #ifndef NDEBUG
-//       internal::debug::in_size(i,size());
-// #endif
-// 		return _storage[
-//          internal::linear_index<Order,Stride,Rank>::exec(_dim,_str,i)
-//          ];
-// 	}
+	const T& operator [] (int i) const {
+#ifndef NDEBUG
+      internal::debug::in_size(i,size());
+#endif
+		return _storage[i];
+	}
+	T& operator [] (int i) {
+#ifndef NDEBUG
+      internal::debug::in_size(i,size());
+#endif
+		return _storage[i];
+	}
 
 	/***********************************************/
 
-// 	int size()                              const { return _storage.size();       }
-// 	int size  (int r)                  const { 
-// #ifndef NDEBUG
-//       internal::debug::in_rank<Rank>(r);
-// #endif
-//       return _dim[r-1];             }
-// 	int stride(int r)                  const {
-// #ifndef NDEBUG
-//       internal::debug::in_rank<Rank>(r);
-// #endif
-//       return _str[r-1];             }
-// 	const std::array<int,Rank>& get_dim()   const { return _dim;                  }
+	unsigned size()                              const { return _storage.size(); }
+   template<int r>
+	int size  ()                  const { 
+#ifndef NDEBUG
+      internal::debug::in_rank<r,Rank>();
+#endif
+      return internal::fixed_get_dim<1,r,dims...>::value;      
+   }
+#ifndef NDEBUG
+	const std::array<int,Rank>& get_dim()   const { return _dim;                  }
+#endif
 // 	const std::array<int,Rank>& get_str()   const { return _str;                  }
 // 	bool allocated ()                            const { return _storage.allocated();  }
 // 	bool associated()                            const { return _storage.associated(); }

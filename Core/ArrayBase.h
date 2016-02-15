@@ -10,6 +10,7 @@
 #endif
 
 #include "Util.h"
+#include "FixedUtil.h"
 #include "Storage.h"
 #include "BinaryOp.h"
 #include "ConstantOp.h"
