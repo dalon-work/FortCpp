@@ -17,7 +17,7 @@ private:
 
 	T* _A=nullptr;
 	bool _alloc=0;
-	int _size;
+	int _size=0;
 
 public:
 	Storage()=default;
@@ -38,8 +38,22 @@ public:
 		_alloc = 0;
 		_A = A;
 		_size = i;
-
 	}
+
+   void swap(Derived& B)
+   {
+      T*   p =   _A;
+      int  s = _size;
+      bool a = _alloc;
+
+      _A     = B._A;
+      _size  = B._size;
+      _alloc = B._alloc;
+
+      B._A     = p;
+      B._size  = s;
+      B._alloc = a;
+   }
 
 	T* data() { return _A; }
 	bool allocated() const { return _alloc; }

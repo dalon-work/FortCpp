@@ -52,6 +52,31 @@ void set_array(std::array<int,Rank>& A,int i,indices... idx)
 
 /******* OFFSET *******/
 
+template<int Rank,int D>
+unsigned strided_offset(const std::array<int,Rank>& str, int i)
+{
+   return i*str[D];
+}
+
+template<int Rank,int D,typename... indices>
+unsigned strided_offset(const std::array<int,Rank>& str,int i,indices... idx)
+{
+   return i*str[D]+strided_offset<Rank,D+1>(str,idx...);
+}
+
+template<int Rank,int D>
+unsigned row_contig_offset(const std::array<int,Rank>& str, int i)
+{
+   return i;
+}
+
+template<int Rank,int D,typename... indices>
+unsigned row_contig_offset(const std::array<int,Rank>& str,int i,indices... idx)
+{
+   return i*str[D]+strided_offset<Rank,D+1>(str,idx...);
+}
+
+
 template<int Order,int Stride,int Rank> struct offset;
 
 template<>
@@ -121,7 +146,7 @@ struct offset<RowMajor,Contig,Rank>
 {
    template<typename... indices>
    static unsigned
-   exec(const std::array<int,Rank>& str,int i,indices... idx)
+   exec(const std::array<int,Rank>& str,indices... idx)
    {
       return row_contig_offset<Rank,0>(str,idx...);
    }

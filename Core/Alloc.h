@@ -41,13 +41,21 @@ class Alloc : public ArrayBase<Alloc<T,Rank,Options> >
 
 private:
    internal::Storage<T,StorageType,Align> _storage;
-	std::array<int,Rank> _dim;
-	std::array<int,Rank> _str;
+	std::array<int,Rank> _dim = {{0}};
+	std::array<int,Rank> _str = {{0}};
 
 public:
 	Alloc()                =default;
-	Alloc(const Derived& B)=default;
-	Alloc(Derived&& B)     =default;
+	Alloc(const Derived& B) : Alloc()
+   {
+      (*this).mold(B);
+      *this = B;
+   }
+
+	Alloc(Derived&& B) : Alloc()
+   {
+      swap(B);
+   }
 
 	~Alloc() 
    {
@@ -66,6 +74,20 @@ public:
    {
 		allocate(idx...);
 	}
+
+   void swap(Derived& B)
+   {
+      std::array<int,Rank> d = _dim;
+      std::array<int,Rank> s = _str;
+
+      _dim = B._dim;
+      _str = B._str;
+      
+      B._dim = d;
+      B._str = s;
+
+      _storage.swap(B._storage);
+   }
 
 	/***********************************************/
 
@@ -86,6 +108,12 @@ public:
    {
 		return Base::operator = (B);
 	}
+
+   const Derived& operator = (Derived&& B)
+   {
+		return Base::operator = (B);
+   }
+
 
 	/************************************************/
 
@@ -131,7 +159,7 @@ public:
       static_assert(Stride == Contig,
             "CANNOT MOLD A STRIDED ARRAY");
 		deallocate();
-      allocate(B.get_dim());
+      allocate(B.derived().get_dim());
 	}
 	/***************************************/
 

@@ -1,6 +1,8 @@
 #ifndef FortCpp_ARRAYBASE_H
 #define FortCpp_ARRAYBASE_H
 
+#include <array>
+
 #include "Macros.h"
 #include "ForwardDeclarations.h"
 
@@ -59,6 +61,17 @@ public:
 	}
 
 	inline Derived& operator = (const ArrayBase<Derived>& B) {
+#ifndef NDEBUG
+      internal::debug::compare_dims(derived(),B.derived());
+#endif
+#pragma GCC ivdep
+		for (int i=0; i<this->size(); i++) {
+			derived()[i] = B.derived()[i];
+		}
+		return derived();
+	}
+
+	inline Derived& operator = (ArrayBase<Derived>&& B) {
 #ifndef NDEBUG
       internal::debug::compare_dims(derived(),B.derived());
 #endif
