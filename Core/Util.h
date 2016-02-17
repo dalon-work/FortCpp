@@ -52,17 +52,80 @@ void set_array(std::array<int,Rank>& A,int i,indices... idx)
 
 /******* OFFSET *******/
 
-template<int Rank,int D>
-int offset(const std::array<int,Rank>& str,int i)
-{
-	return  i*str[D];
-}
+template<int Order,int Stride,int Rank> struct offset;
 
-template<int Rank,int D,typename... indices>
-int offset(const std::array<int,Rank>& str,int i,indices... idx)
+template<>
+struct offset<ColMajor,Contig,1>
 {
-	return i*str[D]+offset<Rank,D+1>(str,idx...);
-}
+   static unsigned
+   exec(const std::array<int,1>& str,int i)
+   {
+      return i;
+   }
+};
+
+template<>
+struct offset<RowMajor,Contig,1>
+{
+   static unsigned
+   exec(const std::array<int,1>& str,int i)
+   {
+      return i;
+   }
+};
+
+template<>
+struct offset<ColMajor,Strided,1>
+{
+   static unsigned
+   exec(const std::array<int,1>& str,int i)
+   {
+      return i*str[0];
+   }
+};
+
+template<>
+struct offset<RowMajor,Strided,1>
+{
+   static unsigned
+   exec(const std::array<int,1>& str,int i)
+   {
+      return i*str[0];
+   }
+};
+
+template<int Order,int Rank>
+struct offset<Order,Strided,Rank>
+{
+   template<typename... indices>
+   static unsigned
+   exec(const std::array<int,Rank>& str,indices... idx)
+   {
+      return strided_offset<Rank,0>(str,idx...);
+   }
+};
+
+template<int Rank>
+struct offset<ColMajor,Contig,Rank>
+{
+   template<typename... indices>
+   static unsigned
+   exec(const std::array<int,Rank>& str,int i,indices... idx)
+   {
+      return i+strided_offset<Rank,1>(str,idx...);
+   }
+};
+
+template<int Rank>
+struct offset<RowMajor,Contig,Rank>
+{
+   template<typename... indices>
+   static unsigned
+   exec(const std::array<int,Rank>& str,int i,indices... idx)
+   {
+      return row_contig_offset<Rank,0>(str,idx...);
+   }
+};
 
 
 /*********** COMPUTE_STRIDES **********/

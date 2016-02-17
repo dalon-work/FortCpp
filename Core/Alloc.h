@@ -153,7 +153,7 @@ public:
 #endif
 
 		return _storage[
-         internal::offset<Rank,0>(_str,static_cast<int>(idx)...)
+         internal::offset<Order,Stride,Rank>::exec(_str,idx...)
          ];
 	}
 
@@ -164,7 +164,7 @@ public:
       internal::debug::in_bounds<0,Rank>(_dim,idx...);
 #endif
 		return _storage[
-         internal::offset<Rank,0>(_str,static_cast<int>(idx)...)
+         internal::offset<Order,Stride,Rank>::exec(_str,idx...)
          ];
 	}
 
