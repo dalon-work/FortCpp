@@ -75,6 +75,11 @@ public:
 		allocate(idx...);
 	}
 
+   void swap(Derived&& B)
+   {
+      swap(B);
+   }
+
    void swap(Derived& B)
    {
       std::array<int,Rank> d = _dim;

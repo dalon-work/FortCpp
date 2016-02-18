@@ -67,6 +67,8 @@ int main()
 
    a = return_by_value(); // move + assignment -- move elided, assignment NOT elided
 
+   a.swap(return_by_value()); // move -- elided
+
    FC::Alloc<int,2> b = return_by_value(); // move -- elided
 
    auto s = FC::Slice();
