@@ -34,15 +34,13 @@ namespace internal
 template<int D,int r,int d,int... dims> struct fixed_get_dim;
 
 template<int D,int d,int... dims>
-struct fixed_get_dim<D,D,d,dims...>
-{
-   static const int value = d;
+struct fixed_get_dim<D,D,d,dims...> {
+	static const int value = d;
 };
 
-template<int D,int r,int d,int... dims> 
-struct fixed_get_dim
-{
-   static const int value = fixed_get_dim<D+1,r,dims...>::value;
+template<int D,int r,int d,int... dims>
+struct fixed_get_dim {
+	static const int value = fixed_get_dim<D+1,r,dims...>::value;
 };
 
 /***** FIXED_COMPUTE_OFFSET ******/
@@ -50,13 +48,13 @@ struct fixed_get_dim
 template<int S,int d>
 unsigned fixed_compute_offset(int i)
 {
-   return i*S;
+	return i*S;
 }
 
 template<int S,int d,int... dims,typename... indices>
 unsigned fixed_compute_offset(int i,indices... idx)
 {
-   return i*S+fixed_compute_offset<S*d,dims...>(idx...);
+	return i*S+fixed_compute_offset<S* d,dims...>(idx...);
 }
 
 // template<int S,int... dims> struct fixed_compute_offset;
@@ -85,15 +83,13 @@ unsigned fixed_compute_offset(int i,indices... idx)
 template<int... dim> struct fixed_product;
 
 template<int d>
-struct fixed_product<d>
-{
-   static const unsigned value = d;
+struct fixed_product<d> {
+	static const unsigned value = d;
 };
 
 template<int d,int... dim>
-struct fixed_product<d,dim...>
-{
-   static const unsigned value = d*fixed_product<dim...>::value;
+struct fixed_product<d,dim...> {
+	static const unsigned value = d* fixed_product<dim...>::value;
 };
 
 

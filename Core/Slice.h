@@ -22,7 +22,7 @@ struct SliceBase {
 	SliceBase(int b,int e,int s) : beg(b),end(e),str(s) {}
 
 	int len(int i) {
-      using namespace std;
+		using namespace std;
 
 		if (beg < 0) {
 			beg = i+beg;
@@ -52,40 +52,37 @@ struct SliceBase {
 	}
 };
 
-struct FullSlice : public SliceBase
-{
-   FullSlice() : SliceBase() {};
+struct FullSlice : public SliceBase {
+	FullSlice() : SliceBase() {};
 };
 
-struct ContigSlice : public SliceBase
-{
-   ContigSlice(int b) : SliceBase(b) {};
-   ContigSlice(int b,int e) : SliceBase(b,e) {};
+struct ContigSlice : public SliceBase {
+	ContigSlice(int b) : SliceBase(b) {};
+	ContigSlice(int b,int e) : SliceBase(b,e) {};
 };
 
-struct StridedSlice : public SliceBase
-{
-   StridedSlice(int b,int e,int s) : SliceBase(b,e,s) {};
+struct StridedSlice : public SliceBase {
+	StridedSlice(int b,int e,int s) : SliceBase(b,e,s) {};
 };
 
 FullSlice Slice()
 {
-   return FullSlice();
+	return FullSlice();
 }
 
 ContigSlice Slice(int b)
 {
-   return ContigSlice(b);
+	return ContigSlice(b);
 }
 
 ContigSlice Slice(int b,int e)
 {
-   return ContigSlice(b,e);
+	return ContigSlice(b,e);
 }
 
 StridedSlice Slice(int b,int e,int s)
 {
-   return StridedSlice(b,e,s);
+	return StridedSlice(b,e,s);
 }
 
 }; // end namespace FortCpp

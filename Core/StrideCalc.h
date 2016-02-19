@@ -23,127 +23,114 @@ template<typename front,typename... indices> struct count_slice;
 
 template<typename tail>
 struct count_slice<tail> {
-   static const int count = is_slice<tail>::value;
+	static const int count = is_slice<tail>::value;
 };
 
 template<typename head,typename... indices>
 struct count_slice {
-   static const int 
-      count = is_slice<head>::value + count_slice<indices...>::count;
+	static const int
+	count = is_slice<head>::value + count_slice<indices...>::count;
 };
 
 /*** Determines if a slice is contiguous or not ***/
 template<int Order,int Stride,typename... indices> struct contig_view;
 template<int Order,bool Full,typename... indices> struct contig_view_cont;
 
-template<int Order,typename... indices> 
-struct contig_view<Order,Strided,indices...>
-{
-   static const int
-      stride = Strided;
+template<int Order,typename... indices>
+struct contig_view<Order,Strided,indices...> {
+	static const int
+	stride = Strided;
 };
 
 /******* COLUMN MAJOR *********/
 
 template<typename head>
-struct contig_view<ColMajor,Contig,head>
-{
-   static const int 
-      stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
+struct contig_view<ColMajor,Contig,head> {
+	static const int
+	stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
 };
 
 template<typename head,typename... indices>
-struct contig_view<ColMajor,Contig,head,indices...>
-{
-      static const int 
-         stride = std::is_same<head,FullSlice>::value ?
-                  contig_view_cont<ColMajor,1,indices...>::stride : Strided;
+struct contig_view<ColMajor,Contig,head,indices...> {
+	static const int
+	stride = std::is_same<head,FullSlice>::value ?
+	         contig_view_cont<ColMajor,1,indices...>::stride : Strided;
 };
 
 template<typename head>
-struct contig_view_cont<ColMajor,1,head>
-{
-      static const int 
-         stride = std::is_same<head,FullSlice>::value ? Contig : 
-                  is_slice<head>::value ? Strided : Contig;
+struct contig_view_cont<ColMajor,1,head> {
+	static const int
+	stride = std::is_same<head,FullSlice>::value ? Contig :
+	         is_slice<head>::value ? Strided : Contig;
 };
 
 template<typename head,typename... indices>
-struct contig_view_cont<ColMajor,1,head,indices...>
-{
-   static const int
-      stride = std::is_same<head,FullSlice>::value ?
-         contig_view_cont<ColMajor,1,indices...>::stride :
-         is_slice<head>::value ? Strided :
-         contig_view_cont<ColMajor,0,indices...>::stride;
+struct contig_view_cont<ColMajor,1,head,indices...> {
+	static const int
+	stride = std::is_same<head,FullSlice>::value ?
+	         contig_view_cont<ColMajor,1,indices...>::stride :
+	         is_slice<head>::value ? Strided :
+	         contig_view_cont<ColMajor,0,indices...>::stride;
 };
 
 template<typename head>
-struct contig_view_cont<ColMajor,0,head>
-{
-   static const int
-      stride = is_slice<head>::value ? Strided : Contig;
+struct contig_view_cont<ColMajor,0,head> {
+	static const int
+	stride = is_slice<head>::value ? Strided : Contig;
 };
 
 template<typename head,typename... indices>
-struct contig_view_cont<ColMajor,0,head,indices...>
-{
-   static const int
-      stride = is_slice<head>::value ? Strided : 
-         contig_view_cont<ColMajor,0,indices...>::stride;
+struct contig_view_cont<ColMajor,0,head,indices...> {
+	static const int
+	stride = is_slice<head>::value ? Strided :
+	         contig_view_cont<ColMajor,0,indices...>::stride;
 };
 
 /******* ROW MAJOR *********/
 
 template<typename head>
-struct contig_view<RowMajor,Contig,head>
-{
-   static const int 
-      stride = is_slice<head>::value ? Contig : Strided;
+struct contig_view<RowMajor,Contig,head> {
+	static const int
+	stride = is_slice<head>::value ? Contig : Strided;
 };
 
 template<typename head,typename... indices>
-struct contig_view<RowMajor,Contig,head,indices...>
-{
-      static const int 
-         stride = !is_slice<head>::value ? 
-                     contig_view_cont<RowMajor,0,indices...>::stride :
-                        std::is_same<head,FullSlice>::value ?
-                           contig_view_cont<RowMajor,1,indices...>::stride :
-                              Strided;
+struct contig_view<RowMajor,Contig,head,indices...> {
+	static const int
+	stride = !is_slice<head>::value ?
+	         contig_view_cont<RowMajor,0,indices...>::stride :
+	         std::is_same<head,FullSlice>::value ?
+	         contig_view_cont<RowMajor,1,indices...>::stride :
+	         Strided;
 };
 
 template<typename head>
-struct contig_view_cont<RowMajor,1,head>
-{
-      static const int 
-         stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
+struct contig_view_cont<RowMajor,1,head> {
+	static const int
+	stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
 };
 
 template<typename head,typename... indices>
-struct contig_view_cont<RowMajor,1,head,indices...>
-{
-   static const int
-      stride = std::is_same<head,FullSlice>::value ?
-         contig_view_cont<RowMajor,1,indices...>::stride :
-            Strided;
+struct contig_view_cont<RowMajor,1,head,indices...> {
+	static const int
+	stride = std::is_same<head,FullSlice>::value ?
+	         contig_view_cont<RowMajor,1,indices...>::stride :
+	         Strided;
 };
 
 template<typename head>
-struct contig_view_cont<RowMajor,0,head>
-{
-   static const int
-      stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
+struct contig_view_cont<RowMajor,0,head> {
+	static const int
+	stride = std::is_same<head,FullSlice>::value ? Contig : Strided;
 };
 
 template<typename head,typename... indices>
-struct contig_view_cont<RowMajor,0,head,indices...>
-{
-   static const int
-      stride = std::is_same<head,FullSlice>::value ?
-         contig_view_cont<RowMajor,1,indices...>::stride :
-            is_slice<head>::value ?  Strided :
-               contig_view_cont<RowMajor,0,indices...>::stride;
+struct contig_view_cont<RowMajor,0,head,indices...> {
+	static const int
+	stride = std::is_same<head,FullSlice>::value ?
+	         contig_view_cont<RowMajor,1,indices...>::stride :
+	         is_slice<head>::value ?  Strided :
+	         contig_view_cont<RowMajor,0,indices...>::stride;
 };
 
 /***** SET_LEN ********/
@@ -155,58 +142,58 @@ struct contig_view_cont<RowMajor,0,head,indices...>
 //       indices... idx);
 template<int Rank,int nRank,int D,int nD,typename... indices>
 void set_len(const std::array<int,Rank>& dim,
-      std::array<int,nRank>& len,
-      SliceBase& i,
-      indices&... idx);
+             std::array<int,nRank>& len,
+             SliceBase& i,
+             indices& ... idx);
 
 template<int Rank,int nRank,int D,int nD>
 void set_len(const std::array<int,Rank>& dim,
-      const std::array<int,nRank>& len)
+             const std::array<int,nRank>& len)
 {
 }
 
 template<int Rank,int nRank,int D,int nD,typename... indices>
 void set_len(const std::array<int,Rank>& dim,
-      std::array<int,nRank>& len,
-      int& i,
-      indices&... idx)
+             std::array<int,nRank>& len,
+             int& i,
+             indices& ... idx)
 {
-   set_len<Rank,nRank,D+1,nD>(dim,len,idx...);
+	set_len<Rank,nRank,D+1,nD>(dim,len,idx...);
 }
 
 template<int Rank,int nRank,int D,int nD,typename... indices>
 void set_len(const std::array<int,Rank>& dim,
-      std::array<int,nRank>& len,
-      SliceBase& i,
-      indices&... idx)
+             std::array<int,nRank>& len,
+             SliceBase& i,
+             indices& ... idx)
 {
-   len[nD] = i.len(dim[D]);
-   set_len<Rank,nRank,D+1,nD+1>(dim,len,idx...);
+	len[nD] = i.len(dim[D]);
+	set_len<Rank,nRank,D+1,nD+1>(dim,len,idx...);
 }
 
 /***** SET_BEG *******/
 
-int get_beg(const int& i) 
+int get_beg(const int& i)
 {
-   return static_cast<int>(i);
+	return static_cast<int>(i);
 }
 
 int get_beg(const SliceBase& i)
 {
-   return static_cast<int>(i.beg);
+	return static_cast<int>(i.beg);
 }
 
 template<int Rank,int D,typename tail>
 void set_beg(std::array<int,Rank>& beg,tail& i)
 {
-   beg[D] = get_beg(i);
+	beg[D] = get_beg(i);
 }
 
 template<int Rank,int D,typename head, typename... indices>
-void set_beg(std::array<int,Rank>& beg,head& i,const indices&... idx)
+void set_beg(std::array<int,Rank>& beg,head& i,const indices& ... idx)
 {
-   beg[D] = get_beg(i);
-   set_beg<Rank,D+1>(beg,idx...);
+	beg[D] = get_beg(i);
+	set_beg<Rank,D+1>(beg,idx...);
 }
 
 /******* SET_STR *************/
@@ -218,34 +205,34 @@ void set_beg(std::array<int,Rank>& beg,head& i,const indices&... idx)
 //       indices... idx);
 template<int Rank,int nRank,int D,int nD,typename... indices>
 void set_str(const std::array<int,Rank>& str,
-      std::array<int,nRank>& nstr,
-      SliceBase& i,
-      indices... idx);
+             std::array<int,nRank>& nstr,
+             SliceBase& i,
+             indices... idx);
 
 
 template<int Rank,int nRank,int D,int nD>
 void set_str(const std::array<int,Rank>& str,
-      std::array<int,nRank>& nstr)
+             std::array<int,nRank>& nstr)
 {
 }
 
 template<int Rank,int nRank,int D,int nD,typename... indices>
 void set_str(const std::array<int,Rank>& str,
-      std::array<int,nRank>& nstr,
-      int& i,
-      indices... idx)
+             std::array<int,nRank>& nstr,
+             int& i,
+             indices... idx)
 {
-   set_str<Rank,nRank,D+1,nD>(str,nstr,idx...);
+	set_str<Rank,nRank,D+1,nD>(str,nstr,idx...);
 }
 
 template<int Rank,int nRank,int D,int nD,typename... indices>
 void set_str(const std::array<int,Rank>& str,
-      std::array<int,nRank>& nstr,
-      SliceBase& i,
-      indices... idx)
+             std::array<int,nRank>& nstr,
+             SliceBase& i,
+             indices... idx)
 {
-   nstr[nD] = i.str*str[D];
-   set_str<Rank,nRank,D+1,nD+1>(str,nstr,idx...);
+	nstr[nD] = i.str*str[D];
+	set_str<Rank,nRank,D+1,nD+1>(str,nstr,idx...);
 }
 
 

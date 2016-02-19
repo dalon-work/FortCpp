@@ -40,20 +40,19 @@ public:
 		_size = i;
 	}
 
-   void swap(Derived& B)
-   {
-      T*   p =   _A;
-      int  s = _size;
-      bool a = _alloc;
+	void swap(Derived& B) {
+		T*   p =   _A;
+		int  s = _size;
+		bool a = _alloc;
 
-      _A     = B._A;
-      _size  = B._size;
-      _alloc = B._alloc;
+		_A     = B._A;
+		_size  = B._size;
+		_alloc = B._alloc;
 
-      B._A     = p;
-      B._size  = s;
-      B._alloc = a;
-   }
+		B._A     = p;
+		B._size  = s;
+		B._alloc = a;
+	}
 
 	T* data() { return _A; }
 	bool allocated() const { return _alloc; }
@@ -97,13 +96,13 @@ private:
 	static const unsigned _size = internal::fixed_product<dims...>::value;
 	static const bool _alloc=1;
 
-   std::array<T,_size> _A;
+	std::array<T,_size> _A;
 
 public:
 	Storage()                 = default;
 	Storage(const Derived& B) = default;
 	Storage(Derived&& B)      = default;
-   ~Storage()                = default;
+	~Storage()                = default;
 
 
 	T* data() { return _A.data(); }
