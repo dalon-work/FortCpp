@@ -11,8 +11,12 @@ namespace FortCpp
 class ArrayException : public std::exception
 {
 public:
+	std::string _msg;
 	ArrayException() {};
-	virtual const char* what() const throw()=0;
+	ArrayException(std::string msg) : _msg(msg) {} ;
+	virtual const char* what() const throw() {
+		return _msg.c_str();
+	}
 
 };
 

@@ -115,13 +115,19 @@ public:
 	void allocate(indices... idx) {
 		static_assert(sizeof...(idx) == Rank,
 		              "NUMBER OF INDICES PASSED TO ALLOCATE DOES NOT MATCH RANK OF ARRAY");
-		internal::set_array<Rank,0>(_dim,static_cast<int>(idx)...);
+		internal::set_array<Rank,0>(_dim,idx...);
+#ifndef NDEBUG
+		internal::debug::is_allocated(allocated());
+#endif
 		for (int i=0; i<Rank; i++) { _str[i] = 1; }
 		internal::compute_strides<Order,Rank>::exec(_str,_dim);
-		_storage.allocate(internal::product(static_cast<int>(idx)...));
+		_storage.allocate(internal::product(idx...));
 	}
 
 	void allocate(const std::array<int,Rank>& new_dim) {
+#ifndef NDEBUG
+		internal::debug::is_allocated(allocated());
+#endif
 		_dim = new_dim;
 		for (int i=0; i<Rank; i++) { _str[i] = 1; }
 		internal::compute_strides<Order,Rank>::exec(_str,_dim);
@@ -256,34 +262,31 @@ public:
 
 	}
 
-	template<typename... indices>
-	Alloc<T,Rank-sizeof...(indices),Order | UnAligned | Contig>
-	reduce(indices... idx) {
-		static const int newRank = Rank-sizeof...(indices);
+	 void mapView(T* p,
+	              const std::array<int,Rank>& dim,
+	              const std::array<int     ,Rank>& str) {
+	     _storage.map(p,internal::product<Rank>(dim));
+	     _dim = dim;
+	     _str = str;
+	 }
 
 
-		void mapView(T* p,
-		             const std::array<int,Rank>& dim,
-		             const std::array<int     ,Rank>& str) {
-			_storage.map(p,internal::product<Rank>(dim));
-			_dim = dim;
-			_str = str;
-		}
-
-
-
-
-
+	// template<typename... indices>
+	// Alloc<T,Rank-sizeof...(indices),Order | UnAligned | Contig>
+	// reduce(indices... idx) {
+	//  static const int newRank = Rank-sizeof...(indices);
+	//
+	//
 
 
 
 
 
 
-		/*******************************************************/
+	/*******************************************************/
 
 
-	};
+};
 
 }; // end namespace FortCpp
 
