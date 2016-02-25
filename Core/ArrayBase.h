@@ -119,14 +119,17 @@ public:
 
 	/************************************************/
 
+   FortCpp_BASE_BINARY_OP(AddBinOp,+)
+   FortCpp_BASE_BINARY_OP(SubBinOp,-)
+   FortCpp_BASE_BINARY_OP(MulBinOp,*)
+   FortCpp_BASE_BINARY_OP(DivBinOp,/)
+   FortCpp_BASE_BINARY_OP(LesBinOp,<)
+   FortCpp_BASE_BINARY_OP(GreBinOp,>)
+   FortCpp_BASE_BINARY_OP(LEqBinOp,<=)
+   FortCpp_BASE_BINARY_OP(GEqBinOp,>=)
+   FortCpp_BASE_BINARY_OP(EquBinOp,==)
+   FortCpp_BASE_BINARY_OP(NEqBinOp,!=)
 
-	FortCpp_BINARY_OP(AddBinOp,+)
-	FortCpp_BINARY_OP(SubBinOp,-)
-	FortCpp_BINARY_OP(MulBinOp,*)
-	FortCpp_BINARY_OP(DivBinOp,/)
-
-	FortCpp_BINARY_OP(EqBinOp,==)
-	FortCpp_BINARY_OP(NotEqBinOp,!=)
 
 	FortCpp_UNARY_FUNC(SqrtUnOp,sqrt)
 	FortCpp_UNARY_FUNC(SinUnOp,sin)

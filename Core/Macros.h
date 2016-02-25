@@ -1,24 +1,20 @@
 
-// #define FortCpp_NOT_STATIC_FUNCTION_ASSERT static_assert(int(internal::traits<Derived>::Size) == int(internal::Unknown),"YOU_TRIED_TO_CALL_A_DYNAMIC_FUNCTION_ON_A_STATIC_ARRAY");
-// #define FortCpp_IS_STATIC_FUNCTION_ASSERT static_assert(int(internal::traits<Derived>::Size) != int(internal::Unknown),"YOU_TRIED_TO_CALL_A_STATIC_FUNCTION_ON_A_DYNAMIC_ARRAY");
-
-// #define FortCpp_SLICE_TEMPLATE(D) int _Type ## D , int _L ## D , int _S ## D
-
-// #define FortCpp_SLICE_0(D) internal::Slice<_Type ## D, 0, _L ## D, _S ## D>
-
-// #define FortCpp_SLICE(D) internal::Slice<_Type ## D, D, _L ## D, _S ## D>
-
-// #define FortCpp_SLICE_RUNTIME_LENGTH(D) internal::runtime_length<_Type ## D , D ,AccessorDerived , FortCpp_SLICE_0( D )>::result(_accessor,S ## D);
-
-// #define FortCpp_SLICE_RUNTIME_STRIDE(ST,D) internal::runtime_stride<Stride ## ST, D ,AccessorDerived, FortCpp_SLICE_0( D ) >::result(_accessor,S ## D);
-
-
-#define FortCpp_BINARY_OP(OP,X) template <typename OtherDerived> \
-   inline const BinaryOp<Derived,OtherDerived,OP<T> >operator X \
-     (const OtherDerived &rhs) const \
+#define FortCpp_BASE_BINARY_OP(OP,X) template <typename OtherDerived,typename T2> \
+   inline const BinaryOp<Derived,OtherDerived,OP<T,T2> >operator X \
+     (const ArrayBase<OtherDerived> &rhs) const \
    { \
-     return BinaryOp<Derived,OtherDerived,OP<T> >(this->derived(),rhs,OP<T>()); \
-   } \
+      typedef typename internal::traits<OtherDerived>::Scalar T2; \
+     return BinaryOp<Derived,OtherDerived,OP<T,T2> >(this->derived(),rhs.derived(),OP<OpT>()); \
+   }
+
+#define FortCpp_BINARY_OP(OP,X) \
+template<typename T1,typename T2> \
+struct OP { \
+   typedef decltype( T + T2 ) OpT; \
+	inline static const auto eval(const T& _lhs,const T& _rhs) { \
+		return static_cast<OpT>(_lhs) X static_cast<OpT>(_rhs); \
+	} \
+}; 
  
 #define FortCpp_UNARY_FUNC(OP,X) \
   inline const UnaryOp<Derived,OP<T> > X() const \
@@ -33,73 +29,6 @@
      return FUNC(_rhs); \
     } \
   };
-
-#ifdef NDEBUG
-#define FortCpp_SIZE_FortCppTCH(a,b)
-#define FortCpp_BOUNDS_CHECK(i,D)
-#define FortCpp_LINEAR_SIZE_CHECK(i)
-#define FortCpp_SLICE_CHECK(D)
-#define FortCpp_NAN_CHECK(a)
-#else
-
-#if defined(FortCpp_WRITE_NAN) || defined(FortCpp_READ_NAN)
-#define FortCpp_NAN_CHECK(a) try{ \
-                             if(bool((a) != (a))){  \
-                                 throw NanException(); \
-                             }  \
-                           }   \
-                          catch(std::exception &e){  \
-                            FortCpp::ArrayException::handle_exception(e); \
-                            }
-#else
-#define FortCpp_NAN_CHECK(a)
-#endif
-
-#define FortCpp_SIZE_FortCppTCH(a,b) try{                            \
-                                if((a) != (b)){                 \
-                                  throw SizeException((a),(b)); \
-                                }                           \
-                            }                               \
-                            catch(std::exception &e){       \
-                              FortCpp::ArrayException::handle_exception(e); \
-                            }
-
-#define FortCpp_BOUNDS_CHECK(i,D) try{ \
-                                  if( (i) >= d ## D() ){ \
-                                    throw BoundsException((i),(D),d ## D()); \
-                                  } \
-                                  else if( (i) < 0 ){ \
-                                    throw BoundsException((i),(D),d ## D()); \
-                                  } \
-                              } \
-                              catch(std::exception &e){ \
-                                FortCpp::ArrayException::handle_exception(e); \
-                              }
-
-#define FortCpp_LINEAR_SIZE_CHECK(i) try{ \
-                                   if( (i) >= size() ){ \
-                                     throw LinearSizeException( (i),size() ); \
-                                   } \
-                                   else if( (i) < 0 ){ \
-                                     throw LinearSizeException( (i),size() ); \
-                                   } \
-                                 } \
-                                 catch(std::exception &e){ \
-                                   FortCpp::ArrayException::handle_exception(e); \
-                                 }
-
-#define FortCpp_SLICE_CHECK(D) try{ \
-                                int sl = S ## D.b() + l ## D  - 1; \
-                                   if( sl >= d ## D() ){ \
-                                     throw BoundsException(sl, D , d ## D() ); \
-                                   } \
-                                   else if( sl < 0 ){ \
-                                     throw BoundsException(sl, D , d ## D() ); \
-                                   } \
-                                 } \
-                                 catch(std::exception &e){ \
-                                   FortCpp::ArrayException::handle_exception(e); \
-                                 }
 
 #endif
 
