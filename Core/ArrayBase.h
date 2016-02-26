@@ -1,5 +1,26 @@
+
 #ifndef FortCpp_ARRAYBASE_H
 #define FortCpp_ARRAYBASE_H
+
+#include <array>
+#include <cmath>
+
+#include "Macros.h"
+#include "ForwardDeclarations.h"
+
+#ifndef NDEBUG
+#include "ArrayException.h"
+#include "Debug.h"
+#endif
+
+#include "Util.h"
+#include "FixedUtil.h"
+#include "Storage.h"
+#include "BinaryOp.h"
+#include "ConstantOp.h"
+#include "UnaryOp.h"
+#include "Slice.h"
+#include "StrideCalc.h"
 
 namespace FortCpp
 {
@@ -8,124 +29,125 @@ template <typename Derived>
 class ArrayBase
 {
 
-  typedef typename internal::traits<Derived>::Scalar T;
+public:
 
-  private:
+	typedef typename internal::traits<Derived>::Scalar T;
 
-  protected:
-  ArrayBase(const ArrayBase<Derived>&)=default;
-  ArrayBase(ArrayBase<Derived>&&)=default;
-  ArrayBase()=default;
-  ~ArrayBase()=default;
+	ArrayBase()=default;
+	ArrayBase(const ArrayBase<Derived>&)=default;
+	ArrayBase(ArrayBase<Derived>&&)=default;
+	~ArrayBase()=default;
 
-  public:
 
-  /** 
-   * Sets the entire array to a given value
-   */
-   inline const T& operator = (const T &B) 
-   {
+	inline Derived& operator = (const ArrayBase<Derived>& B) {
+#ifndef NDEBUG
+		internal::debug::compare_dims(derived(),B.derived());
+#endif
 #pragma GCC ivdep
-     for(int i=0;i< this->size();i++){ 
-       derived()[i] = B;
-     }
-         return B;
-   }
+		for (int i=0; i<this->size(); i++) {
+			derived()[i] = B.derived()[i];
+		}
+		return derived();
+	}
 
-  /**
-   * This copies an array using the equals sign. The
-   * sizes of the two arrays must match, or else a fatal error
-   * is thrown in debug mode. This allows a MD ArrayBase to be
-   * assigned to a 1D ArrayBase since and vice versa, since it
-   * only takes size into account.
-   */
-   template<typename OtherDerived>
-   inline Derived& operator = (const ArrayBase<OtherDerived> &B) 
-   {
-    FortCpp_SIZE_MATCH(this->size(),B.size())
+	inline Derived& operator = (ArrayBase<Derived>&& B) {
+#ifndef NDEBUG
+		internal::debug::compare_dims(derived(),B.derived());
+#endif
 #pragma GCC ivdep
-    for(int i=0;i<this->size();i++){ 
-      derived()[i] = B.derived()[i];
-    }
-    return derived();
-   }
+		for (int i=0; i<this->size(); i++) {
+			derived()[i] = B.derived()[i];
+		}
+		return derived();
+	}
 
-   inline Derived& operator = (const ArrayBase<Derived> &B) 
-   {
-    FortCpp_SIZE_MATCH(this->size(),B.size())
+	/**
+	 * Sets the entire array to a given value
+	 */
+	inline const T& operator = (const T& B) {
 #pragma GCC ivdep
-    for(int i=0;i<this->size();i++){ 
-      derived()[i] = B.derived()[i];
-    }
-    return derived();
-  }
+		for (int i=0; i < size(); i++) {
+			derived()[i] = B;
+		}
+		return B;
+	}
 
-   /**
-    * += and -= operators
-    */
-   inline Derived& operator += (const T &B) 
-   {
-     derived() = derived() + B;
-     return derived();
-   }
+	template<typename OtherDerived>
+	inline Derived& operator = (const ArrayBase<OtherDerived>& B) {
+#ifndef NDEBUG
+		internal::debug::compare_dims(derived(),B.derived());
+#endif
+#pragma GCC ivdep
+		for (int i=0; i<this->size(); i++) {
+			derived()[i] = B.derived()[i];
+		}
+		return derived();
+	}
 
-   template<typename OtherDerived>
-   inline Derived& operator += (const ArrayBase<OtherDerived> &B) 
-   {
-     derived() = derived() + B.derived();
-     return derived();
-   }
+	constexpr int size() const { return derived().size(); }
+	constexpr int size(int i) const { return derived().size(i); }
 
-   inline Derived& operator -= (const T &B) 
-   {
-     derived() = derived() - B;
-     return derived();
-   }
+	/**
+	 * += and -= operators
+	 */
+	inline Derived& operator += (const T& B) {
+		derived() = derived() + B;
+		return derived();
+	}
 
-   template<typename OtherDerived>
-   inline Derived& operator -= (const ArrayBase<OtherDerived> &B) 
-   {
-     derived() = derived() - B.derived();
-     return derived();
-   }
+	template<typename OtherDerived>
+	inline Derived& operator += (const ArrayBase<OtherDerived>& B) {
+#ifndef NDEBUG
+		internal::debug::compare_dims(derived(),B.derived());
+#endif
+		derived() = derived() + B.derived();
+		return derived();
+	}
 
-   /************************************************/
+	inline Derived& operator -= (const T& B) {
+		derived() = derived() - B;
+		return derived();
+	}
 
-   FortCpp_BINARY_OP(AddBinOp,+)
-   FortCpp_BINARY_OP(SubBinOp,-)
-   FortCpp_BINARY_OP(MulBinOp,*)
-   FortCpp_BINARY_OP(DivBinOp,/)
-   FortCpp_BINARY_OP(EqBinOp,==)
-   FortCpp_BINARY_OP(NotEqBinOp,!=)
+	template<typename OtherDerived>
+	inline Derived& operator -= (const ArrayBase<OtherDerived>& B) {
+#ifndef NDEBUG
+		internal::debug::compare_dims(derived(),B.derived());
+#endif
+		derived() = derived() - B.derived();
+		return derived();
+	}
 
-   FortCpp_UNARY_FUNC(SqrtUnOp,sqrt)
-   FortCpp_UNARY_FUNC(SinUnOp,sin)
-   FortCpp_UNARY_FUNC(CosUnOp,cos)
+	/************************************************/
 
-   inline const UnaryOp<Derived,NegUnOp<T> >operator -() const
-   {
-     return UnaryOp<Derived,NegUnOp<T> >(this->derived(),NegUnOp<T>());
-   }
+   FortCpp_BASE_BINARY_OP(AddBinOp,+)
+   FortCpp_BASE_BINARY_OP(SubBinOp,-)
+   FortCpp_BASE_BINARY_OP(MulBinOp,*)
+   FortCpp_BASE_BINARY_OP(DivBinOp,/)
+   FortCpp_BASE_BINARY_OP(LesBinOp,<)
+   FortCpp_BASE_BINARY_OP(GreBinOp,>)
+   FortCpp_BASE_BINARY_OP(LEqBinOp,<=)
+   FortCpp_BASE_BINARY_OP(GEqBinOp,>=)
+   FortCpp_BASE_BINARY_OP(EquBinOp,==)
+   FortCpp_BASE_BINARY_OP(NEqBinOp,!=)
 
-   inline explicit operator bool() const {
-     for(int i=0;i<derived().size();i++){
-       if(derived()[i]) return 1;
-     }
-     return 0;
-   }
-   /*********************************************/
+	FortCpp_BASE_UNARY_OP(SinUnOp,sin)
+	FortCpp_BASE_UNARY_OP(CosUnOp,cos)
+	FortCpp_BASE_UNARY_OP(SqtUnOp,sqrt)
 
-  inline const int size() const { return this->derived().size(); }
+	inline const UnaryOp<Derived,NegUnOp<T> >operator -() const {
+		return UnaryOp<Derived,NegUnOp<T> >(derived(),NegUnOp<T>());
+	}
 
-  inline const Derived& derived() const { return *static_cast<const Derived*>(this); }
-  inline       Derived& derived() { return *static_cast<Derived*>(this); }
+	const Derived& derived() const { return *static_cast<const Derived*>(this); }
+	Derived& derived() { return *static_cast<Derived*>(this); }
 
-  friend std::ostream& operator << (std::ostream& os, const ArrayBase<Derived> &A){
-    for(int i=0;i<A.size();i++){
-      os << A.derived()[i] << ' ';
-    }
-    return os;
-  }
+	friend std::ostream& operator << (std::ostream& os, const ArrayBase<Derived>& A) {
+		for (int i=0; i<A.size(); i++) {
+			os << A.derived()[i] << ' ';
+		}
+		return os;
+	}
 };
 
 /**********************************************************************/

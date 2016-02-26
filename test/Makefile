@@ -1,4 +1,10 @@
 
-all:
-	gfortran slicing.f90 -c -g -fcheck=all -O0
-	g++ main.C slicing.o -lgfortran -o test.exec -std=c++11 -g -O0
+all: testMain_debug.o testMain_opt.o
+	clang++-3.5 -O0 -g --std=c++11 testMain_debug.o tests.C -o tests_debug.exec
+	g++ -O3 -g --std=c++11 testMain_opt.o   tests.C -o tests_opt.exec
+
+testMain_debug.o: testMain.C
+	g++ -O0 -g --std=c++11 testMain.C -c -o testMain_debug.o
+
+testMain_opt.o: testMain.C
+	g++ -O3 -g --std=c++11 testMain.C -c -o testMain_opt.o

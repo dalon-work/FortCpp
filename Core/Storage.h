@@ -8,146 +8,121 @@ namespace FortCpp
 namespace internal
 {
 
-template<typename T,int Type,int Size, int Align> class Storage;
 
 template<typename T>
-class Storage<T,Pointer,Unknown,UnAligned>
+class Storage<T,Pointer,UnAligned>
 {
-  typedef class Storage<T,Pointer,Unknown,UnAligned> Derived;
-  private:
-  T*__restrict__ _A;
-  int _size;
-  bool _alloc;
+	typedef class Storage<T,Pointer,UnAligned> Derived;
+private:
 
+	T* _A=nullptr;
+	bool _alloc=0;
+	int _size=0;
 
-  public:
-  Storage(const Derived &B)=default;
-  inline explicit Storage() : _size(0), _alloc(0), _A(0) {}
+public:
+	Storage()=default;
+	Storage(const Derived& B)=default;
+	Storage(Derived&& B)=default;
 
-  ~Storage(){ this->deallocate(); }
+	~Storage() {
+		deallocate();
+	}
 
-  inline void allocate(const int i){
-    this->_size = i;
-    this->_alloc = 1;
-    this->_A = new T[this->_size];
-  }
+	void allocate(int i) {
+		_alloc = 1;
+		_A = new T[i];
+		_size = i;
+	}
 
-  /** 
-   * Maps a pointer into the array. The size of the 
-   * pointer array is given by i
-   */
-  void map(T* a, const int i){
-    this->_alloc = 0;
-    this->_size = i;
-    this->_A = a;
-  }
+	void map(T* A, int i) {
+		_alloc = 0;
+		_A = A;
+		_size = i;
+	}
 
-  inline T* data() { return _A; }
-  inline const int size() const { return _size; }
-  inline const bool allocated() const { return _alloc; }
-  inline const bool associated() const { return _A; }
-  inline const T & operator [] (const int i) const { 
-#ifdef FortCpp_READ_NAN
-    FortCpp_NAN_CHECK(_A[i])
-#endif
-    return _A[i]; 
-  }
-  inline T & operator [] (const int i){
-#ifdef FortCpp_WRITE_NAN
-    FortCpp_NAN_CHECK(_A[i])
-#endif
-    return _A[i]; }
+	void swap(Derived& B) {
+		T*   p =   _A;
+		int  s = _size;
+		bool a = _alloc;
 
-  /**
-   * Deallocates memory, or disassociates the array from the 
-   * memory it points to if the array was not allocated
-   */
-  void deallocate(){
-    if ( this->_alloc ){ delete[] this->_A; }
-    this->_A = 0;
-    this->_alloc = 0;
-    this->_size = 0;
-  }
+		_A     = B._A;
+		_size  = B._size;
+		_alloc = B._alloc;
+
+		B._A     = p;
+		B._size  = s;
+		B._alloc = a;
+	}
+
+	T* data() { return _A; }
+	bool allocated() const { return _alloc; }
+	bool associated() const { return _A; }
+	int size() const { return _size; }
+
+	const T& operator [] (int i) const {
+// #ifdef FortCpp_READ_NAN
+//     FortCpp_NAN_CHECK(A[i])
+// #endif
+		return _A[i];
+	}
+
+	T& operator [] (int i) {
+// #ifdef FortCpp_WRITE_NAN
+//     FortCpp_NAN_CHECK(A[i])
+// #endif
+		return _A[i];
+	}
+
+	/**
+	 * Deallocates memory, or disassociates the array from the
+	 * memory it points to if the array was not allocated
+	 */
+	void deallocate() {
+		if ( _alloc ) { delete[] _A; }
+		_A = nullptr;
+		_alloc = 0;
+		_size = 0;
+	}
 
 }; // end class Storage
 
-template<typename T,int Size>
-class Storage<T,Pointer,Size,UnAligned>
+/****  FIXED_STORAGE *****/
+
+template<typename T,int... dims>
+class Storage<T,Static,UnAligned,dims...>
 {
-  typedef class Storage<T,Pointer,Size,UnAligned> Derived;
-  private:
-  T*__restrict__ _A;
+	typedef class Storage<T,Static,UnAligned,dims...> Derived;
+private:
+	static const unsigned _size = internal::fixed_product<dims...>::value;
+	static const bool _alloc=1;
+
+	std::array<T,_size> _A;
+
+public:
+	Storage()                 = default;
+	Storage(const Derived& B) = default;
+	Storage(Derived&& B)      = default;
+	~Storage()                = default;
 
 
-  public:
-  Storage(const Derived &B)=default;
-  inline explicit Storage() : _A(0) {}
+	T* data() { return _A.data(); }
+	bool allocated() const { return 1; }
+	bool associated() const { return 1; }
+	int size() const { return _size; }
 
-  ~Storage(){ this->deallocate(); }
+	const T& operator [] (int i) const {
+// #ifdef FortCpp_READ_NAN
+//     FortCpp_NAN_CHECK(A[i])
+// #endif
+		return _A[i];
+	}
 
-  /** 
-   * Maps a pointer into the array. The size of the 
-   * pointer array is given by i
-   */
-  void map(T* a, const int i){
-    this->_A = a;
-  }
-
-  inline T* data() { return _A; }
-  inline const int size() const { return Size; }
-  inline const bool allocated() const { return 0; }
-  inline const bool associated() const { return 1; }
-  inline const T & operator [] (const int i) const {
-#ifdef FortCpp_READ_NAN
-    FortCpp_NAN_CHECK(_A[i])
-#endif
-    return _A[i]; }
-  inline T & operator [] (const int i){
-#ifdef FortCpp_WRITE_NAN
-    FortCpp_NAN_CHECK(_A[i])
-#endif
-    return _A[i]; }
-
-  /**
-   * Deallocates memory, or disassociates the array from the 
-   * memory it points to if the array was not allocated
-   */
-  void deallocate(){
-    this->_A = 0;
-  }
-
-}; // end class Storage
-
-
-template<typename T,int Size>
-class Storage<T,Static,Size,UnAligned>
-{
-  typedef class Storage<T,Static,Size,UnAligned> Derived;
-  private:
-  T _A[Size];
-
-  Storage(const Derived &B){ }
-
-  public:
-  inline explicit Storage() {}
-
-  ~Storage(){}
-
-  inline static const int size() { return Size; }
-  inline T* data() { return _A; }
-  inline const T & operator [] (const int i) const { 
-#ifdef FortCpp_READ_NAN
-    FortCpp_NAN_CHECK(_A[i])
-#endif
-    return _A[i]; }
-  inline T & operator [] (const int i){
-#ifdef FortCpp_WRITE_NAN
-    FortCpp_NAN_CHECK(_A[i])
-#endif
-    return _A[i]; }
-  inline const bool allocated() const { return 1; }
-  inline const bool associated() const { return 1; }
-  inline void deallocate() const {}
+	T& operator [] (int i) {
+// #ifdef FortCpp_WRITE_NAN
+//     FortCpp_NAN_CHECK(A[i])
+// #endif
+		return _A[i];
+	}
 
 }; // end class Storage
 

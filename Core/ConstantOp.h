@@ -7,22 +7,25 @@ namespace FortCpp
 namespace internal
 {
 
-enum CONSTANT_sIDE
+enum
 {
-  LHS,
-  RHS
+   LHS,
+   RHS
 };
 
 /*
  * Traits specialization for ConstantOp
  */
-template<int Side,typename Derived,typename Op>
-struct traits<ConstantOp<Side,Derived,Op> >
-{
-  typedef typename traits<Derived>::Scalar Scalar;
-  enum{
-    Size = (int(traits<Derived>::Size) != int(Unknown)) ? int(traits<Derived>::Size) : int(Unknown)
-  };
+template<typename Lhs,typename Rhs,typename Op>
+struct traits<ConstantOp<LHS,Lhs,Rhs,Op> > {
+	typedef typename Op::ReturnType Scalar;
+   static const int Rank = traits<Rhs>::Rank;
+};
+
+template<typename Lhs,typename Rhs,typename Op>
+struct traits<ConstantOp<RHS,Lhs,Rhs,Op> > {
+	typedef typename Op::ReturnType Scalar;
+   static const int Rank = traits<Lhs>::Rank;
 };
 
 }; // end namespace internal
@@ -30,188 +33,75 @@ struct traits<ConstantOp<Side,Derived,Op> >
 /*
  * Constant Op, with the constant on the LHS
  */
-template<typename Rhs,typename Op>
-class ConstantOp<internal::LHS,Rhs,Op> : public ArrayBase<ConstantOp<internal::LHS,Rhs,Op> >
+template<typename Lhs,typename Rhs,typename Op>
+class ConstantOp<internal::LHS,Lhs,Rhs,Op> : public ArrayBase<ConstantOp<internal::LHS,Lhs,Rhs,Op> >
 {
-  typedef typename internal::traits<Rhs>::Scalar T;
-  typedef ConstantOp<internal::LHS,Rhs,Op> Derived;
+  typedef ConstantOp<internal::LHS,Lhs,Rhs,Op> Derived;
+  typedef typename Op::ReturnType T;
   protected:
-  const T &_c;
+  const Lhs &_c;
   const Rhs &_rhs;
   const Op  &_op;
-  const internal::OpSize<internal::traits<Derived>::Size> _size;
 
   public:
-  inline ConstantOp(const T &C, const Rhs &rhs,const Op &op): _c(C), _rhs(rhs), _op(op), _size(rhs.size())
-  { }
-  inline ConstantOp(const ConstantOp &A) : _c(A._c), _rhs(A._rhs), _op(A._op), _size(A.size())
+  inline ConstantOp(const Lhs &C, const Rhs &rhs,const Op &op): _c(C), _rhs(rhs), _op(op) {};
+  inline ConstantOp(const ConstantOp &A) : _c(A._c), _rhs(A._rhs), _op(A._op)
   { }
 
   inline const T operator [] (const int &i) const{
     return _op.eval(_c,_rhs[i]);
   }
 
-  inline const int size() const { return _size.size(); }
+  inline const Rhs& getExpr() const { return _rhs; }
+
 };
 
 /*
  * Constant Op, with the constant on the RHS
  */
-template<typename Lhs,typename Op>
-class ConstantOp<internal::RHS,Lhs,Op> : public ArrayBase<ConstantOp<internal::RHS,Lhs,Op> >
+template<typename Lhs,typename Rhs,typename Op>
+class ConstantOp<internal::RHS,Lhs,Rhs,Op> : public ArrayBase<ConstantOp<internal::RHS,Lhs,Rhs,Op> >
 {
-  typedef typename internal::traits<Lhs>::Scalar T;
-  typedef ConstantOp<internal::LHS,Lhs,Op> Derived;
+  typedef ConstantOp<internal::LHS,Lhs,Rhs,Op> Derived;
+  typedef typename Op::ReturnType T;
   protected:
-  const T &_c;
   const Lhs &_lhs;
+  const Rhs &_c;
   const Op  &_op;
-  const internal::OpSize<internal::traits<Derived>::Size> _size;
 
   public:
-  inline ConstantOp(const Lhs &lhs,const T &C, const Op &op): _c(C), _lhs(lhs), _op(op), _size(lhs.size())
-  { }
-  inline ConstantOp(const ConstantOp &A) : _c(A._c), _lhs(A._lhs), _op(A._op), _size(A.size())
-  { }
+  inline ConstantOp(const Lhs &lhs,const Rhs &C, const Op &op): _c(C), _lhs(lhs), _op(op) {}
+  inline ConstantOp(const ConstantOp &A) : _c(A._c), _lhs(A._lhs), _op(A._op) {}
 
   inline const T operator [] (const int &i) const{
     return _op.eval(_lhs[i],_c);
   }
 
-  inline const int size() const { return _size.size(); }
+  inline const Lhs& getExpr() const { return _lhs; }
+
 };
 
+FortCpp_LHS_CONSTANT_OP(AddBinOp,+)
+FortCpp_LHS_CONSTANT_OP(SubBinOp,-)
+FortCpp_LHS_CONSTANT_OP(MulBinOp,*)
+FortCpp_LHS_CONSTANT_OP(DivBinOp,/)
+FortCpp_LHS_CONSTANT_OP(LesBinOp,<)
+FortCpp_LHS_CONSTANT_OP(GreBinOp,>)
+FortCpp_LHS_CONSTANT_OP(LEqBinOp,<=)
+FortCpp_LHS_CONSTANT_OP(GEqBinOp,>=)
+FortCpp_LHS_CONSTANT_OP(EquBinOp,==)
+FortCpp_LHS_CONSTANT_OP(NEqBinOp,!=)
 
-/**
-* Addition Operator of an Array and a Scalar
-*/
-template <typename Derived>
-inline const ConstantOp<internal::LHS,Derived,AddBinOp<typename internal::traits<Derived>::Scalar> >operator +
- (const typename internal::traits<Derived>::Scalar &C,const Derived &rhs) 
-{
-  typedef typename internal::traits<Derived>::Scalar T;
- return ConstantOp<internal::LHS,Derived,AddBinOp<T> >(C,rhs,AddBinOp<T>());
-}
-
-template <typename Derived>
-inline const ConstantOp<internal::RHS,Derived,AddBinOp<typename internal::traits<Derived>::Scalar> >operator +
- (const Derived &lhs,const typename internal::traits<Derived>::Scalar &C) 
-{
-  typedef typename internal::traits<Derived>::Scalar T;
- return ConstantOp<internal::RHS,Derived,AddBinOp<T> >(lhs,C,AddBinOp<T>());
-}
-
-/**
-* Subtraction Operator of an Array and a Scalar
-*/
-template <typename Derived>
-inline const ConstantOp<internal::LHS,Derived,SubBinOp<typename internal::traits<Derived>::Scalar> >operator -
- (const typename internal::traits<Derived>::Scalar &C,const Derived &rhs) 
-{
-  typedef typename internal::traits<Derived>::Scalar T;
- return ConstantOp<internal::LHS,Derived,SubBinOp<T> >(C,rhs,SubBinOp<T>());
-}
-
-template <typename Derived>
-inline const ConstantOp<internal::RHS,Derived,SubBinOp<typename internal::traits<Derived>::Scalar> >operator -
- (const Derived &lhs,const typename internal::traits<Derived>::Scalar &C) 
-{
-  typedef typename internal::traits<Derived>::Scalar T;
- return ConstantOp<internal::RHS,Derived,SubBinOp<T> >(lhs,C,SubBinOp<T>());
-}
-
-/**
-* Multiplication Operator of an Array and a Scalar
-*/
-template <typename Derived>
-inline const ConstantOp<internal::LHS,Derived,MulBinOp<typename internal::traits<Derived>::Scalar> >operator *
- (const typename internal::traits<Derived>::Scalar &C,const Derived &rhs) 
-{
-  typedef typename internal::traits<Derived>::Scalar T;
- return ConstantOp<internal::LHS,Derived,MulBinOp<T> >(C,rhs,MulBinOp<T>());
-}
-
-template <typename Derived>
-inline const ConstantOp<internal::RHS,Derived,MulBinOp<typename internal::traits<Derived>::Scalar> >operator *
- (const Derived &lhs,const typename internal::traits<Derived>::Scalar &C) 
-{
-  typedef typename internal::traits<Derived>::Scalar T;
- return ConstantOp<internal::RHS,Derived,MulBinOp<T> >(lhs,C,MulBinOp<T>());
-}
-
-/**
-* Division Operator of an Array and a Scalar
-*/
-template <typename Derived>
-inline const ConstantOp<internal::LHS,Derived,DivBinOp<typename internal::traits<Derived>::Scalar> >operator /
- (const typename internal::traits<Derived>::Scalar &C,const Derived &rhs) 
-{
-  typedef typename internal::traits<Derived>::Scalar T;
- return ConstantOp<internal::LHS,Derived,DivBinOp<T> >(C,rhs,DivBinOp<T>());
-}
-
-template <typename Derived>
-inline const ConstantOp<internal::RHS,Derived,DivBinOp<typename internal::traits<Derived>::Scalar> >operator /
-(const Derived &lhs,const typename internal::traits<Derived>::Scalar &C) 
-{
-  typedef typename internal::traits<Derived>::Scalar T;
- return ConstantOp<internal::RHS,Derived,DivBinOp<T> >(lhs,C,DivBinOp<T>());
-}
-
-/** 
- * Less Than Operator of an Array and a Scalar
- */
-template <typename Derived>
-inline const ConstantOp<internal::LHS,Derived,LessBinOp<typename internal::traits<Derived>::Scalar> > operator <
-  (const typename internal::traits<Derived>::Scalar &lhs, const Derived &rhs)
-{
-  typedef typename internal::traits<Derived>::Scalar T;
-  return ConstantOp<internal::LHS,Derived,LessBinOp<T> >(lhs,rhs,LessBinOp<T>());
-}
-template <typename Derived>
-inline const ConstantOp<internal::RHS,Derived,LessBinOp<typename internal::traits<Derived>::Scalar> > operator <
-  (const Derived &lhs, const typename internal::traits<Derived>::Scalar &rhs)
-{
-  typedef typename internal::traits<Derived>::Scalar T;
-  return ConstantOp<internal::RHS,Derived,LessBinOp<T> >(lhs,rhs,LessBinOp<T>());
-}
-
-/**
- * Equality Operator
- */
-template <typename Derived>
-inline const ConstantOp<internal::LHS,Derived,EqBinOp<typename internal::traits<Derived>::Scalar> > operator ==
-  (const typename internal::traits<Derived>::Scalar &lhs, const Derived &rhs)
-{
-  typedef typename internal::traits<Derived>::Scalar T;
-  return ConstantOp<internal::LHS,Derived,EqBinOp<T> >(lhs,rhs,EqBinOp<T>());
-}
-template <typename Derived>
-inline const ConstantOp<internal::RHS,Derived,EqBinOp<typename internal::traits<Derived>::Scalar> > operator ==
-  (const Derived &lhs, const typename internal::traits<Derived>::Scalar &rhs)
-{
-  typedef typename internal::traits<Derived>::Scalar T;
-  return ConstantOp<internal::RHS,Derived,EqBinOp<T> >(lhs,rhs,EqBinOp<T>());
-}
-
-/**
- * Not-Equality Operator
- */
-template <typename Derived>
-inline const ConstantOp<internal::LHS,Derived,NotEqBinOp<typename internal::traits<Derived>::Scalar> > operator !=
-  (const typename internal::traits<Derived>::Scalar &lhs, const Derived &rhs)
-{
-  typedef typename internal::traits<Derived>::Scalar T;
-  return ConstantOp<internal::LHS,Derived,NotEqBinOp<T> >(lhs,rhs,NotEqBinOp<T>());
-}
-template <typename Derived>
-inline const ConstantOp<internal::RHS,Derived,NotEqBinOp<typename internal::traits<Derived>::Scalar> > operator !=
-  (const Derived &lhs, const typename internal::traits<Derived>::Scalar &rhs)
-{
-  typedef typename internal::traits<Derived>::Scalar T;
-  return ConstantOp<internal::RHS,Derived,NotEqBinOp<T> >(lhs,rhs,NotEqBinOp<T>());
-}
-
+FortCpp_RHS_CONSTANT_OP(AddBinOp,+)
+FortCpp_RHS_CONSTANT_OP(SubBinOp,-)
+FortCpp_RHS_CONSTANT_OP(MulBinOp,*)
+FortCpp_RHS_CONSTANT_OP(DivBinOp,/)
+FortCpp_RHS_CONSTANT_OP(LesBinOp,<)
+FortCpp_RHS_CONSTANT_OP(GreBinOp,>)
+FortCpp_RHS_CONSTANT_OP(LEqBinOp,<=)
+FortCpp_RHS_CONSTANT_OP(GEqBinOp,>=)
+FortCpp_RHS_CONSTANT_OP(EquBinOp,==)
+FortCpp_RHS_CONSTANT_OP(NEqBinOp,!=)
 
 }; // end namespace FortCpp
 #endif

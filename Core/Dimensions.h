@@ -1,6 +1,7 @@
 #ifndef FortCpp_DIMENSIONS_H
 #define FortCpp_DIMENSIONS_H
 #include "ForwardDeclarations.h"
+#include <array>
 
 namespace FortCpp
 {
@@ -9,201 +10,100 @@ namespace internal
 {
 
 
+/************ DIMENSIONS *******************/
 
-template<typename Derived>
-class Dimensions<Derived,Unknown,1>
+template<int Rank,int Order,int Stride>
+class Dimensions
 {
-  private:
-  int _d1;
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() : _d1(0) {}
-  inline void set_dim(const int d1) { _d1 = d1; }
-  const inline int d1() const {return _d1;}
+private:
+
+	// offset computes the index location of
+	// an element in a MD Array
+
+public:
+
+	Dimensions()=default;
+	Dimensions(const Dimensions& other)=delete;
+	Dimensions(const Dimensions&& other)=delete;
+	~Dimensions()=default;
+
+	// set_dim sets the dimensions of the array
+	template<typename... indices>
+	void set_dim(indices... idx) {
+		copy_dim<0>(idx...);
+		str.compute_strides(dim);
+		s = product(idx...);
+	}
+
+	void unset() {
+		for (int r=0; r<Rank; r++) {
+			dim[r]=0;
+			str.str[r]=0;
+		}
+		s=0;
+	}
+
+	void copy_dim(const std::array<int,Rank>& otherdim,
+	              const std::array<int,Rank>& otherstr) {
+		dim = otherdim;
+		str.str = otherstr;
+		s = product<Rank>(dim);
+	}
+
+
+	// computes the offset for a MD index
+	template<typename... indices>
+	constexpr int operator () (indices... idx) const {
+		return offset<0>(idx...);
+	}
+
+	constexpr int operator [] (const int i) const {return str.offset(dim,i);}
+
+	constexpr int size() const {
+		return s;
+	}
+
+	constexpr int size(int D) const {
+		return dim[D-1];
+	}
+
+	constexpr int stride(int D) const {
+		return str[D-1];
+	}
+
+	const std::array<int,Rank>& get_dim() const {
+		return dim;
+	}
+
+	const std::array<int,Rank>& get_str() const {
+		return str.str;
+	}
+
 };
 
-template<typename Derived>
-class Dimensions<Derived,Unknown,2>
+/***************** EQUALITY ********************/
+
+template<int LRank, int LOrder, int LStride,
+         int RRank, int ROrder, int RStride>
+bool operator == (const Dimensions<LRank,LOrder,LStride>& lhs,
+                  const Dimensions<RRank,ROrder,RStride>& rhs)
 {
-  private:
-  int _d1,_d2;
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() : _d1(0),_d2(0) {}
-  inline void set_dim(const int d1,
-                      const int d2) { _d1 = d1;
-                                      _d2 = d2;}
-  inline const int d1() const {return _d1;}
-  inline const int d2() const {return _d2;}
-};
+	static_assert(LRank == RRank,
+	              "ARRAY EXPRESSION RANKS NOT EQUAL");
+	static_assert(LOrder == ROrder,
+	              "CANNOT MIX COLUMN AND ROW MAJOR ORDER IN ARRAY EXPRESSIONS");
+	for (int i=1; i<=LRank; i++) {
+		if ( lhs.size(i) != rhs.size(i)) {
+			return 0;
+		}
+	}
+	return 1;
+}
 
-template<typename Derived>
-class Dimensions<Derived,Unknown,3>
-{
-  private:
-  int _d1,_d2,_d3;
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() : _d1(0),_d2(0),_d3(0) {}
-  inline void set_dim(const int d1,
-                      const int d2,
-                      const int d3) { _d1 = d1;
-                                      _d2 = d2;
-                                      _d3 = d3;}
-  inline const int d1() const {return _d1;}
-  inline const int d2() const {return _d2;}
-  inline const int d3() const {return _d3;}
-};
+}; // end namespace internal
 
-template<typename Derived>
-class Dimensions<Derived,Unknown,4>
-{
-  private:
-  int _d1,_d2,_d3,_d4;
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() : _d1(0),_d2(0),_d3(0),_d4(0) {}
-  inline void set_dim(const int d1,
-                      const int d2,
-                      const int d3,
-                      const int d4) { _d1 = d1;
-                                      _d2 = d2;
-                                      _d3 = d3;
-                                      _d4 = d4;}
-  inline const int d1() const {return _d1;}
-  inline const int d2() const {return _d2;}
-  inline const int d3() const {return _d3;}
-  inline const int d4() const {return _d4;}
-};
+}; // end namespace FortCpp
 
-template<typename Derived>
-class Dimensions<Derived,Unknown,5>
-{
-  private:
-  int _d1,_d2,_d3,_d4,_d5;
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() : _d1(0),_d2(0),_d3(0),_d4(0),_d5(0) {}
-  inline void set_dim(const int d1,
-                      const int d2, 
-                      const int d3, 
-                      const int d4, 
-                      const int d5) { _d1 = d1; 
-                                      _d2 = d2;
-                                      _d3 = d3;
-                                      _d4 = d4;
-                                      _d5 = d5;}
-  inline const int d1() const {return _d1;}
-  inline const int d2() const {return _d2;}
-  inline const int d3() const {return _d3;}
-  inline const int d4() const {return _d4;}
-  inline const int d5() const {return _d5;}
-};
-
-template<typename Derived,int Size>
-class Dimensions<Derived,Size,1>
-{
-  enum{
-    D1 = traits<Derived>::D1
-  };
-  private:
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() {}
-  inline void set_dim(const int d1) {}
-  static inline const int d1() {return D1;}
-};
-
-template<typename Derived,int Size>
-class Dimensions<Derived,Size,2>
-{
-  enum{
-    D1 = traits<Derived>::D1,
-    D2 = traits<Derived>::D2
-  };
-  private:
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() {}
-  inline void set_dim(const int d1,
-                      const int d2) {}
-  static inline const int d1() {return D1;}
-  static inline const int d2() {return D2;}
-};
-
-template<typename Derived,int Size>
-class Dimensions<Derived,Size,3>
-{
-  enum{
-    D1 = traits<Derived>::D1,
-    D2 = traits<Derived>::D2,
-    D3 = traits<Derived>::D3
-  };
-  private:
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() {}
-  inline void set_dim(const int d1,
-                      const int d2,
-                      const int d3) {}
-  static inline const int d1() {return D1;}
-  static inline const int d2() {return D2;}
-  static inline const int d3() {return D3;}
-};
-
-template<typename Derived,int Size>
-class Dimensions<Derived,Size,4>
-{
-  enum{
-    D1 = traits<Derived>::D1,
-    D2 = traits<Derived>::D2,
-    D3 = traits<Derived>::D3,
-    D4 = traits<Derived>::D4
-  };
-  private:
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() {}
-  inline void set_dim(const int d1,
-                      const int d2,
-                      const int d3,
-                      const int d4) {}
-  static inline const int d1() {return D1;}
-  static inline const int d2() {return D2;}
-  static inline const int d3() {return D3;}
-  static inline const int d4() {return D4;}
-};
-
-template<typename Derived,int Size>
-class Dimensions<Derived,Size,5>
-{
-  enum{
-    D1 = traits<Derived>::D1,
-    D2 = traits<Derived>::D2,
-    D3 = traits<Derived>::D3,
-    D4 = traits<Derived>::D4,
-    D5 = traits<Derived>::D5
-  };
-  private:
-  public:
-  Dimensions(const Dimensions &other)=default;
-  inline explicit Dimensions() {}
-  inline void set_dim(const int d1,
-                      const int d2,
-                      const int d3,
-                      const int d4,
-                      const int d5) {}
-  static inline const int d1() {return D1;}
-  static inline const int d2() {return D2;}
-  static inline const int d3() {return D3;}
-  static inline const int d4() {return D4;}
-  static inline const int d5() {return D5;}
-};
-
-
-};
-
-};
 
 
 
