@@ -9,78 +9,32 @@ This is not the first or the best such offering. Here is a list of others:
 * [Boost::MultiArray](http://www.boost.org/doc/libs/1_44_0/libs/multi_array/doc/index.html)
 * [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page)
 
-This library is not intended to be a linear algebra package. 
-If you want one of those, I suggest Eigen. 
-It's really awesome, and if they added higher than 2d arrays, I might just switch to Eigen.
-I needed slicing, and whole-array operations, bounds and size checking, and a few nice bells and whistles. 
-I also wanted some C++ practice. Haven't done that since high school.
-I add to this library whenever I need something, but if you really want something, email me and let me know.
-Or fork it and send me a pull request. 
+This library is not intended to be a linear algebra package. It is intended to create
+user-friendly arrays which provide whole-array operations, slicing, views, multi-d indexing,
+and bounds checking. Whole-array operations do not generate temporaries (with appropriate inlining),
+keeping the overhead of using the arrays down.
 
-I didn't like any of the above for a a few different reasons. 
-1. Too much C++ fluff (complicated interface)
-2. External Dependencies (read: Boost)
-3. Not maintained
-4. Features not available
-
-I'm not a C++ guru, I'm a engineer who started with Fortran, MATLAB, and Python (NumPy), so don't rake me over the coals for not doing "proper" C++. Sometimes I feel like C++ takes itself way too seriously.
-
-## How to use FortC++
-
-FortC++ has up to 5d arrays. This number might go up later. 
-The basic functionality can be had as follows:
+FortC++ supports any rank of array using variadic templates. Column-Major ordering of the data
+is the default, but Row-Major ordering is fully supported. 
+There are two main components to FortCpp:
 
 ```c++
-#include "FortCpp.h"
-
-using namespace FortCpp;
-
-Array1d<double> a;    // Dynamic 1d array of type double
-Array1d<int> b;       // Dynamic 1d array of type int
-Array1d<float,10> c;  // Static 1d array (size 10) of type float
-Array2d<float,3,3> d; // Static 2d array (size 9) of type float
-Array2d<int> e;       // Dynamic 2d array of type int
-Array2d<double> f;    // Dynamic 2d array of type double
-                      // NOTE: STATIC ARRAYS DO NOT EXIST FOR DIMENSIONS HIGHER THAN 2
-Array3d<int> g;       // Dynamic 3d array ot type int
-
-a.allocate(10);       // allocate `a` to size 10
-b.mold(a);            // allocate `b` to same size as `a`
-
-e.mold(d);            // allocate `e` to same size of `d`
-f.allocate(3,3);      // allocate `f` to size 3x3
-
-b = 0;                // set all of `b` equal to zero
-a = b;                // set `a` equal to `b`. This is a deep-copy operation. None of this shallow copy business
-
-for(int i=0;i<a.size();i++) // loop through the size of array `a`
-{   
-  a[i] = i;                 // [] are linear indexers, accessing memory sequentially  
-  b(i) = i-1;               // () are non-linear indexers, but for 1d arrays, are the same as []
-}
-
-a.deallocate();             // deallocate the memory allocated by the dynamic arrays
-b.deallocate();
-
-for(int i=0;i<d.size();i++) // this is accessing the 2d array linearly
-{
-  d[i] = i;
-}
-
-for(int j=0;j<e.d2();j++){    // this is accessing the 2d array using the indexing operations
-  for(int i=0;i<e.d1();i++){  // Note: this is Column-Major, more below
-    e(i,j) = i*j;
-  }
-}
-
-f = d+e; // this is an element-wise addition operation, 
-         // which through the magic of inlining, does not create temporaries.
-         // In debug mode, this makes sure that both arrays have the same size.
-         
-g.map( function_returning_external_int_ptr() , 10,10,10); // This maps an external pointer to a 3d array, and 
-                                                          // makes it of size 10x10x10
-
+FortCpp::Alloc< Type, Rank, Options >
+FortCpp::Fixed< Type, Dims... >
 ```
+
+The `Alloc` class specifies an allocatable array, whose dimensions are only known at runtime.
+This is the main workhorse of FortC++. The `Fixed` class specifies a static array whose size
+must be determined at compile time. These two classes are fully compatible with each other.
+
+---
+
+### How to use FortC++
+
+Because FortC++ is a header-file only library, using the library is as straightforward as
+placing the library in your project's directory and including `FortCpp.h`.
+
+For a more detailed introduction to FortC++, see the [tutorial][docs/tutorial.md].
 
 ### Column-Major vs. Row-Major
 
@@ -100,9 +54,6 @@ By default, FortC++ is in Debug mode. This includes bounds-checking and whole-ar
 If an error does occur, FortC++ throws an ArrayException. An ArrayException will print out an error message,
 and then exit the program. 
 
-If the macro FortCpp_EXCEPTION_PAUSE is defined, then before exiting, 
-the program will pause and wait for a keypress. 
-
 To turn debugging off, define the macro NDEBUG. Use this for release code, as debugging does incur a performance hit.
 
 ### Compiling and Optimization
@@ -110,10 +61,6 @@ To turn debugging off, define the macro NDEBUG. Use this for release code, as de
 This library uses features from the C++11 standard, so you have to use a C++11 compliant compiler. 
 With G++, this means compiling with the -`std=c++11` option. This library also relies heavily on the ability
 of the compiler to inline everything, or else performance goes to zilch. For G++, this means compiling with the `-O3` flag.
-
-I've tried several ways to disable aliasing checks in whole-array operations, and have succeeded (I think)
-with the G++ compiler through the use of `#pragma GCC ivdep`. The important point here is: This library assumes
-no aliasing (or it will, when I can figure out a better way to do it). Don't do it.
 
 ## Slicing
 
