@@ -3,7 +3,7 @@
 #define FortCpp_ARRAYBASE_H
 
 #include <array>
-#include <utility>
+#include <cmath>
 
 #include "Macros.h"
 #include "ForwardDeclarations.h"
@@ -131,22 +131,13 @@ public:
    FortCpp_BASE_BINARY_OP(EquBinOp,==)
    FortCpp_BASE_BINARY_OP(NEqBinOp,!=)
 
-
-	FortCpp_UNARY_FUNC(SqrtUnOp,sqrt)
-	FortCpp_UNARY_FUNC(SinUnOp,sin)
-	FortCpp_UNARY_FUNC(CosUnOp,cos)
+	FortCpp_BASE_UNARY_OP(SinUnOp,sin)
+	FortCpp_BASE_UNARY_OP(CosUnOp,cos)
+	FortCpp_BASE_UNARY_OP(SqtUnOp,sqrt)
 
 	inline const UnaryOp<Derived,NegUnOp<T> >operator -() const {
-		return UnaryOp<Derived,NegUnOp<T> >(this->derived(),NegUnOp<T>());
+		return UnaryOp<Derived,NegUnOp<T> >(derived(),NegUnOp<T>());
 	}
-
-	//
-	//  inline explicit operator bool() const {
-	//    for(int i=0;i<derived().size();i++){
-	//      if(derived()[i]) return 1;
-	//    }
-	//    return 0;
-	//  }
 
 	const Derived& derived() const { return *static_cast<const Derived*>(this); }
 	Derived& derived() { return *static_cast<Derived*>(this); }

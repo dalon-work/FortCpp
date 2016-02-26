@@ -609,6 +609,33 @@ TEST_CASE("Array Math","[Math]"){
       REQUIRE(c[i] == 8.0);
    }
 
+   c = -a;
+
+   for(int i=0;i<c.size();i++){
+      REQUIRE(c[i] == -a[i]);
+   }
+
+   c = Math::sqrt(a);
+
+   for(int i=0;i<c.size();i++){
+      REQUIRE(c[i] == Approx( std::sqrt(a[i]) ) );
+   }
+
+   c = Math::cos(a);
+
+   for(int i=0;i<c.size();i++){
+      REQUIRE(c[i] == Approx( std::cos(a[i]) ) );
+   }
+
+   using namespace Math;
+
+   c = a*b+sqrt(a)*cos(b);
+
+   for(int i=0;i<c.size();i++){
+      REQUIRE(c[i] == Approx( a[i]*b[i]+std::sqrt(a[i])*std::cos(b[i]) ) );
+   }
+
+
 }
 
 

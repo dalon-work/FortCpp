@@ -8,7 +8,7 @@ namespace internal
 {
 template<typename Rhs,typename Op>
 struct traits<UnaryOp<Rhs,Op> > {
-	typedef typename traits<Rhs>::Scalar Scalar;
+	typedef typename Op::ReturnType Scalar;
 	enum {
 	    Rank = traits<Rhs>::Rank
 	};
@@ -23,6 +23,7 @@ class UnaryOp : public ArrayBase<UnaryOp<Rhs,Op> >
 {
 	typedef typename internal::traits<Rhs>::Scalar T;
 	typedef UnaryOp<Rhs,Op> Derived;
+   typedef typename Op::ReturnType ReturnType;
 protected:
 	const Rhs& _rhs;
 	const Op&  _op;
@@ -33,7 +34,7 @@ public:
 	inline UnaryOp(const UnaryOp& A) : _rhs(A._rhs), _op(A._op)
 	{ }
 
-	inline const T operator [] (const int& i) const {
+	inline ReturnType operator [] (const int& i) const {
 		return _op.eval(_rhs[i]);
 	}
 
@@ -50,14 +51,15 @@ public:
 
 template<typename T>
 struct NegUnOp {
+   typedef T ReturnType;
 	inline static const T eval (const T& _rhs) {
 		return -_rhs;
 	}
 };
 
-FortCpp_UNARY_OP(SqrtUnOp,sqrt)
 FortCpp_UNARY_OP(SinUnOp,sin)
 FortCpp_UNARY_OP(CosUnOp,cos)
+FortCpp_UNARY_OP(SqtUnOp,sqrt)
 
 }; // end namespace FortCpp
 #endif

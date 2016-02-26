@@ -77,10 +77,9 @@ typename internal::traits<Derived>::Scalar max(const ArrayBase<Derived>& rhs)
 	return m;
 }
 
-}; // end namespace Math
 
 template<typename Derived>
-UnaryOp<Derived,SqrtUnOp<typename internal::traits<Derived>::Scalar> > sqrt(const ArrayBase<Derived>& rhs)
+UnaryOp<Derived,SqtUnOp<typename internal::traits<Derived>::Scalar> > sqrt(const ArrayBase<Derived>& rhs)
 {
 	return rhs.sqrt();
 };
@@ -96,6 +95,8 @@ UnaryOp<Derived,CosUnOp<typename internal::traits<Derived>::Scalar> > cos(const 
 {
 	return rhs.cos();
 };
+
+}; // end namespace Math
 
 }; // end namespace FortCpp
 

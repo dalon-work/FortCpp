@@ -16,16 +16,17 @@ struct OP { \
 	} \
 }; 
  
-#define FortCpp_UNARY_FUNC(OP,X) \
-  inline const UnaryOp<Derived,OP<T> > X() const \
+#define FortCpp_BASE_UNARY_OP(OP,X) \
+  inline UnaryOp<Derived,OP<T> > X() const \
   { \
-    return UnaryOp<Derived,OP<T> >(this->derived(),OP<T>()); \
+    return UnaryOp<Derived,OP<T> >(derived(),OP<T>()); \
   }
 
 #define FortCpp_UNARY_OP(NAME,FUNC) \
   template<typename T> \
   struct NAME{ \
-    inline static const T eval (const T &_rhs){ \
+     typedef decltype( std::FUNC( std::declval<typename std::enable_if<std::is_arithmetic<T>::value,T>::type >() ) ) ReturnType; \
+    inline static const ReturnType eval (const T &_rhs){ \
      return FUNC(_rhs); \
     } \
   };
