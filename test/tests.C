@@ -584,9 +584,34 @@ TEST_CASE("Fixed","[Fixed]"){
       }
    }
 
+}
 
+TEST_CASE("Array Math","[Math]"){
+   Alloc<double,1> a(10),c(10);
+   Alloc<int,1> b(10);
+
+   a = 2.0;
+   b = 3.0;
+
+   c = a*b;
+   c = a+1;
+   c = a+1.0;
+   c = 1+a;
+   c = 1.0+a;
+
+   for(int i=0;i<c.size();i++){
+      REQUIRE( c[i] == 3.0 );
+   }
+
+   c = a*b+2;
+
+   for(int i=0;i<c.size();i++){
+      REQUIRE(c[i] == 8.0);
+   }
 
 }
+
+
 
 
 

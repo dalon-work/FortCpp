@@ -11,11 +11,12 @@ namespace internal
 
 template<typename Lhs,typename Rhs,typename Op>
 struct traits<BinaryOp<Lhs,Rhs,Op> > {
-	typedef typename traits<Lhs>::Scalar Scalar;
+	typedef typename Op::ReturnType Scalar;
 	enum {
 	    Rank = traits<Lhs>::Rank
 	};
 };
+
 
 
 }; // end namespace internal
@@ -26,7 +27,7 @@ struct traits<BinaryOp<Lhs,Rhs,Op> > {
 template<typename Lhs,typename Rhs,typename Op>
 class BinaryOp : public ArrayBase<BinaryOp<Lhs,Rhs,Op> >
 {
-   typedef typename Op::Scalar OpType;
+   typedef typename Op::ReturnType ReturnType;
 	typedef BinaryOp<Lhs,Rhs,Op> Derived;
 
 protected:
@@ -39,8 +40,8 @@ public:
 	};
 	BinaryOp(const BinaryOp& A) : _lhs(A._lhs), _rhs(A._rhs), _op(A._op) { }
 
-	const OpType operator [] (const int& i) const {
-		return _op.eval(static_cast<OpType>(_lhs[i]),static_cast<OpType>(_rhs[i]));
+	const ReturnType operator [] (const int& i) const {
+		return _op.eval(static_cast<ReturnType>(_lhs[i]),static_cast<ReturnType>(_rhs[i]));
 	}
 
 	const Lhs& get_lhs() const { return _lhs; }

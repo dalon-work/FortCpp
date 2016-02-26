@@ -3,6 +3,7 @@
 #define FortCpp_ARRAYBASE_H
 
 #include <array>
+#include <utility>
 
 #include "Macros.h"
 #include "ForwardDeclarations.h"
@@ -31,35 +32,12 @@ class ArrayBase
 public:
 
 	typedef typename internal::traits<Derived>::Scalar T;
-	static const int Rank = internal::traits<Derived>::Rank;
 
 	ArrayBase()=default;
 	ArrayBase(const ArrayBase<Derived>&)=default;
 	ArrayBase(ArrayBase<Derived>&&)=default;
 	~ArrayBase()=default;
 
-	/**
-	 * Sets the entire array to a given value
-	 */
-	inline const T& operator = (const T& B) {
-#pragma GCC ivdep
-		for (int i=0; i < size(); i++) {
-			derived()[i] = B;
-		}
-		return B;
-	}
-
-	template<typename OtherDerived>
-	inline Derived& operator = (const ArrayBase<OtherDerived>& B) {
-#ifndef NDEBUG
-		internal::debug::compare_dims(derived(),B.derived());
-#endif
-#pragma GCC ivdep
-		for (int i=0; i<this->size(); i++) {
-			derived()[i] = B.derived()[i];
-		}
-		return derived();
-	}
 
 	inline Derived& operator = (const ArrayBase<Derived>& B) {
 #ifndef NDEBUG
@@ -79,6 +57,29 @@ public:
 #pragma GCC ivdep
 		for (int i=0; i<this->size(); i++) {
 			derived()[i] = B.derived()[i];
+		}
+		return derived();
+	}
+
+	/**
+	 * Sets the entire array to a given value
+	 */
+	inline const T& operator = (const T& B) {
+#pragma GCC ivdep
+		for (int i=0; i < size(); i++) {
+			derived()[i] = B;
+		}
+		return B;
+	}
+
+	template<typename OtherDerived>
+	inline Derived& operator = (const ArrayBase<OtherDerived>& B) {
+#ifndef NDEBUG
+		internal::debug::compare_dims(derived(),B.derived());
+#endif
+#pragma GCC ivdep
+		for (int i=0; i<this->size(); i++) {
+			derived()[i] = static_cast<T>(B.derived()[i]);
 		}
 		return derived();
 	}

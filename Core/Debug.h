@@ -127,9 +127,9 @@ void compare_dims(const Lhs& lhs, const BinaryOp<Lhs2,Rhs,Op>& rhs)
 	compare_dims(lhs,rhs.get_rhs());
 }
 
-template<typename Lhs,int Side,typename Derived,typename Op>
+template<typename Lhs,int Side,typename Lhs2,typename Rhs,typename Op>
 inline
-void compare_dims(const Lhs& lhs,const ConstantOp<Side,Derived,Op>& rhs)
+void compare_dims(const Lhs& lhs,const ConstantOp<Side,Lhs2,Rhs,Op>& rhs)
 {
 	compare_dims(lhs,rhs.getExpr());
 }

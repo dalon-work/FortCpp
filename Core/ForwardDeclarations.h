@@ -49,8 +49,8 @@ template<typename T,int StorageType,int Align,int... dims> class Storage;
 template<typename Derived> class ArrayBase;
 template<typename T,int Rank, int Options=0> class Alloc;
 template<typename T,int... dims> class Fixed;
-template<int Side, typename Derived,typename Op> class ConstantOp;
 template<typename Lhs,typename Rhs,typename Op> class BinaryOp;
+template<int Side,typename Lhs,typename Rhs,typename Op> class ConstantOp;
 template<typename Rhs,typename Op> class UnaryOp;
 
 }; // end namespace FortCpp

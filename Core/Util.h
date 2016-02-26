@@ -7,6 +7,19 @@ namespace FortCpp
 namespace internal
 {
 
+/*********** IS_ARRAY **********/
+
+template<typename Derived> struct is_array;
+
+template<typename Derived> struct is_array<ArrayBase<Derived  > > { static const bool value = 1; };
+template<typename Derived> struct is_array<ArrayBase<Derived& > > { static const bool value = 1; };
+template<typename Derived> struct is_array<ArrayBase<Derived&&> > { static const bool value = 1; };
+
+template<typename Derived>
+struct is_array
+{
+   static const bool value = 0;
+};
 
 /*********** PRODUCT ***********/
 
