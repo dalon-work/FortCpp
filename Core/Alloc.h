@@ -45,7 +45,10 @@ private:
 	std::array<int,Rank> _str = {{0}};
 
 public:
-	Alloc()                =default;
+	Alloc(){
+      static_assert(Rank > 0,"RANK OF ARRAY MUST BE GREATER THAN 0");
+   }
+
 	Alloc(const Derived& B) : Alloc() {
 		(*this).mold(B);
 		*this = B;
@@ -117,7 +120,7 @@ public:
 		              "NUMBER OF INDICES PASSED TO ALLOCATE DOES NOT MATCH RANK OF ARRAY");
 		internal::set_array<Rank,0>(_dim,idx...);
 #ifndef NDEBUG
-		internal::debug::is_allocated(allocated());
+		internal::debug::is_allocated(allocated(),associated());
 #endif
 		for (int i=0; i<Rank; i++) { _str[i] = 1; }
 		internal::compute_strides<Order,Rank>::exec(_str,_dim);

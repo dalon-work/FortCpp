@@ -13,11 +13,14 @@ namespace debug
 /******** IS_ALLOCATED ***********/
 
 inline
-void is_allocated(bool alloc)
+void is_allocated(bool alloc,bool assoc)
 {
 	if ( alloc ) {
 		throw ArrayException("ARRAY IS ALREADY ALLOCATED!");
 	}
+   if( assoc ) {
+      throw ArrayException("ARRAY IS ALREADY ASSOCIATED!");
+   }
 }
 
 /********** IS_NEGATIVE ***********/

@@ -107,7 +107,7 @@ public:
 
 	/***********************************************/
 
-	unsigned size()                              const { return _storage.size(); }
+	unsigned size() const { return _storage.size(); }
 	template<int r>
 	int size  ()                  const {
 #ifndef NDEBUG
@@ -115,9 +115,11 @@ public:
 #endif
 		return internal::fixed_get_dim<1,r,dims...>::value;
 	}
-#ifndef NDEBUG
-	const std::array<int,Rank>& get_dim()   const { return _dim;                  }
-#endif
+	std::array<int,Rank> get_dim()   const { 
+      std::array<int,Rank> d = {{dims...}};
+      return d;                  
+   }
+
 //  const std::array<int,Rank>& get_str()   const { return _str;                  }
 //  bool allocated ()                            const { return _storage.allocated();  }
 //  bool associated()                            const { return _storage.associated(); }
