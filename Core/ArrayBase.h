@@ -3,6 +3,7 @@
 #define FortCpp_ARRAYBASE_H
 
 #include <array>
+#include <utility>
 
 #include "Macros.h"
 #include "ForwardDeclarations.h"
@@ -31,35 +32,12 @@ class ArrayBase
 public:
 
 	typedef typename internal::traits<Derived>::Scalar T;
-	static const int Rank = internal::traits<Derived>::Rank;
 
 	ArrayBase()=default;
 	ArrayBase(const ArrayBase<Derived>&)=default;
 	ArrayBase(ArrayBase<Derived>&&)=default;
 	~ArrayBase()=default;
 
-	/**
-	 * Sets the entire array to a given value
-	 */
-	inline const T& operator = (const T& B) {
-#pragma GCC ivdep
-		for (int i=0; i < size(); i++) {
-			derived()[i] = B;
-		}
-		return B;
-	}
-
-	template<typename OtherDerived>
-	inline Derived& operator = (const ArrayBase<OtherDerived>& B) {
-#ifndef NDEBUG
-		internal::debug::compare_dims(derived(),B.derived());
-#endif
-#pragma GCC ivdep
-		for (int i=0; i<this->size(); i++) {
-			derived()[i] = B.derived()[i];
-		}
-		return derived();
-	}
 
 	inline Derived& operator = (const ArrayBase<Derived>& B) {
 #ifndef NDEBUG
@@ -79,6 +57,29 @@ public:
 #pragma GCC ivdep
 		for (int i=0; i<this->size(); i++) {
 			derived()[i] = B.derived()[i];
+		}
+		return derived();
+	}
+
+	/**
+	 * Sets the entire array to a given value
+	 */
+	inline const T& operator = (const T& B) {
+#pragma GCC ivdep
+		for (int i=0; i < size(); i++) {
+			derived()[i] = B;
+		}
+		return B;
+	}
+
+	template<typename OtherDerived>
+	inline Derived& operator = (const ArrayBase<OtherDerived>& B) {
+#ifndef NDEBUG
+		internal::debug::compare_dims(derived(),B.derived());
+#endif
+#pragma GCC ivdep
+		for (int i=0; i<this->size(); i++) {
+			derived()[i] = static_cast<T>(B.derived()[i]);
 		}
 		return derived();
 	}
@@ -119,14 +120,17 @@ public:
 
 	/************************************************/
 
+   FortCpp_BASE_BINARY_OP(AddBinOp,+)
+   FortCpp_BASE_BINARY_OP(SubBinOp,-)
+   FortCpp_BASE_BINARY_OP(MulBinOp,*)
+   FortCpp_BASE_BINARY_OP(DivBinOp,/)
+   FortCpp_BASE_BINARY_OP(LesBinOp,<)
+   FortCpp_BASE_BINARY_OP(GreBinOp,>)
+   FortCpp_BASE_BINARY_OP(LEqBinOp,<=)
+   FortCpp_BASE_BINARY_OP(GEqBinOp,>=)
+   FortCpp_BASE_BINARY_OP(EquBinOp,==)
+   FortCpp_BASE_BINARY_OP(NEqBinOp,!=)
 
-	FortCpp_BINARY_OP(AddBinOp,+)
-	FortCpp_BINARY_OP(SubBinOp,-)
-	FortCpp_BINARY_OP(MulBinOp,*)
-	FortCpp_BINARY_OP(DivBinOp,/)
-
-	FortCpp_BINARY_OP(EqBinOp,==)
-	FortCpp_BINARY_OP(NotEqBinOp,!=)
 
 	FortCpp_UNARY_FUNC(SqrtUnOp,sqrt)
 	FortCpp_UNARY_FUNC(SinUnOp,sin)
