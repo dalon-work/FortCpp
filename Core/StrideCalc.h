@@ -7,16 +7,15 @@ namespace FortCpp
 namespace internal
 {
 
-template<typename idx> struct is_slice        { static const int value = 0; };
-template<   > struct is_slice<FullSlice     > { static const int value = 1; };
-template<   > struct is_slice<ContigSlice   > { static const int value = 1; };
-template<   > struct is_slice<StridedSlice  > { static const int value = 1; };
-template<   > struct is_slice<FullSlice&    > { static const int value = 1; };
-template<   > struct is_slice<ContigSlice&  > { static const int value = 1; };
-template<   > struct is_slice<StridedSlice& > { static const int value = 1; };
-template<   > struct is_slice<FullSlice&&   > { static const int value = 1; };
-template<   > struct is_slice<ContigSlice&& > { static const int value = 1; };
-template<   > struct is_slice<StridedSlice&&> { static const int value = 1; };
+template<typename idx> struct is_sliceImpl        { static const bool value = 0; };
+template<   > struct is_sliceImpl<FullSlice     > { static const bool value = 1; };
+template<   > struct is_sliceImpl<ContigSlice   > { static const bool value = 1; };
+template<   > struct is_sliceImpl<StridedSlice  > { static const bool value = 1; };
+
+template<typename idx> 
+struct is_slice { 
+   static const bool value = is_sliceImpl<typename std::remove_reference<idx>::type>::value;
+};
 
 /*** Counts the number of slices in a view ***/
 template<typename front,typename... indices> struct count_slice;

@@ -33,7 +33,7 @@ struct OP { \
 #define FortCpp_LHS_CONSTANT_OP(OP,X)  \
    template <typename Lhs,typename Derived> \
    inline const ConstantOp<internal::LHS, \
-                           typename std::enable_if<std::is_arithmetic<Lhs>::value,Lhs>::type, \
+                           typename std::enable_if<!internal::is_array<Lhs>::value,Lhs>::type, \
                            Derived, \
                            OP<Lhs,typename internal::traits<Derived>::Scalar> > \
                            operator X \
@@ -48,7 +48,7 @@ struct OP { \
    template <typename Derived,typename Rhs> \
    inline const ConstantOp<internal::RHS, \
                            Derived, \
-                           typename std::enable_if<std::is_arithmetic<Rhs>::value,Rhs>::type, \
+                           typename std::enable_if<!internal::is_array<Rhs>::value,Rhs>::type, \
                            OP<typename internal::traits<Derived>::Scalar,Rhs> > \
                            operator X \
      (const ArrayBase<Derived> &lhs,const Rhs& rhs) \

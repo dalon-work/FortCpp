@@ -9,16 +9,20 @@ namespace internal
 
 /*********** IS_ARRAY **********/
 
-template<typename Derived> struct is_array;
+template<typename Derived> 
+struct is_arrayImpl { static const bool value = 0; };
 
-template<typename Derived> struct is_array<ArrayBase<Derived  > > { static const bool value = 1; };
-template<typename Derived> struct is_array<ArrayBase<Derived& > > { static const bool value = 1; };
-template<typename Derived> struct is_array<ArrayBase<Derived&&> > { static const bool value = 1; };
+template<typename T,int Rank,int Options>                struct is_arrayImpl<Alloc<T,Rank,Options> >       { static const bool value = 1; };
+template<typename Derived>                               struct is_arrayImpl<ArrayBase<Derived> >          { static const bool value = 1; };
+template<typename T,int... dims>                         struct is_arrayImpl<Fixed<T,dims...> >            { static const bool value = 1; };
+template<typename Lhs,typename Rhs,typename Op>          struct is_arrayImpl<BinaryOp<Lhs,Rhs,Op> >        { static const bool value = 1; };
+template<int Side,typename Lhs,typename Rhs,typename Op> struct is_arrayImpl<ConstantOp<Side,Lhs,Rhs,Op> > { static const bool value = 1; };
+template<typename Rhs,typename Op>                       struct is_arrayImpl<UnaryOp<Rhs,Op> >             { static const bool value = 1; };
 
 template<typename Derived>
 struct is_array
 {
-   static const bool value = 0;
+   static const bool value = is_arrayImpl<typename std::remove_reference<Derived>::type>::value;
 };
 
 /*********** PRODUCT ***********/
