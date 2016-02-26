@@ -45,9 +45,9 @@ private:
 	std::array<int,Rank> _str = {{0}};
 
 public:
-	Alloc(){
-      static_assert(Rank > 0,"RANK OF ARRAY MUST BE GREATER THAN 0");
-   }
+	Alloc() {
+		static_assert(Rank > 0,"RANK OF ARRAY MUST BE GREATER THAN 0");
+	}
 
 	Alloc(const Derived& B) : Alloc() {
 		(*this).mold(B);
@@ -265,13 +265,13 @@ public:
 
 	}
 
-	 void mapView(T* p,
-	              const std::array<int,Rank>& dim,
-	              const std::array<int     ,Rank>& str) {
-	     _storage.map(p,internal::product<Rank>(dim));
-	     _dim = dim;
-	     _str = str;
-	 }
+	void mapView(T* p,
+	             const std::array<int,Rank>& dim,
+	             const std::array<int     ,Rank>& str) {
+		_storage.map(p,internal::product<Rank>(dim));
+		_dim = dim;
+		_str = str;
+	}
 
 
 	// template<typename... indices>

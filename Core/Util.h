@@ -9,7 +9,7 @@ namespace internal
 
 /*********** IS_ARRAY **********/
 
-template<typename Derived> 
+template<typename Derived>
 struct is_arrayImpl { static const bool value = 0; };
 
 template<typename T,int Rank,int Options>                struct is_arrayImpl<Alloc<T,Rank,Options> >       { static const bool value = 1; };
@@ -20,9 +20,8 @@ template<int Side,typename Lhs,typename Rhs,typename Op> struct is_arrayImpl<Con
 template<typename Rhs,typename Op>                       struct is_arrayImpl<UnaryOp<Rhs,Op> >             { static const bool value = 1; };
 
 template<typename Derived>
-struct is_array
-{
-   static const bool value = is_arrayImpl<typename std::remove_reference<Derived>::type>::value;
+struct is_array {
+	static const bool value = is_arrayImpl<typename std::remove_reference<Derived>::type>::value;
 };
 
 /*********** PRODUCT ***********/

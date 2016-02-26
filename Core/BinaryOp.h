@@ -27,7 +27,7 @@ struct traits<BinaryOp<Lhs,Rhs,Op> > {
 template<typename Lhs,typename Rhs,typename Op>
 class BinaryOp : public ArrayBase<BinaryOp<Lhs,Rhs,Op> >
 {
-   typedef typename Op::ReturnType ReturnType;
+	typedef typename Op::ReturnType ReturnType;
 	typedef BinaryOp<Lhs,Rhs,Op> Derived;
 
 protected:

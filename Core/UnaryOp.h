@@ -23,7 +23,7 @@ class UnaryOp : public ArrayBase<UnaryOp<Rhs,Op> >
 {
 	typedef typename internal::traits<Rhs>::Scalar T;
 	typedef UnaryOp<Rhs,Op> Derived;
-   typedef typename Op::ReturnType ReturnType;
+	typedef typename Op::ReturnType ReturnType;
 protected:
 	const Rhs& _rhs;
 	const Op&  _op;
@@ -51,7 +51,7 @@ public:
 
 template<typename T>
 struct NegUnOp {
-   typedef T ReturnType;
+	typedef T ReturnType;
 	inline static const T eval (const T& _rhs) {
 		return -_rhs;
 	}

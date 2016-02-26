@@ -21,15 +21,15 @@ struct SliceBase {
 		using namespace std;
 
 #ifndef NDEBUG
-      if( str == 0 ){
-         throw ZeroSliceException(beg,end,str);
-      }
-      if( str < 0 ){
-         throw ArrayException("NEGATIVE SLICE NOT CURRENTLY SUPPORTED");
-      }
+		if ( str == 0 ) {
+			throw ZeroSliceException(beg,end,str);
+		}
+		if ( str < 0 ) {
+			throw ArrayException("NEGATIVE SLICE NOT CURRENTLY SUPPORTED");
+		}
 #endif
 
-      // compute start index
+		// compute start index
 		if (beg < 0) {
 			beg = i+beg;
 		}
@@ -41,42 +41,42 @@ struct SliceBase {
 		}
 
 #ifndef NDEBUG
-      // bounds check
-      if( beg < 0 ){
-         throw BoundSliceException(beg,i);
-      }
-      if( beg >= i ){
-         throw BoundSliceException(beg,i);
-      }
+		// bounds check
+		if ( beg < 0 ) {
+			throw BoundSliceException(beg,i);
+		}
+		if ( beg >= i ) {
+			throw BoundSliceException(beg,i);
+		}
 #endif
 
-      // compute end index
+		// compute end index
 		if (end == END) {
 			end = i;
 		}
 		else if (end < 0) {
 			end = i+end;
 		}
-      else if (end == BEG) {
-         end = 0;
-      }
+		else if (end == BEG) {
+			end = 0;
+		}
 
 #ifndef NDEBUG
-      // bounds check
-      if( end < 0 ){
-         throw BoundSliceException(end,i);
-      }
-      if( end > i ){
-         throw BoundSliceException(end,i);
-      }
-
-      // zero slice check
-		if ( (beg > end) && str > 0) {
-         throw ZeroSliceException(beg,end,str);
+		// bounds check
+		if ( end < 0 ) {
+			throw BoundSliceException(end,i);
 		}
-      if ( (end > beg) && str < 0) {
-         throw ZeroSliceException(beg,end,str);
-      }
+		if ( end > i ) {
+			throw BoundSliceException(end,i);
+		}
+
+		// zero slice check
+		if ( (beg > end) && str > 0) {
+			throw ZeroSliceException(beg,end,str);
+		}
+		if ( (end > beg) && str < 0) {
+			throw ZeroSliceException(beg,end,str);
+		}
 #endif
 
 		if (str < 0) {

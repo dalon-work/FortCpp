@@ -115,10 +115,10 @@ public:
 #endif
 		return internal::fixed_get_dim<1,r,dims...>::value;
 	}
-	std::array<int,Rank> get_dim()   const { 
-      std::array<int,Rank> d = {{dims...}};
-      return d;                  
-   }
+	std::array<int,Rank> get_dim()   const {
+		std::array<int,Rank> d = {{dims...}};
+		return d;
+	}
 
 //  const std::array<int,Rank>& get_str()   const { return _str;                  }
 //  bool allocated ()                            const { return _storage.allocated();  }

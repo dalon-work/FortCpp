@@ -12,9 +12,9 @@ template<   > struct is_sliceImpl<FullSlice     > { static const bool value = 1;
 template<   > struct is_sliceImpl<ContigSlice   > { static const bool value = 1; };
 template<   > struct is_sliceImpl<StridedSlice  > { static const bool value = 1; };
 
-template<typename idx> 
-struct is_slice { 
-   static const bool value = is_sliceImpl<typename std::remove_reference<idx>::type>::value;
+template<typename idx>
+struct is_slice {
+	static const bool value = is_sliceImpl<typename std::remove_reference<idx>::type>::value;
 };
 
 /*** Counts the number of slices in a view ***/

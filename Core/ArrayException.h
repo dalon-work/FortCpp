@@ -107,7 +107,7 @@ public:
 class BoundSliceException : public ArrayException
 {
 public:
-   int i,d;
+	int i,d;
 	BoundSliceException(int I,int D) : i(I), d(D) {}
 
 	const char* what() const throw() {
@@ -122,14 +122,14 @@ public:
 class ZeroSliceException : public ArrayException
 {
 public:
-   int b,e,s;
+	int b,e,s;
 	ZeroSliceException(int B,int E,int S) : b(B), e(E), s(S) {}
 
 	const char* what() const throw() {
 		std::stringstream s;
 		s << "SLICE IS OF SIZE 0 WITH:" << std::endl
-        << "BEG: " << b << " END: " << e << " STRIDE: " << s << std::endl;
-		return s.str().c_str(); 
+		  << "BEG: " << b << " END: " << e << " STRIDE: " << s << std::endl;
+		return s.str().c_str();
 	}
 };
 
