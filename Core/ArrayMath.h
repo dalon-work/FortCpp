@@ -7,6 +7,41 @@ namespace FortCpp
 namespace Math
 {
 
+template<typename T=double>
+static Alloc<T,1> linspace(long double start, long double stop, int num,bool endpoint=1){
+ Alloc<T,1> A;
+ A.allocate(num);
+ int end = endpoint ? 1 : 0;
+ long double dx = (stop-start)/static_cast<long double>(num-end);
+
+ for(int i=0;i<num;i++){
+   A[i] = static_cast<T>(start+static_cast<long double>(i)*dx);
+ }
+
+ return A;
+}
+
+// void cshift(const int num=1){
+//  if(num > 0){
+//    for(int n=0;n<num;n++){
+//      T keep = derived()[d1()-1];
+//      for(int i=d1()-1;i>1;i--){
+//        derived()[i] = derived()[i-1];
+//      }
+//      derived()[0] = keep;
+//    }
+//  }
+//  else if(num < 0){
+//    for(int n=0;n>num;n--){
+//      T keep = derived()[0];
+//      for(int i=1;i<d1();i++){
+//        derived()[i-1] = derived()[i];
+//      }
+//      derived()[d1()-1] = keep;
+//    }
+//  }
+// }
+
 template<typename Derived>
 int count(const ArrayBase<Derived>& rhs)
 {
@@ -77,6 +112,7 @@ typename internal::traits<Derived>::Scalar max(const ArrayBase<Derived>& rhs)
 	return m;
 }
 
+// UnaryOp stuff
 
 template<typename Derived>
 UnaryOp<Derived,SqtUnOp<typename internal::traits<Derived>::Scalar> > sqrt(const ArrayBase<Derived>& rhs)
