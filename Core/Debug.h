@@ -107,6 +107,28 @@ void compare_dims(const std::array<int,Rank>& lhs,
 
 template<typename Lhs,typename T,int... dims>
 inline
+void compare_dims(const Lhs& lhs, const Fixed<T,dims...>& rhs);
+
+template<typename Lhs,typename T,int Rank,int Options>
+inline
+void compare_dims(const Lhs& lhs, const Alloc<T,Rank,Options>& rhs);
+
+template<typename Lhs,typename Lhs2,typename Rhs,typename Op>
+inline
+void compare_dims(const Lhs& lhs, const BinaryOp<Lhs2,Rhs,Op>& rhs);
+
+template<typename Lhs,int Side,typename Lhs2,typename Rhs,typename Op>
+inline
+void compare_dims(const Lhs& lhs,const ConstantOp<Side,Lhs2,Rhs,Op>& rhs);
+
+template<typename Lhs,typename Rhs,typename Op>
+inline
+void compare_dims(const Lhs& lhs,const UnaryOp<Rhs,Op>& rhs);
+
+/**************************/
+
+template<typename Lhs,typename T,int... dims>
+inline
 void compare_dims(const Lhs& lhs, const Fixed<T,dims...>& rhs)
 {
 	compare_dims<internal::traits<Lhs>::Rank>(lhs.get_dim(),rhs.get_dim());

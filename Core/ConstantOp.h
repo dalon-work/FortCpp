@@ -49,7 +49,7 @@ class ConstantOp<internal::LHS,Lhs,Rhs,Op> : public ArrayBase<ConstantOp<interna
   { }
 
   inline const T operator [] (const int &i) const{
-    return _op.eval(static_cast<T>(_c),static_cast<T>(_rhs[i]));
+    return _op.eval(_c,_rhs[i]);
   }
 
   inline const Rhs& getExpr() const { return _rhs; }
@@ -74,7 +74,7 @@ class ConstantOp<internal::RHS,Lhs,Rhs,Op> : public ArrayBase<ConstantOp<interna
   inline ConstantOp(const ConstantOp &A) : _c(A._c), _lhs(A._lhs), _op(A._op) {}
 
   inline const T operator [] (const int &i) const{
-    return _op.eval(static_cast<T>(_lhs[i]),static_cast<T>(_c));
+    return _op.eval(_lhs[i],_c);
   }
 
   inline const Lhs& getExpr() const { return _lhs; }

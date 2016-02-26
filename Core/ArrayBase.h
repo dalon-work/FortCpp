@@ -79,7 +79,7 @@ public:
 #endif
 #pragma GCC ivdep
 		for (int i=0; i<this->size(); i++) {
-			derived()[i] = static_cast<T>(B.derived()[i]);
+			derived()[i] = B.derived()[i];
 		}
 		return derived();
 	}

@@ -41,7 +41,7 @@ public:
 	BinaryOp(const BinaryOp& A) : _lhs(A._lhs), _rhs(A._rhs), _op(A._op) { }
 
 	const ReturnType operator [] (const int& i) const {
-		return _op.eval(static_cast<ReturnType>(_lhs[i]),static_cast<ReturnType>(_rhs[i]));
+		return _op.eval(_lhs[i],_rhs[i]);
 	}
 
 	const Lhs& get_lhs() const { return _lhs; }

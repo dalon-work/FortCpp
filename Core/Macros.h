@@ -11,7 +11,7 @@
 template<typename T1,typename T2> \
 struct OP { \
    typedef decltype( std::declval<T1>() X std::declval<T2>() ) ReturnType; \
-	inline static const ReturnType eval(const ReturnType& _lhs,const ReturnType& _rhs) { \
+	inline static const ReturnType eval(const T1& _lhs,const T2& _rhs) { \
 		return _lhs X _rhs; \
 	} \
 }; 
