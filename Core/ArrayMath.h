@@ -7,8 +7,19 @@ namespace FortCpp
 namespace Math
 {
 
+template<typename T>
+Alloc<T,1> reverse(const Alloc<T,1>& B)
+{
+   Alloc<T,1> A;
+   A.mold(B);
+   int m=B.size()-1;;
+   for(int i=0;i<B.size();i++){
+      A[i] = B[m--];
+   }
+}
+
 template<typename T=double>
-static Alloc<T,1> linspace(long double start, long double stop, int num,bool endpoint=1){
+Alloc<T,1> linspace(long double start, long double stop, int num,bool endpoint=1){
  Alloc<T,1> A;
  A.allocate(num);
  int end = endpoint ? 1 : 0;
@@ -21,26 +32,28 @@ static Alloc<T,1> linspace(long double start, long double stop, int num,bool end
  return A;
 }
 
-// void cshift(const int num=1){
-//  if(num > 0){
-//    for(int n=0;n<num;n++){
-//      T keep = derived()[d1()-1];
-//      for(int i=d1()-1;i>1;i--){
-//        derived()[i] = derived()[i-1];
-//      }
-//      derived()[0] = keep;
-//    }
-//  }
-//  else if(num < 0){
-//    for(int n=0;n>num;n--){
-//      T keep = derived()[0];
-//      for(int i=1;i<d1();i++){
-//        derived()[i-1] = derived()[i];
-//      }
-//      derived()[d1()-1] = keep;
-//    }
-//  }
-// }
+template<typename T>
+void cshift(Alloc<T,1>& A,int num=1){
+   Alloc<T,1> keep(num);
+   auto beg = A.view(Slice( BEG,num));
+   auto end = A.view(Slice(-num,END));
+ if(num > 0){
+    Alloc<T,1> keep(num); 
+    keep = beg;
+    for(int i=0;i<A.size()-num;i++){
+       A[i]=A[i+num];
+    }
+    end = keep;
+ }
+ else if(num < 0){
+    Alloc<T,1> keep(num);
+    keep = end;
+    for(int i=A.size()-1;i>=num;i--){
+       A[i] = A[i-num];
+    }
+    beg = keep;
+ }
+}
 
 template<typename Derived>
 int count(const ArrayBase<Derived>& rhs)

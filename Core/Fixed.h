@@ -125,7 +125,7 @@ public:
 //  bool associated()                            const { return _storage.associated(); }
 //    bool contiguous()                            const { return Stride == Contig;      }
 //    int rank()                              const { return Rank;                  }
-//  T*  data()                                         { return _storage.data();       }
+ T*  data()                                         { return _storage.data();       }
 
 	/***********************************************/
 

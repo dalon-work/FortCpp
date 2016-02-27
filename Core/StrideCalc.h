@@ -172,11 +172,13 @@ void set_len(const std::array<int,Rank>& dim,
 
 /***** SET_BEG *******/
 
+static inline
 int get_beg(const int& i)
 {
 	return static_cast<int>(i);
 }
 
+static inline
 int get_beg(const SliceBase& i)
 {
 	return static_cast<int>(i.beg);

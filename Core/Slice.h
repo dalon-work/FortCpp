@@ -99,21 +99,25 @@ struct StridedSlice : public SliceBase {
 	StridedSlice(int b,int e,int s) : SliceBase(b,e,s) {};
 };
 
+static inline
 FullSlice Slice()
 {
 	return FullSlice();
 }
 
+static inline
 ContigSlice Slice(int b)
 {
 	return ContigSlice(b);
 }
 
+static inline
 ContigSlice Slice(int b,int e)
 {
 	return ContigSlice(b,e);
 }
 
+static inline
 StridedSlice Slice(int b,int e,int s)
 {
 	return StridedSlice(b,e,s);
