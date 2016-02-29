@@ -134,6 +134,7 @@ public:
 	FortCpp_BASE_UNARY_OP(SinUnOp,sin)
 	FortCpp_BASE_UNARY_OP(CosUnOp,cos)
 	FortCpp_BASE_UNARY_OP(SqtUnOp,sqrt)
+	FortCpp_BASE_UNARY_OP(FloorUnOp,floor)
 
 	inline const UnaryOp<Derived,NegUnOp<T> >operator -() const {
 		return UnaryOp<Derived,NegUnOp<T> >(derived(),NegUnOp<T>());

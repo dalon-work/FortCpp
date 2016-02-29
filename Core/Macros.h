@@ -25,11 +25,19 @@ struct OP { \
 #define FortCpp_UNARY_OP(NAME,FUNC) \
   template<typename T> \
   struct NAME{ \
-     typedef decltype( std::FUNC( std::declval<typename std::enable_if<std::is_arithmetic<T>::value,T>::type >() ) ) ReturnType; \
+     typedef decltype( FUNC( std::declval<T>() ) ) ReturnType; \
     inline static const ReturnType eval (const T &_rhs){ \
      return FUNC(_rhs); \
     } \
   };
+
+#define FortCpp_MATH_UNARY_OP(NAME,FUNC) \
+   template<typename Derived> \
+   UnaryOp<Derived,NAME<typename internal::traits<Derived>::Scalar> > \
+   FUNC(const ArrayBase<Derived>& rhs) \
+   { \
+      return rhs.FUNC(); \
+   }; 
 
 #define FortCpp_LHS_CONSTANT_OP(OP,X)  \
    template <typename Lhs,typename Derived> \

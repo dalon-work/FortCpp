@@ -60,6 +60,7 @@ struct NegUnOp {
 FortCpp_UNARY_OP(SinUnOp,sin)
 FortCpp_UNARY_OP(CosUnOp,cos)
 FortCpp_UNARY_OP(SqtUnOp,sqrt)
+FortCpp_UNARY_OP(FloorUnOp,floor)
 
 }; // end namespace FortCpp
 #endif
