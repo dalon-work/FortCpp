@@ -1,5 +1,5 @@
-#ifndef FortCpp_cONSTANTOP_h
-#define FortCpp_cONSTANTOP_h
+#ifndef FortCpp_CONSTANTOP_h
+#define FortCpp_CONSTANTOP_h
 
 namespace FortCpp
 {
@@ -53,6 +53,8 @@ public:
 
 	inline const Rhs& getExpr() const { return _rhs; }
 
+   inline unsigned  size() const { return _rhs.size(); }
+
 };
 
 /*
@@ -77,6 +79,8 @@ public:
 	}
 
 	inline const Lhs& getExpr() const { return _lhs; }
+
+   inline unsigned  size() const { return _lhs.size(); }
 
 };
 

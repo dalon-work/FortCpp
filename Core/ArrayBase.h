@@ -44,7 +44,7 @@ public:
 		internal::debug::compare_dims(derived(),B.derived());
 #endif
 #pragma GCC ivdep
-		for (int i=0; i<this->size(); i++) {
+		for (int i=0; i<derived().size(); i++) {
 			derived()[i] = B.derived()[i];
 		}
 		return derived();
@@ -55,7 +55,7 @@ public:
 		internal::debug::compare_dims(derived(),B.derived());
 #endif
 #pragma GCC ivdep
-		for (int i=0; i<this->size(); i++) {
+		for (int i=0; i<derived().size(); i++) {
 			derived()[i] = B.derived()[i];
 		}
 		return derived();
@@ -66,7 +66,7 @@ public:
 	 */
 	inline const T& operator = (const T& B) {
 #pragma GCC ivdep
-		for (int i=0; i < size(); i++) {
+		for (int i=0; i < derived().size(); i++) {
 			derived()[i] = B;
 		}
 		return B;
@@ -78,14 +78,12 @@ public:
 		internal::debug::compare_dims(derived(),B.derived());
 #endif
 #pragma GCC ivdep
-		for (int i=0; i<this->size(); i++) {
+		for (int i=0; i<derived().size(); i++) {
 			derived()[i] = B.derived()[i];
 		}
 		return derived();
 	}
 
-	constexpr int size() const { return derived().size(); }
-	constexpr int size(int i) const { return derived().size(i); }
 
 	/**
 	 * += and -= operators
@@ -144,7 +142,7 @@ public:
 	Derived& derived() { return *static_cast<Derived*>(this); }
 
 	friend std::ostream& operator << (std::ostream& os, const ArrayBase<Derived>& A) {
-		for (int i=0; i<A.size(); i++) {
+		for (int i=0; i<A.derived().size(); i++) {
 			os << A.derived()[i] << ' ';
 		}
 		return os;

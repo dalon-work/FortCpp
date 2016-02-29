@@ -42,6 +42,8 @@ public:
 		return _rhs;
 	}
 
+   unsigned size() const { return _rhs.size(); }
+
 };
 
 /*

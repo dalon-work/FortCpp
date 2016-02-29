@@ -14,10 +14,11 @@ Alloc<T,1> reverse(const Alloc<T,1>& B)
 {
    Alloc<T,1> A;
    A.mold(B);
-   int m=B.size()-1;;
+   int m=B.size()-1;
    for(int i=0;i<B.size();i++){
       A[i] = B[m--];
    }
+   return A;
 }
 
 template<typename T=double>
@@ -48,6 +49,7 @@ void cshift(Alloc<T,1>& A,int num=1){
     end = keep;
  }
  else if(num < 0){
+    num = -num;
     Alloc<T,1> keep(num);
     keep = end;
     for(int i=A.size()-1;i>=num;i--){
@@ -61,7 +63,7 @@ template<typename Derived>
 int count(const ArrayBase<Derived>& rhs)
 {
 	int c = 0;
-	for (int i=0; i<rhs.size(); i++) {
+	for (int i=0; i<rhs.derived().size(); i++) {
 		if (rhs.derived()[i]) { c++; }
 	}
 	return c;
@@ -70,7 +72,7 @@ int count(const ArrayBase<Derived>& rhs)
 template<typename Derived>
 bool isnan(const ArrayBase<Derived>& rhs)
 {
-	for (int i=0; i<rhs.size(); i++) {
+	for (int i=0; i<rhs.derived().size(); i++) {
 		if (rhs.derived()[i] != rhs.derived()[i]) { return 1; }
 	}
 	return 0;
@@ -79,7 +81,7 @@ bool isnan(const ArrayBase<Derived>& rhs)
 template<typename Derived>
 bool any(const ArrayBase<Derived>& rhs)
 {
-	for (int i=0; i<rhs.size(); i++) {
+	for (int i=0; i<rhs.derived().size(); i++) {
 		if (rhs.derived()[i]) { return 1; }
 	}
 	return 0;
@@ -88,7 +90,7 @@ bool any(const ArrayBase<Derived>& rhs)
 template<typename Derived>
 bool all(const ArrayBase<Derived>& rhs)
 {
-	for (int i=0; i<rhs.size(); i++) {
+	for (int i=0; i<rhs.derived().size(); i++) {
 		if (!rhs.derived()[i]) { return 0; }
 	}
 	return 1;
@@ -99,7 +101,7 @@ typename internal::traits<Derived>::Scalar sum(const ArrayBase<Derived>& rhs)
 {
 	typename internal::traits<Derived>::Scalar s;
 	s = 0;
-	for (int i=0; i<rhs.size(); i++) {
+	for (int i=0; i<rhs.derived().size(); i++) {
 		s += rhs.derived()[i];
 	}
 	return s;
@@ -110,7 +112,7 @@ typename internal::traits<Derived>::Scalar min(const ArrayBase<Derived>& rhs)
 {
 	typename internal::traits<Derived>::Scalar m;
 	m = rhs.derived()[0];
-	for (int i=1; i<rhs.size(); i++) {
+	for (int i=1; i<rhs.derived().size(); i++) {
 		m = m < rhs.derived()[i] ? m : rhs.derived()[i];
 	}
 	return m;
@@ -121,7 +123,7 @@ typename internal::traits<Derived>::Scalar max(const ArrayBase<Derived>& rhs)
 {
 	typename internal::traits<Derived>::Scalar m;
 	m = rhs.derived()[0];
-	for (int i=1; i<rhs.size(); i++) {
+	for (int i=1; i<rhs.derived().size(); i++) {
 		m = m > rhs.derived()[i] ? m : rhs.derived()[i];
 	}
 	return m;

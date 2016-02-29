@@ -17,7 +17,7 @@ private:
 
 	T* _A=nullptr;
 	bool _alloc=0;
-	int _size=0;
+	unsigned _size=0;
 
 public:
 	Storage()=default;
@@ -28,13 +28,13 @@ public:
 		deallocate();
 	}
 
-	void allocate(int i) {
+	void allocate(unsigned i) {
 		_alloc = 1;
 		_A = new T[i];
 		_size = i;
 	}
 
-	void map(T* A, int i) {
+	void map(T* A, unsigned i) {
 		_alloc = 0;
 		_A = A;
 		_size = i;
@@ -42,7 +42,7 @@ public:
 
 	void swap(Derived& B) {
 		T*   p =   _A;
-		int  s = _size;
+		unsigned  s = _size;
 		bool a = _alloc;
 
 		_A     = B._A;
@@ -57,7 +57,7 @@ public:
 	T* data() { return _A; }
 	bool allocated() const { return _alloc; }
 	bool associated() const { return _A; }
-	int size() const { return _size; }
+	unsigned size() const { return _size; }
 
 	const T& operator [] (int i) const {
 // #ifdef FortCpp_READ_NAN
@@ -108,7 +108,7 @@ public:
 	T* data() { return _A.data(); }
 	bool allocated() const { return 1; }
 	bool associated() const { return 1; }
-	int size() const { return _size; }
+	unsigned size() const { return _size; }
 
 	const T& operator [] (int i) const {
 // #ifdef FortCpp_READ_NAN

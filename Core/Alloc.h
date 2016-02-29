@@ -52,11 +52,14 @@ public:
 	Alloc(const Derived& B) : Alloc() {
 		(*this).mold(B);
 		*this = B;
+      std::cout << "COPY" << std::endl;
 	}
 
-	Alloc(Derived&& B) : Alloc() {
-		swap(B);
-	}
+   Alloc(Derived&& B) = default;
+
+	// Alloc(Derived&& B) : Alloc() {
+	// 	swap(B);
+	// }
 
 	~Alloc() {
 		deallocate();
@@ -129,7 +132,7 @@ public:
 
 	void allocate(const std::array<int,Rank>& new_dim) {
 #ifndef NDEBUG
-		internal::debug::is_allocated(allocated());
+		internal::debug::is_allocated(allocated(),associated());
 #endif
 		_dim = new_dim;
 		for (int i=0; i<Rank; i++) { _str[i] = 1; }
@@ -216,8 +219,8 @@ public:
 
 	/***********************************************/
 
-	int size()                              const { return _storage.size();       }
-	int size  (int r)                  const {
+	unsigned size()                         const { return _storage.size();       }
+	unsigned size  (int r)                  const {
 #ifndef NDEBUG
 		internal::debug::in_rank<Rank>(r);
 #endif

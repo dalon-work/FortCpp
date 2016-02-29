@@ -47,6 +47,8 @@ public:
 	const Lhs& get_lhs() const { return _lhs; }
 	const Rhs& get_rhs() const { return _rhs; }
 
+   unsigned size() const { return _lhs.size(); }
+
 };
 
 FortCpp_BINARY_OP(AddBinOp,+)
