@@ -4,8 +4,10 @@
 namespace FortCpp
 {
 
-namespace Math
-{
+   using std::sqrt;
+   using std::cos;
+   using std::sin;
+   using std::floor;
 
 template<typename T>
 Alloc<T,1> reverse(const Alloc<T,1>& B)
@@ -127,25 +129,10 @@ typename internal::traits<Derived>::Scalar max(const ArrayBase<Derived>& rhs)
 
 // UnaryOp stuff
 
-template<typename Derived>
-UnaryOp<Derived,SqtUnOp<typename internal::traits<Derived>::Scalar> > sqrt(const ArrayBase<Derived>& rhs)
-{
-	return rhs.sqrt();
-};
-
-template<typename Derived>
-UnaryOp<Derived,SinUnOp<typename internal::traits<Derived>::Scalar> > sin(const ArrayBase<Derived>& rhs)
-{
-	return rhs.sin();
-};
-
-template<typename Derived>
-UnaryOp<Derived,CosUnOp<typename internal::traits<Derived>::Scalar> > cos(const ArrayBase<Derived>& rhs)
-{
-	return rhs.cos();
-};
-
-}; // end namespace Math
+FortCpp_MATH_UNARY_OP(SqtUnOp,sqrt)
+FortCpp_MATH_UNARY_OP(SinUnOp,sin)
+FortCpp_MATH_UNARY_OP(CosUnOp,cos)
+FortCpp_MATH_UNARY_OP(FloorUnOp,floor)
 
 }; // end namespace FortCpp
 
