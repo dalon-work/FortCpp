@@ -53,8 +53,8 @@ public:
 
 template<typename T>
 struct NegUnOp {
-	typedef T ReturnType;
-	inline static const T eval (const T& _rhs) {
+	typedef decltype( -std::declval<T>() ) ReturnType;
+	inline static const ReturnType eval (const T& _rhs) {
 		return -_rhs;
 	}
 };
