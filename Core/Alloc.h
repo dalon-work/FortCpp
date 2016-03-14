@@ -52,7 +52,7 @@ public:
 	Alloc(const Derived& B) : Alloc() {
 		(*this).mold(B);
 		*this = B;
-      std::cout << "COPY" << std::endl;
+      std::cout << "FORTCPP COPY!" << std::endl;
 	}
 
    Alloc(Derived&& B) = default;
@@ -72,6 +72,7 @@ public:
 	}
 
 	template<typename... indices>
+   explicit
 	Alloc(indices... idx) {
 		allocate(idx...);
 	}
@@ -113,7 +114,6 @@ public:
 	const Derived& operator = (Derived&& B) {
 		return Base::operator = (B);
 	}
-
 
 	/************************************************/
 
