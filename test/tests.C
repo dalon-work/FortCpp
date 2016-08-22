@@ -326,7 +326,6 @@ TEST_CASE("Alloc View","[Alloc][View]"){
          d = 0;
          auto g = d.view(Slice(BEG,END,2),Slice(BEG,END,2));
 
-
          REQUIRE_FALSE(g.contiguous());
          REQUIRE(g.rank() == 2);
          CHECK(g.size(1) == 5);
@@ -516,6 +515,22 @@ TEST_CASE("Alloc View","[Alloc][View]"){
          }
       }
    }
+
+   SECTION("Negative Indexing","[Neg]") {
+
+      Alloc<int,1> a(10);
+
+      for(int i=0;i<10;i++) {
+         a[i] = i;
+      }
+
+      auto b = a.view(Slice(-1,END));
+
+      cout << b << endl;
+
+      REQUIRE( b.size() == 1 );
+      REQUIRE( b[0] == 9 );
+   }
 }
 
 #ifndef NDEBUG
@@ -615,19 +630,17 @@ TEST_CASE("Array Math","[Math]"){
       REQUIRE(c[i] == -a[i]);
    }
 
-   c = Math::sqrt(a);
+   c = sqrt(a);
 
    for(int i=0;i<c.size();i++){
       REQUIRE(c[i] == Approx( std::sqrt(a[i]) ) );
    }
 
-   c = Math::cos(a);
+   c = cos(a);
 
    for(int i=0;i<c.size();i++){
       REQUIRE(c[i] == Approx( std::cos(a[i]) ) );
    }
-
-   using namespace Math;
 
    c = a*b+sqrt(a)*cos(b);
 

@@ -37,10 +37,9 @@ Alloc<T,1> linspace(long double start, long double stop, int num,bool endpoint=1
 
 template<typename T>
 void cshift(Alloc<T,1>& A,int num=1){
-   Alloc<T,1> keep(num);
-   auto beg = A.view(Slice( BEG,num));
-   auto end = A.view(Slice(-num,END));
  if(num > 0){
+    auto beg = A.view(Slice( BEG,num));
+    auto end = A.view(Slice(-num,END));
     Alloc<T,1> keep(num); 
     keep = beg;
     for(int i=0;i<A.size()-num;i++){
@@ -50,6 +49,8 @@ void cshift(Alloc<T,1>& A,int num=1){
  }
  else if(num < 0){
     num = -num;
+    auto beg = A.view(Slice( BEG,num));
+    auto end = A.view(Slice(-num,END));
     Alloc<T,1> keep(num);
     keep = end;
     for(int i=A.size()-1;i>=num;i--){
