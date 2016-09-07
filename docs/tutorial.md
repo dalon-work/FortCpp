@@ -121,60 +121,6 @@ This library uses features from the C++11 standard, so you have to use a C++11 c
 With G++, this means compiling with the -`std=c++11` option. This library also relies heavily on the ability
 of the compiler to inline everything, or else performance goes to zilch. For G++, this means compiling with the `-O3` flag.
 
-## Slicing
-
-A slice can be created and used as follows:
-```c++
-Array1d<int> a(100); // Dynamic 1d array of size 100
-
-a = 1; // set all of a equal to 1
-
-auto b = a(S(0,100,2)); // This creates a StridedArray1d, which points to every other element of array `a`
-                        // and use the `auto` keyword, these templates are super-annoying.
-                        // NumPy calls this a `view`.
-```
-The function `S` is a helper function that generates a `Slice` object. I know, I know, I've imported a nasty
-capital `S` into the global namespace. How many times do you actually use that particular name?
-I might have this function name be a `#define`, so the name can be changed to something you're okay with.
-
-StridedArrays know their size and dimensions, and can be accessed like a normal array. 
-Continuing with the above example:
-```c++
-b = 0; // this sets every other element of `a` equal to 0
-
-for(int i=0;i<b.size();i++) // set every other element of `a` equal to i
-{
-  b[i] = i;
-}
-```
-These can also be used in whole-array operations like:
-```c++
-Array3d<double> a(100,100,100);
-Array2d<int> b;
-auto c = a( S(0,50) ,2, S(10,30) );
-b.mold( c ); // This allocates b to be equal to the 
-             // same size as the 2d slice of the 3d array `a`.
-                                   
-b = 2.0*c;
-```
-So, what is the function `S`? `S` is:
-```c++
-S(b,e);    
-S(b,e,s);
-S<L>(b);
-S<L,s>(b);
-```
-where the template parameter `L` is the length of the slice, and `b-e=L , stepping by s`.
-Due to the nature of C++, the slice does not include the last element specified (`e`).
-For example, slice `S(0,10)`, is length 10, starting at element 0, which means it actually runs from 0 to 9.
-Slices can also be saved and used later with the `auto` keyword:
-```c++
-auto a = S(1,4);
-Array3d<double> b(7,9,12);
-b( a, 10, 2 ) = 2.0;
-```
-A `StridedArray` knows when it is contiguous, allowing the compiler to optimize those operations.
-
 ## Copy operations
 
 FortC++ uses default copy/move constructors. I know, I'm a horrible C++ programmer, but right now, I have
