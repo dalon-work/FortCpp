@@ -242,6 +242,13 @@ public:
 
 	/***********************************************/
 
+   void view(Derived& other) {
+#ifndef NDEBUG
+		internal::debug::is_allocated(allocated(),associated());
+#endif
+      mapView(other.data(),other.get_dim(),other.get_str());
+   }
+
 	template<typename... indices>
 	Alloc<T, internal::count_slice<indices...>::count,
 	      Order | UnAligned | internal::contig_view<Order,Stride,indices...>::stride>
@@ -267,6 +274,8 @@ public:
 		return S;
 
 	}
+
+
 
 	void mapView(T* p,
 	             const std::array<int,Rank>& dim,
