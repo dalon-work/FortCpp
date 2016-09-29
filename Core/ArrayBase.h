@@ -43,7 +43,6 @@ public:
 #ifndef NDEBUG
 		internal::debug::compare_dims(derived(),B.derived());
 #endif
-#pragma GCC ivdep
 		for (int i=0; i<derived().size(); i++) {
 			derived()[i] = B.derived()[i];
 		}
@@ -54,7 +53,6 @@ public:
 #ifndef NDEBUG
 		internal::debug::compare_dims(derived(),B.derived());
 #endif
-#pragma GCC ivdep
 		for (int i=0; i<derived().size(); i++) {
 			derived()[i] = B.derived()[i];
 		}
@@ -65,7 +63,6 @@ public:
 	 * Sets the entire array to a given value
 	 */
 	inline const T& operator = (const T& B) {
-#pragma GCC ivdep
 		for (int i=0; i < derived().size(); i++) {
 			derived()[i] = B;
 		}
@@ -77,7 +74,6 @@ public:
 #ifndef NDEBUG
 		internal::debug::compare_dims(derived(),B.derived());
 #endif
-#pragma GCC ivdep
 		for (int i=0; i<derived().size(); i++) {
 			derived()[i] = B.derived()[i];
 		}
