@@ -126,10 +126,10 @@ public:
 	ZeroSliceException(int B,int E,int S) : b(B), e(E), s(S) {}
 
 	const char* what() const throw() {
-		std::stringstream s;
-		s << "SLICE IS OF SIZE 0 WITH:" << std::endl
+		std::stringstream st;
+		st << "SLICE IS OF SIZE 0 WITH:" << std::endl
 		  << "BEG: " << b << " END: " << e << " STRIDE: " << s << std::endl;
-		return s.str().c_str();
+		return st.str().c_str();
 	}
 };
 
