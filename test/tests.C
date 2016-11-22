@@ -526,10 +526,47 @@ TEST_CASE("Alloc View","[Alloc][View]"){
 
       auto b = a.view(Slice(-1,END));
 
-      cout << b << endl;
-
       REQUIRE( b.size() == 1 );
       REQUIRE( b[0] == 9 );
+   }
+
+   SECTION("Negative Slicing","[Neg]") {
+
+      Alloc<int,1> a(10);
+
+      for(int i=0;i<10;i++) {
+         a[i] = i;
+      }
+
+      auto b = reverse(a);
+
+      auto c = a.view(Slice(END,BEG,-1));
+
+      for(int i=0;i<10;i++) {
+         REQUIRE( b[i] == c[i] );
+      }
+
+      auto f = a.view(Slice(END,BEG,-2) );
+
+      for(int i=0;i<5;i++) {
+         REQUIRE( f[i] == b[2*i] );
+      }
+
+      Alloc<int,2> d(5,5);
+      for(int j=0;j<5;j++) {
+         for(int i=0;i<5;i++) {
+            d(i,j) = j*i;
+         }
+      }
+
+      auto e = d.view(Slice(END,BEG,-1),Slice(END,BEG,-1));
+
+      for(int j=0;j<5;j++) {
+         for(int i=0;i<5;i++) {
+            REQUIRE( e(i,j) == d(4-i,4-j) );
+         }
+      }
+
    }
 }
 

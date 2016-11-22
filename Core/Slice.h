@@ -17,6 +17,9 @@ struct SliceBase {
 	SliceBase(int b,int e) : beg(b),end(e),str(1) {}
 	SliceBase(int b,int e,int s) : beg(b),end(e),str(s) {}
 
+   /**
+    * i is the size of the given dimension
+    */
 	int len(int i) {
 		using namespace std;
 
@@ -24,17 +27,14 @@ struct SliceBase {
 		if ( str == 0 ) {
 			throw ZeroSliceException(beg,end,str);
 		}
-		if ( str < 0 ) {
-			throw ArrayException("NEGATIVE SLICE NOT CURRENTLY SUPPORTED");
-		}
 #endif
 
 		// compute start index
-		if (beg < 0) {
-			beg = i+beg;
-		}
-		else if (beg == END) {
+		if (beg == END) {
 			beg = i-1;
+		}
+      else if (beg < 0) {
+			beg = i+beg;
 		}
 		else if (beg == BEG) {
 			beg = 0;
@@ -58,12 +58,12 @@ struct SliceBase {
 			end = i+end;
 		}
 		else if (end == BEG) {
-			end = 0;
+			end = -1;
 		}
 
 #ifndef NDEBUG
 		// bounds check
-		if ( end < 0 ) {
+		if ( end < -1 ) {
 			throw BoundSliceException(end,i);
 		}
 		if ( end > i ) {
