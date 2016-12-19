@@ -177,6 +177,8 @@ public:
 
 	template<typename... indices>
 	const T& operator () (indices... idx) const {
+		static_assert(sizeof...(idx) == Rank,
+		              "NUMBER OF INDICES PASSED TO ALLOCATE DOES NOT MATCH RANK OF ARRAY");
 #ifndef NDEBUG
 		internal::debug::is_negative<0>(idx...);
 		internal::debug::in_bounds<0,Rank>(_dim,idx...);
@@ -189,6 +191,8 @@ public:
 
 	template<typename... indices>
 	T& operator () (indices... idx) {
+		static_assert(sizeof...(idx) == Rank,
+		              "NUMBER OF INDICES PASSED TO ALLOCATE DOES NOT MATCH RANK OF ARRAY");
 #ifndef NDEBUG
 		internal::debug::is_negative<0>(idx...);
 		internal::debug::in_bounds<0,Rank>(_dim,idx...);
