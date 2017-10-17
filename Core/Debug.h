@@ -166,6 +166,18 @@ void compare_dims(const Lhs& lhs,const UnaryOp<Rhs,Op>& rhs)
 	compare_dims(lhs,rhs.getExpr());
 }
 
+template<typename Lhs, typename Rhs,typename ReturnType,typename FuncType>
+void compare_dims(const Lhs& lhs, const FuncTypeOp<Rhs, ReturnType, FuncType> &rhs)
+{
+   compare_dims(lhs,rhs.getExpr());
+}
+
+template<typename Lhs,typename Rhs, typename ReturnType,typename FuncType>
+void compare_dims(const FuncTypeOp<Lhs, ReturnType, FuncType> &lhs, const Rhs &rhs)
+{
+   compare_dims(lhs.getExpr(),rhs);
+}
+
 
 
 }; // end namespace debug

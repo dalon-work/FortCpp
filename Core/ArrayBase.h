@@ -19,6 +19,7 @@
 #include "BinaryOp.h"
 #include "ConstantOp.h"
 #include "UnaryOp.h"
+#include "Functional.h"
 #include "Slice.h"
 #include "StrideCalc.h"
 
@@ -129,6 +130,11 @@ public:
 	FortCpp_BASE_UNARY_OP(CosUnOp,cos)
 	FortCpp_BASE_UNARY_OP(SqtUnOp,sqrt)
 	FortCpp_BASE_UNARY_OP(FloorUnOp,floor)
+
+   template<typename FuncType>
+   FuncTypeOp<Derived,typename std::result_of<FuncType(T&)>::type,FuncType> for_each(FuncType f) {
+      return FuncTypeOp<Derived,typename std::result_of<FuncType(T&)>::type,FuncType>(derived(),f);
+   }
 
 	inline const UnaryOp<Derived,NegUnOp<T> >operator -() const {
 		return UnaryOp<Derived,NegUnOp<T> >(derived(),NegUnOp<T>());

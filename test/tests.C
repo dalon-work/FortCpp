@@ -688,6 +688,53 @@ TEST_CASE("Array Math","[Math]"){
 
 }
 
+struct TestVal
+{
+   int x;
+   double y;
+};
+
+struct GetX
+{
+   int operator() (TestVal& t) const
+   {
+      return t.x;
+   }
+};
+
+struct SetXZero
+{
+   void operator() (TestVal& t)
+   {
+      t.x = 0;
+   }
+};
+
+TEST_CASE("for_each")
+{
+   Alloc<TestVal,1> a(10);
+
+   for(int i=0;i<10;i++) {
+      a[i].x = i;
+      a[i].y = i;
+   }
+
+   Alloc<int,1> b(10);
+
+   b = a.for_each( GetX() );
+
+   for(int i=0;i<10;i++) {
+      REQUIRE( b[i] == i );
+      b[i] = 7;
+   }
+
+   a.for_each( SetXZero() );
+
+   for(int i=0;i<10;i++) {
+      REQUIRE( a[i].x == 0);
+   }
+}
+
 
 
 

@@ -52,6 +52,7 @@ template<typename T,int... dims> class Fixed;
 template<typename Lhs,typename Rhs,typename Op> class BinaryOp;
 template<int Side,typename Lhs,typename Rhs,typename Op> class ConstantOp;
 template<typename Rhs,typename Op> class UnaryOp;
+template< typename Rhs, typename ReturnType, typename FuncType> class FuncTypeOp;
 
 }; // end namespace FortCpp
 
