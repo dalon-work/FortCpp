@@ -184,17 +184,14 @@ int get_beg(const SliceBase& i)
 	return static_cast<int>(i.beg);
 }
 
-template<int Rank,int D,typename tail>
-void set_beg(std::array<int,Rank>& beg,tail& i)
-{
-	beg[D] = get_beg(i);
-}
-
 template<int Rank,int D,typename head, typename... indices>
+constexpr
 void set_beg(std::array<int,Rank>& beg,head& i,const indices& ... idx)
 {
 	beg[D] = get_beg(i);
-	set_beg<Rank,D+1>(beg,idx...);
+   if constexpr(sizeof...(indices) != 0) {
+      set_beg<Rank,D+1>(beg,idx...);
+   }
 }
 
 /******* SET_STR *************/

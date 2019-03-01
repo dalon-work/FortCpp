@@ -53,35 +53,28 @@ int product(const std::array<int,Rank>& idx)
 
 /********** SET_ARRAY **********/
 
-template<int Rank,int D>
-inline
-void set_array(std::array<int,Rank>& A,int i)
-{
-	A[D] = i;
-}
-
 template<int Rank,int D,typename... indices>
-inline
+constexpr inline
 void set_array(std::array<int,Rank>& A,int i,indices... idx)
 {
-	A[D] = i;
-	set_array<Rank,D+1>(A,idx...);
+   A[D] = i;
+   if constexpr( sizeof...(indices) != 0 ) {
+      set_array<Rank,D+1>(A,idx...);
+   }
 }
 
 /******* OFFSET *******/
-
-template<int Rank,int D>
-constexpr inline
-unsigned strided_offset(const std::array<int,Rank>& str, int i)
-{
-	return i*str[D];
-}
 
 template<int Rank,int D,typename... indices>
 constexpr inline
 unsigned strided_offset(const std::array<int,Rank>& str,int i,indices... idx)
 {
-	return i*str[D]+strided_offset<Rank,D+1>(str,idx...);
+   if constexpr (sizeof...(idx) != 0) {
+      return i*str[D]+strided_offset<Rank,D+1>(str,idx...);
+   }
+   else {
+      return i*str[D];
+   }
 }
 
 template<int Rank,int D>
