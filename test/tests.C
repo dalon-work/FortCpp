@@ -354,7 +354,7 @@ TEST_CASE("Alloc View","[Alloc][View]"){
 
          for(int j=0;j<d.size(2);j++){
             for(int i=0;i<d.size(1);i++){
-               INFO( "i: " << i << " j: " << j << '\n';);
+               INFO( "i: " << i << " j: " << j << '\n');
                if( j%2 == 0 && i%2==0 ){
                   CHECK(d(i,j) == 1);
                }
@@ -417,7 +417,7 @@ TEST_CASE("Alloc View","[Alloc][View]"){
 
          for(int i=0;i<h.size(1);i++){
             for(int j=0;j<h.size(2);j++){
-               INFO( "i: " << i << " j: " << j << '\n';);
+               INFO( "i: " << i << " j: " << j << '\n');
                if( j%2 == 0 && i%2==0 ){
                   CHECK(h(i,j) == 1);
                }
