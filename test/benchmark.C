@@ -1,6 +1,6 @@
 #include "benchmark/benchmark.h"
-#include "noopt.h"
 #include "FortCpp.h"
+#include "Eigen/Dense"
 
 static void BM_add_two_arrays_into_third(benchmark::State& state) {
    int N = state.range(0);
@@ -15,7 +15,7 @@ static void BM_add_two_arrays_into_third(benchmark::State& state) {
 }
 BENCHMARK(BM_add_two_arrays_into_third)->Range(0,8<<20);
 
-void BM_add_two_FC_arrays_into_third(benchmark::State& state) {
+static void BM_add_two_FC_arrays_into_third(benchmark::State& state) {
    int N = state.range(0);
    FortCpp::Alloc<double,1> a(N),b(N),c(N);
    a = 1;
@@ -28,5 +28,19 @@ void BM_add_two_FC_arrays_into_third(benchmark::State& state) {
    }
 }
 BENCHMARK(BM_add_two_FC_arrays_into_third)->Range(0,8<<20);
+
+static void BM_add_two_Eigen_arrays_into_third(benchmark::State& state) {
+   int N = state.range(0);
+   Eigen::ArrayXd a(N),b(N),c(N);
+   a = 1;
+   b = 2;
+   c = 0;
+   while (state.KeepRunning()) {
+      benchmark::DoNotOptimize(c.data());
+      c = a + b;
+      benchmark::ClobberMemory();
+   }
+}
+BENCHMARK(BM_add_two_Eigen_arrays_into_third)->Range(0,8<<20);
 
 BENCHMARK_MAIN();
