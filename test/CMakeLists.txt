@@ -1,6 +1,6 @@
 
 add_executable(test_fortcpp tests.C testMain.C)
-add_executable(bench_fortcpp benchmark.C)
+add_executable(bench_fortcpp benchmark.C noopt.C)
 target_link_libraries(test_fortcpp PUBLIC FortCpp)
 target_link_libraries(bench_fortcpp PUBLIC FortCpp benchmark)
 
