@@ -38,7 +38,7 @@ public:
          _A = std::aligned_alloc(64,sizeof(T)*i);
       }
       else {
-         _A = std::malloc(sizeof(T)*i);
+         _A = static_cast<T*>( std::malloc(sizeof(T)*i) );
       }
 
 		_size = i;
