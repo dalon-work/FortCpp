@@ -26,47 +26,25 @@ struct is_array {
 
 /*********** PRODUCT ***********/
 
-constexpr inline
-int product(int i)
-{
-	return i;
-}
-
 template<typename... indices>
 constexpr inline
-int product(int i,indices... idx)
+int product(indices... idx)
 {
-	return i*product(idx...);
+	return ( idx * ... );
 }
 
-template<int Rank>
+template<size_t Rank, size_t... I>
+int product_impl(const std::array<int,Rank>& idx, std::index_sequence<I...>) {
+   return ( idx[I] * ... );
+}
+
+template<size_t Rank, typename Indices = std::make_index_sequence<Rank>>
 inline
 int product(const std::array<int,Rank>& idx)
 {
-	int s=1;
-	for (int r=0; r<Rank; r++) {
-		s *= idx[r];
-	}
-	return s;
+   return product_impl(idx, Indices{});
 }
 
-
-/********** SET_ARRAY **********/
-
-template<int Rank,int D>
-inline
-void set_array(std::array<int,Rank>& A,int i)
-{
-	A[D] = i;
-}
-
-template<int Rank,int D,typename... indices>
-inline
-void set_array(std::array<int,Rank>& A,int i,indices... idx)
-{
-	A[D] = i;
-	set_array<Rank,D+1>(A,idx...);
-}
 
 /******* OFFSET *******/
 
@@ -77,7 +55,7 @@ unsigned strided_offset(const std::array<int,Rank>& str, int i)
 	return i*str[D];
 }
 
-template<int Rank,int D,typename... indices>
+template<size_t Rank,int D,typename... indices>
 constexpr inline
 unsigned strided_offset(const std::array<int,Rank>& str,int i,indices... idx)
 {

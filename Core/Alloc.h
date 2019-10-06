@@ -121,7 +121,7 @@ public:
 	void allocate(indices... idx) {
 		static_assert(sizeof...(idx) == Rank,
 		              "NUMBER OF INDICES PASSED TO ALLOCATE DOES NOT MATCH RANK OF ARRAY");
-		internal::set_array<Rank,0>(_dim,idx...);
+      _dim = { idx... };
 #ifndef NDEBUG
 		internal::debug::is_allocated(allocated(),associated());
 #endif
@@ -148,7 +148,7 @@ public:
 		              "NUMBER OF INDICES PASSED TO MAP DOES NOT MATCH RANK OF ARRAY");
 		static_assert(Stride == Contig,
 		              "CANNOT MAP A STRIDED ARRAY");
-		internal::set_array<Rank,0>(_dim,static_cast<int>(idx)...);
+      _dim = {idx...};
 		for (int i=0; i<Rank; i++) { _str[i] = 1; }
 		internal::compute_strides<Order,Rank>::exec(_str,_dim);
 		_storage.map(a,internal::product(static_cast<int>(idx)...));
