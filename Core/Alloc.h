@@ -34,10 +34,10 @@ class Alloc : public ArrayBase<Alloc<T,Rank,Options> >
 
 	typedef class Alloc<T,Rank,Options> Derived;
 	typedef ArrayBase<Derived> Base;
-	static const int Order = internal::traits<Derived>::Order;
-	static const int Stride = internal::traits<Derived>::Stride;
-	static const int StorageType = internal::traits<Derived>::StorageType;
-	static const int Align = internal::traits<Derived>::Align;
+	static constexpr int Order = internal::traits<Derived>::Order;
+	static constexpr int Stride = internal::traits<Derived>::Stride;
+	static constexpr int StorageType = internal::traits<Derived>::StorageType;
+	static constexpr int Align = internal::traits<Derived>::Align;
 
 private:
 	internal::Storage<T,StorageType,Align> _storage;
