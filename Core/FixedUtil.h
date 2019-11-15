@@ -80,16 +80,11 @@ unsigned fixed_compute_offset(int i,indices... idx)
 
 /***** FIXED_PRODUCT ****/
 
-template<int... dim> struct fixed_product;
+// template<int... dim> struct fixed_product;
 
-template<int d>
-struct fixed_product<d> {
-	static const unsigned value = d;
-};
-
-template<int d,int... dim>
-struct fixed_product<d,dim...> {
-	static const unsigned value = d* fixed_product<dim...>::value;
+template<int... dim>
+struct fixed_product{
+	constexpr static unsigned value = (dim * ...);
 };
 
 
