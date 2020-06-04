@@ -131,40 +131,20 @@ struct contig_view_cont<RowMajor,0,head,indices...> {
 
 /***** SET_LEN ********/
 
-// template<Index Rank,Index nRank,Index D,Index nD,typename... indices>
-// void set_len(const std::array<Index,Rank>& dim,
-//       std::array<Index,nRank>& len,
-//       Index& i,
-//       indices... idx);
-template<Index Rank,Index nRank,Index D,Index nD,typename... indices>
+template<Index Rank,Index nRank,Index D,Index nD,typename head, typename... indices>
 void set_len(const std::array<Index,Rank>& dim,
              std::array<Index,nRank>& len,
-             SliceBase& i,
-             indices& ... idx);
-
-template<Index Rank,Index nRank,Index D,Index nD>
-void set_len(const std::array<Index,Rank>& dim,
-             const std::array<Index,nRank>& len)
-{
-}
-
-template<Index Rank,Index nRank,Index D,Index nD,typename... indices>
-void set_len(const std::array<Index,Rank>& dim,
-             std::array<Index,nRank>& len,
-             Index& i,
+             head& i,
              indices& ... idx)
 {
-	set_len<Rank,nRank,D+1,nD>(dim,len,idx...);
-}
+	if constexpr ( std::is_same<head, SliceBase>::value ) {
+		len[nD] = i.len(dim[D]);
+		set_len<Rank,nRank,D+1,nD+1>(dim,len,idx...);
+	}
+	else {
+		set_len<Rank,nRank,D+1,nD>(dim,len,idx...);
+	}
 
-template<Index Rank,Index nRank,Index D,Index nD,typename... indices>
-void set_len(const std::array<Index,Rank>& dim,
-             std::array<Index,nRank>& len,
-             SliceBase& i,
-             indices& ... idx)
-{
-	len[nD] = i.len(dim[D]);
-	set_len<Rank,nRank,D+1,nD+1>(dim,len,idx...);
 }
 
 /***** SET_BEG *******/
@@ -181,14 +161,13 @@ Index get_beg(const SliceBase& i)
 	return static_cast<Index>(i.beg);
 }
 
-template<Index Rank,Index D,typename tail>
-void set_beg(std::array<Index,Rank>& beg,tail& i)
+template<Index Rank, Index D>
+void set_beg(std::array<Index, Rank>& beg)
 {
-	beg[D] = get_beg(i);
 }
 
 template<Index Rank,Index D,typename head, typename... indices>
-void set_beg(std::array<Index,Rank>& beg,head& i,const indices& ... idx)
+void set_beg(std::array<Index,Rank>& beg, head& i, const indices& ... idx)
 {
 	beg[D] = get_beg(i);
 	set_beg<Rank,D+1>(beg,idx...);
@@ -196,46 +175,21 @@ void set_beg(std::array<Index,Rank>& beg,head& i,const indices& ... idx)
 
 /******* SET_STR *************/
 
-// template<Index Rank,Index newRank,Index D,Index nD,typename... indices>
-// void set_str(const std::array<Index,Rank>& str,
-//       std::array<Index,newRank>& nstr,
-//       Index& i,
-//       indices... idx);
-template<Index Rank,Index nRank,Index D,Index nD,typename... indices>
+template<Index Rank,Index nRank,Index D,Index nD,typename Head, typename... indices>
 void set_str(const std::array<Index,Rank>& str,
              std::array<Index,nRank>& nstr,
-             SliceBase& i,
-             indices... idx);
-
-
-template<Index Rank,Index nRank,Index D,Index nD>
-void set_str(const std::array<Index,Rank>& str,
-             std::array<Index,nRank>& nstr)
-{
-}
-
-template<Index Rank,Index nRank,Index D,Index nD,typename... indices>
-void set_str(const std::array<Index,Rank>& str,
-             std::array<Index,nRank>& nstr,
-             Index& i,
+             Head& i,
              indices... idx)
 {
-	set_str<Rank,nRank,D+1,nD>(str,nstr,idx...);
+	if constexpr ( std::is_same<Head, SliceBase>::value ) {
+		nstr[nD] = i.str*str[D];
+		set_str<Rank,nRank,D+1,nD+1>(str,nstr,idx...);
+	}
+	else {
+		set_str<Rank,nRank,D+1,nD>(str,nstr,idx...);
+	}
+
 }
-
-template<Index Rank,Index nRank,Index D,Index nD,typename... indices>
-void set_str(const std::array<Index,Rank>& str,
-             std::array<Index,nRank>& nstr,
-             SliceBase& i,
-             indices... idx)
-{
-	nstr[nD] = i.str*str[D];
-	set_str<Rank,nRank,D+1,nD+1>(str,nstr,idx...);
-}
-
-
-
-
 
 /** Struct to extract a given dimension and compute total stride**/
 // template<typename ArrayDerived,Index Dim> struct compute_stride;

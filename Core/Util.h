@@ -28,6 +28,13 @@ struct is_array {
 
 template<typename... indices>
 constexpr
+Index product(Index i)
+{
+		return i;
+}
+
+template<typename... indices>
+constexpr
 Index product(Index i,indices... idx)
 {
 	return i*product(idx...);

@@ -57,24 +57,17 @@ void in_size(Index i,Index s)
 }
 
 /******** IN_BOUNDS *******/
-
-template<Index D,Index Rank>
-inline
-void in_bounds(const std::array<Index,Rank>& dim,Index i)
-{
-	if ( i >= dim[D] ) {
-		throw BoundsException(i,dim[D],D);
-	}
-}
-
+  
 template<Index D,Index Rank,typename... indices>
 inline
-void in_bounds(const std::array<Index,Rank>& dim,Index i,indices... idx)
+void in_bounds(const std::array<Index,Rank>& dim, Index i, indices... idx)
 {
 	if ( i >= dim[D] ) {
 		throw BoundsException(i,dim[D],D);
 	}
-	in_bounds<D+1,Rank>(dim,idx...);
+	if constexpr ( sizeof...(idx) > 0 ) {
+		in_bounds<D+1,Rank>(dim,idx...);
+	}
 }
 
 template<Index Rank>
