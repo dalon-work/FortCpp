@@ -12,11 +12,11 @@ namespace internal
 template<typename Derived>
 struct is_arrayImpl { static const bool value = 0; };
 
-template<typename T,int Rank,int Options>                struct is_arrayImpl<Alloc<T,Rank,Options> >       { static const bool value = 1; };
+template<typename T,Index Rank,Index Options>                struct is_arrayImpl<Alloc<T,Rank,Options> >       { static const bool value = 1; };
 template<typename Derived>                               struct is_arrayImpl<ArrayBase<Derived> >          { static const bool value = 1; };
-template<typename T,int... dims>                         struct is_arrayImpl<Fixed<T,dims...> >            { static const bool value = 1; };
+template<typename T,Index... dims>                         struct is_arrayImpl<Fixed<T,dims...> >            { static const bool value = 1; };
 template<typename Lhs,typename Rhs,typename Op>          struct is_arrayImpl<BinaryOp<Lhs,Rhs,Op> >        { static const bool value = 1; };
-template<int Side,typename Lhs,typename Rhs,typename Op> struct is_arrayImpl<ConstantOp<Side,Lhs,Rhs,Op> > { static const bool value = 1; };
+template<Index Side,typename Lhs,typename Rhs,typename Op> struct is_arrayImpl<ConstantOp<Side,Lhs,Rhs,Op> > { static const bool value = 1; };
 template<typename Rhs,typename Op>                       struct is_arrayImpl<UnaryOp<Rhs,Op> >             { static const bool value = 1; };
 
 template<typename Derived>
@@ -26,25 +26,18 @@ struct is_array {
 
 /*********** PRODUCT ***********/
 
-constexpr inline
-int product(int i)
-{
-	return i;
-}
-
 template<typename... indices>
-constexpr inline
-int product(int i,indices... idx)
+constexpr
+Index product(Index i,indices... idx)
 {
 	return i*product(idx...);
 }
 
-template<int Rank>
-inline
-int product(const std::array<int,Rank>& idx)
+template<Index Rank>
+Index product(const std::array<Index,Rank>& idx)
 {
-	int s=1;
-	for (int r=0; r<Rank; r++) {
+	Index s=1;
+	for (Index r=0; r<Rank; r++) {
 		s *= idx[r];
 	}
 	return s;
@@ -53,16 +46,14 @@ int product(const std::array<int,Rank>& idx)
 
 /********** SET_ARRAY **********/
 
-template<int Rank,int D>
-inline
-void set_array(std::array<int,Rank>& A,int i)
+template<Index Rank,Index D>
+void set_array(std::array<Index,Rank>& A,Index i)
 {
 	A[D] = i;
 }
 
-template<int Rank,int D,typename... indices>
-inline
-void set_array(std::array<int,Rank>& A,int i,indices... idx)
+template<Index Rank,Index D,typename... indices>
+void set_array(std::array<Index,Rank>& A,Index i,indices... idx)
 {
 	A[D] = i;
 	set_array<Rank,D+1>(A,idx...);
@@ -70,51 +61,53 @@ void set_array(std::array<int,Rank>& A,int i,indices... idx)
 
 /******* OFFSET *******/
 
-template<int Rank,int D>
-constexpr inline
-unsigned strided_offset(const std::array<int,Rank>& str, int i)
+template<Index Rank,Index D>
+constexpr
+Index strided_offset(const std::array<Index,Rank>& str, Index i)
 {
 	return i*str[D];
 }
 
-template<int Rank,int D,typename... indices>
-constexpr inline
-unsigned strided_offset(const std::array<int,Rank>& str,int i,indices... idx)
+template<Index Rank,Index D,typename... indices>
+constexpr
+Index strided_offset(const std::array<Index,Rank>& str,Index i,indices... idx)
 {
 	return i*str[D]+strided_offset<Rank,D+1>(str,idx...);
 }
 
-template<int Rank,int D>
-constexpr inline
-unsigned row_contig_offset(const std::array<int,Rank>& str, int i)
+template<Index Rank,Index D>
+constexpr
+Index row_contig_offset(const std::array<Index,Rank>& str, Index i)
 {
 	return i;
 }
 
-template<int Rank,int D,typename... indices>
+template<Index Rank,Index D,typename... indices>
 constexpr inline
-unsigned row_contig_offset(const std::array<int,Rank>& str,int i,indices... idx)
+Index row_contig_offset(const std::array<Index,Rank>& str,Index i,indices... idx)
 {
 	return i*str[D]+strided_offset<Rank,D+1>(str,idx...);
 }
 
 
-template<int Order,int Stride,int Rank> struct offset;
+template<Index Order,Index Stride,Index Rank> struct offset;
 
 template<>
 struct offset<ColMajor,Contig,1> {
-	constexpr inline
-	static unsigned
-	exec(const std::array<int,1>& str,int i) {
+	constexpr
+	static Index
+	exec(const std::array<Index,1>& str,Index i)
+	{
 		return i;
 	}
 };
 
 template<>
 struct offset<RowMajor,Contig,1> {
-	constexpr inline
-	static unsigned
-	exec(const std::array<int,1>& str,int i) {
+	constexpr
+	static Index
+	exec(const std::array<Index,1>& str,Index i)
+	{
 		return i;
 	}
 };
@@ -122,8 +115,9 @@ struct offset<RowMajor,Contig,1> {
 template<>
 struct offset<ColMajor,Strided,1> {
 	constexpr inline
-	static unsigned
-	exec(const std::array<int,1>& str,int i) {
+	static Index
+	exec(const std::array<Index,1>& str,Index i)
+	{
 		return i*str[0];
 	}
 };
@@ -131,38 +125,42 @@ struct offset<ColMajor,Strided,1> {
 template<>
 struct offset<RowMajor,Strided,1> {
 	constexpr inline
-	static unsigned
-	exec(const std::array<int,1>& str,int i) {
+	static Index
+	exec(const std::array<Index,1>& str,Index i)
+	{
 		return i*str[0];
 	}
 };
 
-template<int Order,int Rank>
+template<Index Order,Index Rank>
 struct offset<Order,Strided,Rank> {
 	template<typename... indices>
 	constexpr inline
-	static unsigned
-	exec(const std::array<int,Rank>& str,indices... idx) {
+	static Index
+	exec(const std::array<Index,Rank>& str,indices... idx)
+	{
 		return strided_offset<Rank,0>(str,idx...);
 	}
 };
 
-template<int Rank>
+template<Index Rank>
 struct offset<ColMajor,Contig,Rank> {
 	template<typename... indices>
 	constexpr inline
-	static unsigned
-	exec(const std::array<int,Rank>& str,int i,indices... idx) {
+	static Index
+	exec(const std::array<Index,Rank>& str,Index i,indices... idx)
+	{
 		return i+strided_offset<Rank,1>(str,idx...);
 	}
 };
 
-template<int Rank>
+template<Index Rank>
 struct offset<RowMajor,Contig,Rank> {
 	template<typename... indices>
 	constexpr inline
-	static unsigned
-	exec(const std::array<int,Rank>& str,indices... idx) {
+	static Index
+	exec(const std::array<Index,Rank>& str,indices... idx)
+	{
 		return row_contig_offset<Rank,0>(str,idx...);
 	}
 };
@@ -170,28 +168,30 @@ struct offset<RowMajor,Contig,Rank> {
 
 /*********** COMPUTE_STRIDES **********/
 
-template<int Order,int Rank> struct compute_strides;
+template<Index Order,Index Rank> struct compute_strides;
 
-template<int Rank>
+template<Index Rank>
 struct compute_strides<ColMajor,Rank> {
 	inline
-	static void exec(std::array<int,Rank>& str,
-	                 const std::array<int,Rank>& dim) {
-		for (int r=0; r<Rank-1; r++) {
-			for (int i=r+1; i<Rank; i++) {
+	static void exec(std::array<Index,Rank>& str,
+	                 const std::array<Index,Rank>& dim)
+	{
+		for (Index r=0; r<Rank-1; r++) {
+			for (Index i=r+1; i<Rank; i++) {
 				str[i]*=dim[r];
 			}
 		}
 	}
 };
 
-template<int Rank>
+template<Index Rank>
 struct compute_strides<RowMajor,Rank> {
 	inline
-	static void exec(std::array<int,Rank>& str,
-	                 const std::array<int,Rank>& dim) {
-		for (int r=1; r<Rank; r++) {
-			for (int i=0; i<r; i++) {
+	static void exec(std::array<Index,Rank>& str,
+	                 const std::array<Index,Rank>& dim)
+	{
+		for (Index r=1; r<Rank; r++) {
+			for (Index i=0; i<r; i++) {
 				str[i] *= dim[r];
 			}
 		}
@@ -200,27 +200,29 @@ struct compute_strides<RowMajor,Rank> {
 
 /******** COMPUTE_OFFSET ***********/
 
-template<int Order,int Stride,int Rank> struct linear_index;
+template<Index Order,Index Stride,Index Rank> struct linear_index;
 
-template<int Order,int Rank>
+template<Index Order,Index Rank>
 struct linear_index<Order,Contig,Rank> {
 	inline
-	static int exec(const std::array<int,Rank>& dim,
-	                const std::array<int,Rank>& str,
-	                int i) {
+	static Index exec(const std::array<Index,Rank>& dim,
+	                  const std::array<Index,Rank>& str,
+	                  Index i)
+	{
 		return i;
 	}
 };
 
-template<int Rank>
+template<Index Rank>
 struct linear_index<ColMajor,Strided,Rank> {
 	inline
-	static int exec(const std::array<int,Rank>& dim,
-	                const std::array<int,Rank>& str,
-	                int i) {
-		int o=str[0]*(i%dim[0]);
-		int d=dim[0];
-		for (int r=1; r<Rank-1; r++) {
+	static Index exec(const std::array<Index,Rank>& dim,
+	                  const std::array<Index,Rank>& str,
+	                  Index i)
+	{
+		Index o=str[0]*(i%dim[0]);
+		Index d=dim[0];
+		for (Index r=1; r<Rank-1; r++) {
 			o += str[r]*((i/d)%dim[r]);
 			d *= dim[r];
 		}
@@ -229,15 +231,16 @@ struct linear_index<ColMajor,Strided,Rank> {
 	}
 };
 
-template<int Rank>
+template<Index Rank>
 struct linear_index<RowMajor,Strided,Rank> {
 	inline
-	static int exec(const std::array<int,Rank>& dim,
-	                const std::array<int,Rank>& str,
-	                int i) {
-		int o = str[Rank-1]*(i%dim[Rank-1]);
-		int d=dim[Rank-1];
-		for (int r=Rank-2; r>=1; r--) {
+	static Index exec(const std::array<Index,Rank>& dim,
+	                  const std::array<Index,Rank>& str,
+	                  Index i)
+	{
+		Index o = str[Rank-1]*(i%dim[Rank-1]);
+		Index d=dim[Rank-1];
+		for (Index r=Rank-2; r>=1; r--) {
 			o += str[r]*((i/d)%dim[r]);
 			d *= dim[r];
 		}

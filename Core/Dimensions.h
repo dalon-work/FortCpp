@@ -12,7 +12,7 @@ namespace internal
 
 /************ DIMENSIONS *******************/
 
-template<int Rank,int Order,int Stride>
+template<Index Rank,Index Order,Index Stride>
 class Dimensions
 {
 private:
@@ -29,22 +29,25 @@ public:
 
 	// set_dim sets the dimensions of the array
 	template<typename... indices>
-	void set_dim(indices... idx) {
+	void set_dim(indices... idx)
+	{
 		copy_dim<0>(idx...);
 		str.compute_strides(dim);
 		s = product(idx...);
 	}
 
-	void unset() {
-		for (int r=0; r<Rank; r++) {
+	void unset()
+	{
+		for (Index r=0; r<Rank; r++) {
 			dim[r]=0;
 			str.str[r]=0;
 		}
 		s=0;
 	}
 
-	void copy_dim(const std::array<int,Rank>& otherdim,
-	              const std::array<int,Rank>& otherstr) {
+	void copy_dim(const std::array<Index,Rank>& otherdim,
+	              const std::array<Index,Rank>& otherstr)
+	{
 		dim = otherdim;
 		str.str = otherstr;
 		s = product<Rank>(dim);
@@ -53,29 +56,35 @@ public:
 
 	// computes the offset for a MD index
 	template<typename... indices>
-	constexpr int operator () (indices... idx) const {
+	constexpr Index operator () (indices... idx) const
+	{
 		return offset<0>(idx...);
 	}
 
-	constexpr int operator [] (const int i) const {return str.offset(dim,i);}
+	constexpr Index operator [] (const Index i) const {return str.offset(dim,i);}
 
-	constexpr int size() const {
+	constexpr Index size() const
+	{
 		return s;
 	}
 
-	constexpr int size(int D) const {
+	constexpr Index size(Index D) const
+	{
 		return dim[D-1];
 	}
 
-	constexpr int stride(int D) const {
+	constexpr Index stride(Index D) const
+	{
 		return str[D-1];
 	}
 
-	const std::array<int,Rank>& get_dim() const {
+	const std::array<Index,Rank>& get_dim() const
+	{
 		return dim;
 	}
 
-	const std::array<int,Rank>& get_str() const {
+	const std::array<Index,Rank>& get_str() const
+	{
 		return str.str;
 	}
 
@@ -83,8 +92,8 @@ public:
 
 /***************** EQUALITY ********************/
 
-template<int LRank, int LOrder, int LStride,
-         int RRank, int ROrder, int RStride>
+template<Index LRank, Index LOrder, Index LStride,
+         Index RRank, Index ROrder, Index RStride>
 bool operator == (const Dimensions<LRank,LOrder,LStride>& lhs,
                   const Dimensions<RRank,ROrder,RStride>& rhs)
 {
@@ -92,7 +101,7 @@ bool operator == (const Dimensions<LRank,LOrder,LStride>& lhs,
 	              "ARRAY EXPRESSION RANKS NOT EQUAL");
 	static_assert(LOrder == ROrder,
 	              "CANNOT MIX COLUMN AND ROW MAJOR ORDER IN ARRAY EXPRESSIONS");
-	for (int i=1; i<=LRank; i++) {
+	for (Index i=1; i<=LRank; i++) {
 		if ( lhs.size(i) != rhs.size(i)) {
 			return 0;
 		}

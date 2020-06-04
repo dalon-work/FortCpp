@@ -37,7 +37,7 @@ struct OP { \
    FUNC(const ArrayBase<Derived>& rhs) \
    { \
       return rhs.FUNC(); \
-   }; 
+   };
 
 #define FortCpp_LHS_CONSTANT_OP(OP,X)  \
    template <typename Lhs,typename Derived> \

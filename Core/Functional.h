@@ -15,7 +15,7 @@ template<typename Rhs,typename ReturnType,typename FuncType>
 struct traits< FuncTypeOp<Rhs,ReturnType,FuncType> > {
 	typedef ReturnType Scalar;
 	enum {
-	    Rank = traits<Rhs>::Rank
+		Rank = traits<Rhs>::Rank
 	};
 
 }; // end namespace internal
@@ -29,38 +29,40 @@ class FuncTypeOp : public ArrayBase< FuncTypeOp<Rhs,ReturnType,FuncType> >
 	typedef class FuncTypeOp<Rhs, ReturnType, FuncType> Derived;
 	typedef ArrayBase<Derived> Base;
 
-   protected:
-   Rhs& _rhs;
-   FuncType _func;
+protected:
+	Rhs& _rhs;
+	FuncType _func;
 
-   public:
-   inline FuncTypeOp(Rhs& rhs,FuncType& func): _rhs(rhs), _func(func)
-   { }
-   inline FuncTypeOp(const FuncTypeOp& A) : _rhs(A._rhs), _func(A._func)
-   { }
-   inline ReturnType operator [] (const int& i) const {
-      return _func(_rhs[i]);
-   }
+public:
+	inline FuncTypeOp(Rhs& rhs,FuncType& func): _rhs(rhs), _func(func)
+	{ }
+	inline FuncTypeOp(const FuncTypeOp& A) : _rhs(A._rhs), _func(A._func)
+	{ }
+	inline ReturnType operator [] (const Index& i) const
+	{
+		return _func(_rhs[i]);
+	}
 
-   inline const Rhs& getExpr() const {
-      return _rhs;
-   }
+	inline const Rhs& getExpr() const
+	{
+		return _rhs;
+	}
 
-   unsigned size() const { return _rhs.size(); }
+	Index size() const { return _rhs.size(); }
 
 };
 
 template< typename Rhs, typename FuncType>
-class FuncTypeOp<Rhs,void,FuncType> 
+class FuncTypeOp<Rhs,void,FuncType>
 {
-   protected:
-   public:
-   inline FuncTypeOp(Rhs& rhs,FuncType& func)
-   {
-      for (int i=0; i<rhs.size(); i++) {
-         func(rhs[i]);
-      }
-   }
+protected:
+public:
+	inline FuncTypeOp(Rhs& rhs,FuncType& func)
+	{
+		for (Index i=0; i<rhs.size(); i++) {
+			func(rhs[i]);
+		}
+	}
 };
 
 

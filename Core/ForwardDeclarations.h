@@ -8,17 +8,17 @@ namespace FortCpp
  * See the pairing with the enumeration down below
  */
 enum {
-    ColMajor  = 0,
-    RowMajor  = 1,
-    UnAligned = 0,
-    Aligned   = 2,
-    Contig    = 0,
-    Strided   = 4,
-    Static    = 0,
-    Pointer   = 8
+	ColMajor  = 0,
+	RowMajor  = 1,
+	UnAligned = 0,
+	Aligned   = 2,
+	Contig    = 0,
+	Strided   = 4,
+	Static    = 0,
+	Pointer   = 8
 };
 
-
+using Index = int64_t;
 
 /**************************************************/
 
@@ -33,24 +33,24 @@ namespace internal
  *                 Defaults to 0 (not aligned)
  */
 enum {
-    MajorOrderBit = 1,
-    AlignedBit    = 2,
-    StrideBit     = 4,
-    StorageBit    = 8
+	MajorOrderBit = 1,
+	AlignedBit    = 2,
+	StrideBit     = 4,
+	StorageBit    = 8
 };
 
-template<int Size> class OpSize;
+template<Index Size> class OpSize;
 template<typename Derived> struct traits;
-template<int Rank ,int Order,int Stride> class Dimensions;
-template<typename T,int StorageType,int Align,int... dims> class Storage;
+template<Index Rank,Index Order,Index Stride> class Dimensions;
+template<typename T,Index StorageType,Index Align,Index... dims> class Storage;
 
 }; // end namespace internal
 
 template<typename Derived> class ArrayBase;
-template<typename T,int Rank, int Options=0> class Alloc;
-template<typename T,int... dims> class Fixed;
+template<typename T,Index Rank, Index Options=0> class Alloc;
+template<typename T,Index... dims> class Fixed;
 template<typename Lhs,typename Rhs,typename Op> class BinaryOp;
-template<int Side,typename Lhs,typename Rhs,typename Op> class ConstantOp;
+template<Index Side,typename Lhs,typename Rhs,typename Op> class ConstantOp;
 template<typename Rhs,typename Op> class UnaryOp;
 template< typename Rhs, typename ReturnType, typename FuncType> class FuncTypeOp;
 

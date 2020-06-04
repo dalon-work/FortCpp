@@ -8,8 +8,8 @@ namespace internal
 {
 
 enum {
-    LHS,
-    RHS
+	LHS,
+	RHS
 };
 
 /*
@@ -18,13 +18,13 @@ enum {
 template<typename Lhs,typename Rhs,typename Op>
 struct traits<ConstantOp<LHS,Lhs,Rhs,Op> > {
 	typedef typename Op::ReturnType Scalar;
-	static const int Rank = traits<Rhs>::Rank;
+	static const Index Rank = traits<Rhs>::Rank;
 };
 
 template<typename Lhs,typename Rhs,typename Op>
 struct traits<ConstantOp<RHS,Lhs,Rhs,Op> > {
 	typedef typename Op::ReturnType Scalar;
-	static const int Rank = traits<Lhs>::Rank;
+	static const Index Rank = traits<Lhs>::Rank;
 };
 
 }; // end namespace internal
@@ -47,13 +47,14 @@ public:
 	inline ConstantOp(const ConstantOp& A) : _c(A._c), _rhs(A._rhs), _op(A._op)
 	{ }
 
-	inline const T operator [] (const int& i) const {
+	inline const T operator [] (const Index& i) const
+	{
 		return _op.eval(_c,_rhs[i]);
 	}
 
 	inline const Rhs& getExpr() const { return _rhs; }
 
-   inline unsigned  size() const { return _rhs.size(); }
+	inline Index  size() const { return _rhs.size(); }
 
 };
 
@@ -74,13 +75,14 @@ public:
 	inline ConstantOp(const Lhs& lhs,const Rhs& C, const Op& op): _c(C), _lhs(lhs), _op(op) {}
 	inline ConstantOp(const ConstantOp& A) : _c(A._c), _lhs(A._lhs), _op(A._op) {}
 
-	inline const T operator [] (const int& i) const {
+	inline const T operator [] (const Index& i) const
+	{
 		return _op.eval(_lhs[i],_c);
 	}
 
 	inline const Lhs& getExpr() const { return _lhs; }
 
-   inline unsigned  size() const { return _lhs.size(); }
+	inline Index  size() const { return _lhs.size(); }
 
 };
 

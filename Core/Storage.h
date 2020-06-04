@@ -17,32 +17,36 @@ private:
 
 	T* _A=nullptr;
 	bool _alloc=0;
-	unsigned _size=0;
+	Index _size=0;
 
 public:
 	Storage()=default;
 	Storage(const Derived& B)=default;
 	Storage(Derived&& B)=default;
 
-	~Storage() {
+	~Storage()
+	{
 		deallocate();
 	}
 
-	void allocate(unsigned i) {
+	void allocate(Index i)
+	{
 		_alloc = 1;
 		_A = new T[i];
 		_size = i;
 	}
 
-	void map(T* A, unsigned i) {
+	void map(T* A, Index i)
+	{
 		_alloc = 0;
 		_A = A;
 		_size = i;
 	}
 
-	void swap(Derived& B) {
+	void swap(Derived& B)
+	{
 		T*   p =   _A;
-		unsigned  s = _size;
+		Index  s = _size;
 		bool a = _alloc;
 
 		_A     = B._A;
@@ -57,16 +61,18 @@ public:
 	T* data() { return _A; }
 	bool allocated() const { return _alloc; }
 	bool associated() const { return _A; }
-	unsigned size() const { return _size; }
+	Index size() const { return _size; }
 
-	const T& operator [] (int i) const {
+	const T& operator [] (Index i) const
+	{
 // #ifdef FortCpp_READ_NAN
 //     FortCpp_NAN_CHECK(A[i])
 // #endif
 		return _A[i];
 	}
 
-	T& operator [] (int i) {
+	T& operator [] (Index i)
+	{
 // #ifdef FortCpp_WRITE_NAN
 //     FortCpp_NAN_CHECK(A[i])
 // #endif
@@ -77,7 +83,8 @@ public:
 	 * Deallocates memory, or disassociates the array from the
 	 * memory it points to if the array was not allocated
 	 */
-	void deallocate() {
+	void deallocate()
+	{
 		if ( _alloc ) { delete[] _A; }
 		_A = nullptr;
 		_alloc = 0;
@@ -88,12 +95,12 @@ public:
 
 /****  FIXED_STORAGE *****/
 
-template<typename T,int... dims>
+template<typename T,Index... dims>
 class Storage<T,Static,UnAligned,dims...>
 {
 	typedef class Storage<T,Static,UnAligned,dims...> Derived;
 private:
-	static const unsigned _size = internal::fixed_product<dims...>::value;
+	static const Index _size = internal::fixed_product<dims...>::value;
 	static const bool _alloc=1;
 
 	std::array<T,_size> _A;
@@ -108,16 +115,18 @@ public:
 	T* data() { return _A.data(); }
 	bool allocated() const { return 1; }
 	bool associated() const { return 1; }
-	unsigned size() const { return _size; }
+	Index size() const { return _size; }
 
-	const T& operator [] (int i) const {
+	const T& operator [] (Index i) const
+	{
 // #ifdef FortCpp_READ_NAN
 //     FortCpp_NAN_CHECK(A[i])
 // #endif
 		return _A[i];
 	}
 
-	T& operator [] (int i) {
+	T& operator [] (Index i)
+	{
 // #ifdef FortCpp_WRITE_NAN
 //     FortCpp_NAN_CHECK(A[i])
 // #endif

@@ -13,7 +13,7 @@ template<typename Lhs,typename Rhs,typename Op>
 struct traits<BinaryOp<Lhs,Rhs,Op> > {
 	typedef typename Op::ReturnType Scalar;
 	enum {
-	    Rank = traits<Lhs>::Rank
+		Rank = traits<Lhs>::Rank
 	};
 };
 
@@ -36,18 +36,20 @@ protected:
 	const Op&  _op;
 
 public:
-	BinaryOp(const Lhs& lhs,const Rhs& rhs,const Op& op): _lhs(lhs), _rhs(rhs), _op(op) {
+	BinaryOp(const Lhs& lhs,const Rhs& rhs,const Op& op): _lhs(lhs), _rhs(rhs), _op(op)
+	{
 	};
 	BinaryOp(const BinaryOp& A) : _lhs(A._lhs), _rhs(A._rhs), _op(A._op) { }
 
-	const ReturnType operator [] (const int& i) const {
+	const ReturnType operator [] (const Index& i) const
+	{
 		return _op.eval(_lhs[i],_rhs[i]);
 	}
 
 	const Lhs& get_lhs() const { return _lhs; }
 	const Rhs& get_rhs() const { return _rhs; }
 
-   unsigned size() const { return _lhs.size(); }
+	Index size() const { return _lhs.size(); }
 
 };
 

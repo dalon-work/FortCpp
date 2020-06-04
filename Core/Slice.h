@@ -4,23 +4,24 @@
 namespace FortCpp
 {
 
-static const int BEG = 156700;
-static const int END = -156700;
+static const Index BEG = 156700;
+static const Index END = -156700;
 
 struct SliceBase {
-	int beg;
-	int end;
-	int str;
+	Index beg;
+	Index end;
+	Index str;
 
 	SliceBase() : beg(0),end(END),str(1) {}
-	SliceBase(int b) : beg(b),end(END),str(1) {}
-	SliceBase(int b,int e) : beg(b),end(e),str(1) {}
-	SliceBase(int b,int e,int s) : beg(b),end(e),str(s) {}
+	SliceBase(Index b) : beg(b),end(END),str(1) {}
+	SliceBase(Index b,Index e) : beg(b),end(e),str(1) {}
+	SliceBase(Index b,Index e,Index s) : beg(b),end(e),str(s) {}
 
-   /**
-    * i is the size of the given dimension
-    */
-	int len(int i) {
+	/**
+	 * i is the size of the given dimension
+	 */
+	Index len(Index i)
+	{
 		using namespace std;
 
 #ifndef NDEBUG
@@ -33,7 +34,7 @@ struct SliceBase {
 		if (beg == END) {
 			beg = i-1;
 		}
-      else if (beg < 0) {
+		else if (beg < 0) {
 			beg = i+beg;
 		}
 		else if (beg == BEG) {
@@ -91,12 +92,12 @@ struct FullSlice : public SliceBase {
 };
 
 struct ContigSlice : public SliceBase {
-	ContigSlice(int b) : SliceBase(b) {};
-	ContigSlice(int b,int e) : SliceBase(b,e) {};
+	ContigSlice(Index b) : SliceBase(b) {};
+	ContigSlice(Index b,Index e) : SliceBase(b,e) {};
 };
 
 struct StridedSlice : public SliceBase {
-	StridedSlice(int b,int e,int s) : SliceBase(b,e,s) {};
+	StridedSlice(Index b,Index e,Index s) : SliceBase(b,e,s) {};
 };
 
 static inline
@@ -106,19 +107,19 @@ FullSlice Slice()
 }
 
 static inline
-ContigSlice Slice(int b)
+ContigSlice Slice(Index b)
 {
 	return ContigSlice(b);
 }
 
 static inline
-ContigSlice Slice(int b,int e)
+ContigSlice Slice(Index b,Index e)
 {
 	return ContigSlice(b,e);
 }
 
 static inline
-StridedSlice Slice(int b,int e,int s)
+StridedSlice Slice(Index b,Index e,Index s)
 {
 	return StridedSlice(b,e,s);
 }

@@ -10,7 +10,7 @@ template<typename Rhs,typename Op>
 struct traits<UnaryOp<Rhs,Op> > {
 	typedef typename Op::ReturnType Scalar;
 	enum {
-	    Rank = traits<Rhs>::Rank
+		Rank = traits<Rhs>::Rank
 	};
 };
 }; // end namespace internal
@@ -34,15 +34,17 @@ public:
 	inline UnaryOp(const UnaryOp& A) : _rhs(A._rhs), _op(A._op)
 	{ }
 
-	inline ReturnType operator [] (const int& i) const {
+	inline ReturnType operator [] (const Index& i) const
+	{
 		return _op.eval(_rhs[i]);
 	}
 
-	inline const Rhs& getExpr() const {
+	inline const Rhs& getExpr() const
+	{
 		return _rhs;
 	}
 
-   unsigned size() const { return _rhs.size(); }
+	unsigned size() const { return _rhs.size(); }
 
 };
 
@@ -54,7 +56,8 @@ public:
 template<typename T>
 struct NegUnOp {
 	typedef decltype( -std::declval<T>() ) ReturnType;
-	inline static const ReturnType eval (const T& _rhs) {
+	inline static const ReturnType eval (const T& _rhs)
+	{
 		return -_rhs;
 	}
 };
