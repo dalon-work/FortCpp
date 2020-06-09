@@ -68,18 +68,16 @@ void set_array(std::array<Index,Rank>& A,Index i,indices... idx)
 
 /******* OFFSET *******/
 
-template<Index Rank,Index D>
-constexpr
-Index strided_offset(const std::array<Index,Rank>& str, Index i)
-{
-	return i*str[D];
-}
-
 template<Index Rank,Index D,typename... indices>
 constexpr
 Index strided_offset(const std::array<Index,Rank>& str,Index i,indices... idx)
 {
-	return i*str[D]+strided_offset<Rank,D+1>(str,idx...);
+	if constexpr ( D+1 != Rank ) {
+		return i*str[D]+strided_offset<Rank,D+1>(str,idx...);
+	}
+	else {
+		return i*str[D];
+	}
 }
 
 template<Index Rank,Index D>

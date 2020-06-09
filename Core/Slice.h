@@ -4,71 +4,111 @@
 namespace FortCpp
 {
 
-static const Index BEG = 156700;
-static const Index END = -156700;
+struct SliceDimBeg {};
+struct SliceDimEnd {};
+struct SliceDimContig {};
 
-struct SliceBase {
-	Index beg;
-	Index end;
-	Index str;
+constexpr inline SliceDimBeg BEG;
+constexpr inline SliceDimEnd END;
 
-	SliceBase() : beg(0),end(END),str(1) {}
-	SliceBase(Index b) : beg(b),end(END),str(1) {}
-	SliceBase(Index b,Index e) : beg(b),end(e),str(1) {}
-	SliceBase(Index b,Index e,Index s) : beg(b),end(e),str(s) {}
+namespace internal
+{
+
+struct SliceBase {};
+template<typename T> struct SliceBeg {};
+template<typename T> struct SliceEnd {};
+template<typename T> struct SliceStride {};
+template<> struct SliceBeg<Index> { Index _beg; };
+template<> struct SliceEnd<Index> { Index _end; };
+template<> struct SliceStride<Index> { Index _str; };
+
+template<typename _B, typename _E, typename _S>
+struct traits< Slice<_B, _E, _S> > {
+	using B = _B;
+	using E = _E;
+	using S = _S;
+	enum {
+		is_full = std::is_same_v<B,SliceDimBeg> && std::is_same_v<E,SliceDimEnd> && std::is_same_v<S,SliceDimContig>,
+		is_contig = std::is_same_v<E,SliceDimEnd> && std::is_same_v<S,SliceDimContig>,
+	};
+};
+
+template<typename B, typename E, typename S>
+struct Slice : public SliceBase, SliceBeg<B>, SliceEnd<E>, SliceStride<S>
+{
+
+	constexpr Index get_beg() const {
+		if constexpr ( std::is_same_v<Index, B> ) {
+			return this->_beg;
+		}
+		else {
+			return 0;
+		}
+	}
 
 	/**
 	 * i is the size of the given dimension
 	 */
-	Index len(Index i)
+	void set_data(Index size, Index& beg, Index& len, Index& str)
 	{
-		using namespace std;
-
-#ifndef NDEBUG
-		if ( str == 0 ) {
-			throw ZeroSliceException(beg,end,str);
-		}
-#endif
+		Index end;
 
 		// compute start index
-		if (beg == END) {
-			beg = i-1;
+		if constexpr ( std::is_same<B, SliceDimEnd>::value ) {
+			beg = size-1;
 		}
-		else if (beg < 0) {
-			beg = i+beg;
-		}
-		else if (beg == BEG) {
+		else if constexpr ( std::is_same<B, SliceDimBeg>::value ) {
 			beg = 0;
+		}
+		else {
+			if (this->_beg < 0) {
+				beg = size + this->_beg;
+			}
+			else {
+				beg = this->_beg;
+			}
+			this->_beg = beg;
+		}
+
+		// compute end index
+		if constexpr ( std::is_same<E, SliceDimEnd>::value ) {
+			end = size;
+		}
+		else if constexpr ( std::is_same<E, SliceDimBeg>::value ) {
+			end = -1;
+		}
+		else { 
+			if (this->_end < 0) {
+				end = size + this->_end;
+			}
+			else {
+				end = this->_end;
+			}
+			this->_end = end;
+		}
+
+		if constexpr ( std::is_same<S, SliceDimContig>::value ) {
+			str = 1;
+		}
+		else {
+			str = this->_str;
 		}
 
 #ifndef NDEBUG
 		// bounds check
 		if ( beg < 0 ) {
-			throw BoundSliceException(beg,i);
+			throw BoundSliceException(beg, size);
 		}
-		if ( beg >= i ) {
-			throw BoundSliceException(beg,i);
-		}
-#endif
-
-		// compute end index
-		if (end == END) {
-			end = i;
-		}
-		else if (end < 0) {
-			end = i+end;
-		}
-		else if (end == BEG) {
-			end = -1;
+		if ( beg >= size ) {
+			throw BoundSliceException(beg, size);
 		}
 
-#ifndef NDEBUG
 		// bounds check
 		if ( end < -1 ) {
-			throw BoundSliceException(end,i);
+			throw BoundSliceException(end, size);
 		}
-		if ( end > i ) {
-			throw BoundSliceException(end,i);
+		if ( end > size ) {
+			throw BoundSliceException(end, size);
 		}
 
 		// zero slice check
@@ -80,49 +120,49 @@ struct SliceBase {
 		}
 #endif
 
-		if (str < 0) {
-			return 1+(end-beg+1)/str;
+		if ( str < 0 ) {
+			len = 1+(end-beg+1)/str;
 		}
-		return 1+(end-beg-1)/str;
+		else {
+			len = 1+(end-beg-1)/str;
+		}
 	}
 };
 
-struct FullSlice : public SliceBase {
-	FullSlice() : SliceBase() {};
+template<typename T>
+struct IndexOrSlice
+{
+	constexpr static bool is_slice = std::is_same<T, SliceDimBeg>::value ||
+		                             std::is_same<T, SliceDimEnd>::value ||
+							         std::is_same<T, SliceDimContig>::value;
+
+	using type = typename std::conditional< is_slice, T, Index>::type;
+
 };
 
-struct ContigSlice : public SliceBase {
-	ContigSlice(Index b) : SliceBase(b) {};
-	ContigSlice(Index b,Index e) : SliceBase(b,e) {};
+} // end namespace internal
+
+template<typename B = SliceDimBeg, typename E = SliceDimEnd, typename S = SliceDimContig>
+auto Slice(B b = B{}, E e = E{}, S s = S{})
+{
+	using BT = typename internal::IndexOrSlice<B>::type;
+	using ET = typename internal::IndexOrSlice<E>::type;
+	using ST = typename internal::IndexOrSlice<S>::type;
+
+	internal::Slice<BT, ET, ST> NewSlice;
+
+	if constexpr ( !internal::IndexOrSlice<B>::is_slice ) {
+		NewSlice._beg = static_cast<Index>(b);
+	}
+	if constexpr ( !internal::IndexOrSlice<E>::is_slice ) {
+		NewSlice._end = static_cast<Index>(e);
+	}
+	if constexpr ( !internal::IndexOrSlice<S>::is_slice ) {
+		NewSlice._str = static_cast<Index>(s);
+	}
+
+	return NewSlice;
 };
-
-struct StridedSlice : public SliceBase {
-	StridedSlice(Index b,Index e,Index s) : SliceBase(b,e,s) {};
-};
-
-static inline
-FullSlice Slice()
-{
-	return FullSlice();
-}
-
-static inline
-ContigSlice Slice(Index b)
-{
-	return ContigSlice(b);
-}
-
-static inline
-ContigSlice Slice(Index b,Index e)
-{
-	return ContigSlice(b,e);
-}
-
-static inline
-StridedSlice Slice(Index b,Index e,Index s)
-{
-	return StridedSlice(b,e,s);
-}
 
 }; // end namespace FortCpp
 

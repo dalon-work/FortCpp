@@ -43,6 +43,7 @@ template<Index Size> class OpSize;
 template<typename Derived> struct traits;
 template<Index Rank,Index Order,Index Stride> class Dimensions;
 template<typename T,Index StorageType,Index Align,Index... dims> class Storage;
+template<typename B, typename E, typename S> struct Slice;
 
 }; // end namespace internal
 

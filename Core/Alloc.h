@@ -283,8 +283,8 @@ public:
 	      Order | UnAligned | internal::contig_view<Order,Stride,indices...>::stride>
 	      view(indices... idx)
 	{
-		static const Index newRank = internal::count_slice<indices...>::count;
-		static const Index newStride = internal::contig_view<Order,Stride,indices...>::stride;
+		constexpr Index newRank = internal::count_slice<indices...>::count;
+		constexpr Index newStride = internal::contig_view<Order,Stride,indices...>::stride;
 		static_assert(newRank > 0, "VIEW IS OF RANK ZERO");
 		static_assert(sizeof...(idx) == Rank,
 		              "NUMBER OF INDICES PASSES TO VIEW DOES NOT MATCH RANK OF ARRAY");
@@ -295,17 +295,12 @@ public:
 		std::array<Index,newRank> len;
 		std::array<Index,newRank> str;
 
-		internal::set_len<Rank,newRank,0,0>(_dim,len,idx...);
-		internal::set_beg<Rank,0>(beg,idx...);
-		internal::set_str<Rank,newRank,0,0>(_str,str,idx...);
-
+		internal::set_data<Rank, newRank,0,0>(_dim, beg, len, str, idx...);
 		S.mapView(&_storage[offset(beg)],len,str);
 
 		return S;
 
 	}
-
-
 
 	void mapView(T* p,
 	             const std::array<Index,Rank>& dim,
