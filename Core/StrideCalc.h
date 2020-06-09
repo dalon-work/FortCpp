@@ -137,22 +137,23 @@ struct contig_view_cont<RowMajor,0,head,indices...> {
 
 template<Index Rank,Index nRank,Index D,Index nD,typename Head, typename... indices>
 void set_data(const std::array<Index,Rank>& dim,
+		      const std::array<Index,Rank>& ostr,
               std::array<Index,Rank>& beg,
               std::array<Index,nRank>& len,
 			  std::array<Index,nRank>& str,
               Head& i,
               indices& ... idx)
 {
-	if constexpr ( std::is_base_of<internal::SliceBase, Head>::value ) {
-		i.set_data(dim[D], beg[D], len[nD], str[nD]);
+	if constexpr ( is_slice<Head>::value ) {
+		i.set_data(dim[D], ostr[D], beg[D], len[nD], str[nD]);
 		if constexpr ( sizeof...(idx) > 0 ) {
-			set_data<Rank,nRank,D+1,nD+1>(dim, beg, len, str, idx...);
+			set_data<Rank,nRank,D+1,nD+1>(dim, ostr, beg, len, str, idx...);
 		}
 	}
 	else {
-		beg[D] = 0.0;
+		beg[D] = static_cast<Index>(i);
 		if constexpr ( sizeof...(idx) > 0 ) {
-			set_data<Rank,nRank,D+1,nD>(dim, beg, len, str, idx...);
+			set_data<Rank,nRank,D+1,nD>(dim, ostr, beg, len, str, idx...);
 		}
 	}
 }

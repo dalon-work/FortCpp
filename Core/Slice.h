@@ -49,7 +49,7 @@ struct Slice : public SliceBase, SliceBeg<B>, SliceEnd<E>, SliceStride<S>
 	/**
 	 * i is the size of the given dimension
 	 */
-	void set_data(Index size, Index& beg, Index& len, Index& str)
+	void set_data(Index size, Index old_stride, Index& beg, Index& len, Index& str)
 	{
 		Index end;
 
@@ -126,6 +126,8 @@ struct Slice : public SliceBase, SliceBeg<B>, SliceEnd<E>, SliceStride<S>
 		else {
 			len = 1+(end-beg-1)/str;
 		}
+
+		str *= old_stride;
 	}
 };
 

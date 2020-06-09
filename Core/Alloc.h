@@ -295,7 +295,7 @@ public:
 		std::array<Index,newRank> len;
 		std::array<Index,newRank> str;
 
-		internal::set_data<Rank, newRank,0,0>(_dim, beg, len, str, idx...);
+		internal::set_data<Rank, newRank,0,0>(_dim, _str, beg, len, str, idx...);
 		S.mapView(&_storage[offset(beg)],len,str);
 
 		return S;
